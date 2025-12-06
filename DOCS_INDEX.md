@@ -392,3 +392,34 @@ CoffPOS/
 <p align="center">
 <strong>Happy Coding! ☕💻</strong>
 </p>
+
+
+---
+
+## 🛠️ Setup Guides (NEW!)
+
+### 11. [QUICK_SETUP_HERD.md](QUICK_SETUP_HERD.md)
+**5-Minute Setup with Herd + TablePlus**
+- Install Laravel Herd
+- Install TablePlus
+- Move project to Herd
+- Setup in 5 minutes
+- Quick verification
+
+**For quick setup** ⚡
+
+---
+
+### 12. [SETUP_HERD_TABLEPLUS.md](SETUP_HERD_TABLEPLUS.md)
+**Complete Herd + TablePlus Guide**
+- Detailed installation steps
+- Herd configuration
+- TablePlus setup
+- Database connection
+- Troubleshooting
+- Pro tips
+- Commands reference
+
+**For detailed setup** 🛠️
+
+---
