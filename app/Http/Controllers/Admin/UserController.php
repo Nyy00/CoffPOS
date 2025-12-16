@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
 use App\Models\User;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +14,12 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
+    protected $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
     /**
      * Display a listing of users with filter by role
      */
@@ -69,28 +77,30 @@ class UserController extends Controller
     /**
      * Store a newly created user in storage
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        // Only admin can create users
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Unauthorized access.');
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'nullable|string|max:20|unique:users,phone',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,manager,cashier',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
+        $validated = $request->validated();
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
-            $avatar = $request->file('avatar');
-            $avatarName = time() . '_' . Str::random(10) . '.' . $avatar->getClientOriginalExtension();
-            $avatarPath = $avatar->storeAs('users', $avatarName, 'public');
-            $validated['avatar'] = $avatarPath;
+            try {
+                $uploadResult = $this->imageService->upload(
+                    $request->file('avatar'), 
+                    'users',
+                    [
+                        'resize' => ['width' => 300, 'height' => 300, 'maintain_aspect_ratio' => false],
+                        'optimize' => true,
+                        'quality' => 90,
+                        'generate_thumbnails' => true,
+                        'thumbnail_sizes' => ['thumbnail']
+                    ]
+                );
+                $validated['avatar'] = $uploadResult['path'];
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Avatar upload failed: ' . $e->getMessage());
+            }
         }
 
         $validated['password'] = Hash::make($validated['password']);
@@ -147,47 +157,35 @@ class UserController extends Controller
     /**
      * Update the specified user in storage
      */
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user)
     {
-        // Only admin can edit users, or users can edit themselves (limited)
-        if (!auth()->user()->isAdmin() && auth()->id() !== $user->id) {
-            abort(403, 'Unauthorized access.');
-        }
-
-        $rules = [
-            'name' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users')->ignore($user->id)
-            ],
-            'phone' => [
-                'nullable',
-                'string',
-                'max:20',
-                Rule::unique('users')->ignore($user->id)
-            ],
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        ];
-
-        // Only admin can change role
-        if (auth()->user()->isAdmin()) {
-            $rules['role'] = 'required|in:admin,manager,cashier';
-        }
-
-        $validated = $request->validate($rules);
+        $validated = $request->validated();
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
-            // Delete old avatar if exists
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
-            }
+            try {
+                // Delete old avatar if exists
+                if ($user->avatar) {
+                    $this->imageService->delete($user->avatar);
+                }
 
-            $avatar = $request->file('avatar');
-            $avatarName = time() . '_' . Str::random(10) . '.' . $avatar->getClientOriginalExtension();
-            $avatarPath = $avatar->storeAs('users', $avatarName, 'public');
-            $validated['avatar'] = $avatarPath;
+                $uploadResult = $this->imageService->upload(
+                    $request->file('avatar'), 
+                    'users',
+                    [
+                        'resize' => ['width' => 300, 'height' => 300, 'maintain_aspect_ratio' => false],
+                        'optimize' => true,
+                        'quality' => 90,
+                        'generate_thumbnails' => true,
+                        'thumbnail_sizes' => ['thumbnail']
+                    ]
+                );
+                $validated['avatar'] = $uploadResult['path'];
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Avatar upload failed: ' . $e->getMessage());
+            }
         }
 
         $user->update($validated);
@@ -219,8 +217,8 @@ class UserController extends Controller
         }
 
         // Delete avatar if exists
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
+        if ($user->avatar) {
+            $this->imageService->delete($user->avatar);
         }
 
         $user->delete();
@@ -292,19 +290,22 @@ class UserController extends Controller
             abort(403, 'Unauthorized access.');
         }
 
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
-            $user->update(['avatar' => null]);
+        if ($user->avatar) {
+            $deleted = $this->imageService->delete($user->avatar);
             
-            return response()->json([
-                'success' => true,
-                'message' => 'Avatar removed successfully'
-            ]);
+            if ($deleted) {
+                $user->update(['avatar' => null]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Avatar removed successfully'
+                ]);
+            }
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'No avatar to remove'
+            'message' => 'No avatar to remove or deletion failed'
         ]);
     }
 

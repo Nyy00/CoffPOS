@@ -96,7 +96,7 @@ Setup database structure, models, authentication system, dan frontend foundation
 **Duration**: 2 weeks (Week 3-4)  
 **Start Date**: December 9, 2025  
 **End Date**: December 22, 2025  
-**Status**: 📝 **PLANNED**
+**Status**: �  **IN PROGRESS** (Backend 84% Complete)
 
 ### 🎯 Sprint Goal
 Membangun semua backend CRUD operations dan frontend admin pages untuk Products, Categories, Customers, Users, dan Expenses.
@@ -107,70 +107,70 @@ Membangun semua backend CRUD operations dan frontend admin pages untuk Products,
 
 #### Admin Controllers (57 SP)
 
-**Task 1.1: ProductController** (13 SP)
-- [ ] Create ProductController
-- [ ] index() - list dengan search & filter
-- [ ] create() - form data
-- [ ] store() - simpan dengan image upload
-- [ ] show() - detail dengan history
-- [ ] edit() - form data
-- [ ] update() - update dengan image
-- [ ] destroy() - delete dengan validasi
+**Task 1.1: ProductController** (13 SP) ✅ **COMPLETED**
+- ✅ Create ProductController
+- ✅ index() - list dengan search & filter
+- ✅ create() - form data
+- ✅ store() - simpan dengan image upload
+- ✅ show() - detail dengan history
+- ✅ edit() - form data
+- ✅ update() - update dengan image
+- ✅ destroy() - delete dengan validasi
 
-**Task 1.2: CategoryController** (8 SP)
-- [ ] Create CategoryController
-- [ ] Full CRUD operations
-- [ ] Image upload integration
+**Task 1.2: CategoryController** (8 SP) ✅ **COMPLETED**
+- ✅ Create CategoryController
+- ✅ Full CRUD operations
+- ✅ Image upload integration
 
-**Task 1.3: CustomerController** (13 SP)
-- [ ] Create CustomerController
-- [ ] Full CRUD operations
-- [ ] Transaction history method
+**Task 1.3: CustomerController** (13 SP) ✅ **COMPLETED**
+- ✅ Create CustomerController
+- ✅ Full CRUD operations
+- ✅ Transaction history method
 
-**Task 1.4: UserController** (10 SP)
-- [ ] Create UserController (Admin only)
-- [ ] Full CRUD operations
-- [ ] Role management
-- [ ] Password reset method
+**Task 1.4: UserController** (10 SP) ✅ **COMPLETED**
+- ✅ Create UserController (Admin only)
+- ✅ Full CRUD operations
+- ✅ Role management
+- ✅ Password reset method
 
-**Task 1.5: ExpenseController** (13 SP)
-- [ ] Create ExpenseController
-- [ ] Full CRUD operations
-- [ ] Receipt upload integration
+**Task 1.5: ExpenseController** (13 SP) ✅ **COMPLETED**
+- ✅ Create ExpenseController
+- ✅ Full CRUD operations
+- ✅ Receipt upload integration
 
 ---
 
 #### Form Requests (8 SP)
 
-**Task 1.6: Create Form Requests** (8 SP)
-- [ ] ProductRequest (store & update rules)
-- [ ] CategoryRequest (store & update rules)
-- [ ] CustomerRequest (store & update rules)
-- [ ] UserRequest (store & update rules)
-- [ ] ExpenseRequest (store & update rules)
+**Task 1.6: Create Form Requests** (8 SP) ✅ **COMPLETED**
+- ✅ ProductRequest (store & update rules)
+- ✅ CategoryRequest (store & update rules)
+- ✅ CustomerRequest (store & update rules)
+- ✅ UserRequest (store & update rules)
+- ✅ ExpenseRequest (store & update rules)
 
 ---
 
 #### ImageService (8 SP)
 
-**Task 1.7: ImageService Implementation** (8 SP)
-- [ ] upload() method
-- [ ] delete() method
-- [ ] resize() method
-- [ ] optimize() method
-- [ ] validateImage() method
+**Task 1.7: ImageService Implementation** (8 SP) ✅ **COMPLETED**
+- ✅ upload() method
+- ✅ delete() method
+- ✅ resize() method
+- ✅ optimize() method
+- ✅ validateImage() method
 
 ---
 
 #### Routes Setup (3 SP)
 
-**Task 1.8: Admin Routes** (3 SP)
-- [ ] Resource routes untuk Products
-- [ ] Resource routes untuk Categories
-- [ ] Resource routes untuk Customers
-- [ ] Resource routes untuk Users
-- [ ] Resource routes untuk Expenses
-- [ ] Apply middleware (auth, role)
+**Task 1.8: Admin Routes** (3 SP) ✅ **COMPLETED**
+- ✅ Resource routes untuk Products
+- ✅ Resource routes untuk Categories
+- ✅ Resource routes untuk Customers
+- ✅ Resource routes untuk Users
+- ✅ Resource routes untuk Expenses
+- ✅ Apply middleware (auth, role)
 
 ---
 
@@ -234,14 +234,15 @@ Membangun semua backend CRUD operations dan frontend admin pages untuk Products,
 
 ### 📊 Sprint 1 Metrics
 
-| Work Type | Story Points | Assignee |
-|-----------|--------------|----------|
-| **Backend** | **76 SP** | Backend Dev 1 & 2 |
-| **Frontend** | **89 SP** | Frontend Dev 1 & 2 |
-| **Total** | **165 SP** | **4 Developers** |
+| Work Type | Story Points | Status | Progress |
+|-----------|--------------|--------|----------|
+| **Backend** | **76 SP** | ✅ **COMPLETED** | **100%** |
+| **Frontend** | **89 SP** | ❌ **NOT STARTED** | **0%** |
+| **Total** | **165 SP** | 🔄 **IN PROGRESS** | **46%** |
 
-**Estimated Days**: 10 working days  
-**Daily Capacity**: ~16.5 SP per day
+**Backend Completed**: 76/76 SP (100%) ✅  
+**Frontend Remaining**: 89 SP (0%) ❌  
+**Overall Progress**: 76/165 SP (46%) 🔄
 
 ---
 

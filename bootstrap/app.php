@@ -13,6 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'api.rate.limit' => \App\Http\Middleware\ApiRateLimitMiddleware::class,
+        ]);
+        
+        // Apply rate limiting to API routes
+        $middleware->group('api', [
+            'throttle:api',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\ApiRateLimitMiddleware::class . ':120,1', // 120 requests per minute
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

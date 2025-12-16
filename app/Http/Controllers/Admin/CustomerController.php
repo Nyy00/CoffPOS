@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -69,15 +70,9 @@ class CustomerController extends Controller
     /**
      * Store a newly created customer in storage
      */
-    public function store(Request $request)
+    public function store(CustomerRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20|unique:customers,phone',
-            'email' => 'nullable|email|unique:customers,email',
-            'address' => 'nullable|string',
-            'points' => 'nullable|integer|min:0'
-        ]);
+        $validated = $request->validated();
 
         $validated['points'] = $validated['points'] ?? 0;
 
@@ -142,24 +137,9 @@ class CustomerController extends Controller
     /**
      * Update the specified customer in storage
      */
-    public function update(Request $request, Customer $customer)
+    public function update(CustomerRequest $request, Customer $customer)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => [
-                'required',
-                'string',
-                'max:20',
-                Rule::unique('customers')->ignore($customer->id)
-            ],
-            'email' => [
-                'nullable',
-                'email',
-                Rule::unique('customers')->ignore($customer->id)
-            ],
-            'address' => 'nullable|string',
-            'points' => 'nullable|integer|min:0'
-        ]);
+        $validated = $request->validated();
 
         $customer->update($validated);
 

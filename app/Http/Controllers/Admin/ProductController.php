@@ -3,14 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Models\Category;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+    protected $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
     /**
      * Display a listing of products with search and filter
      */
@@ -79,25 +87,30 @@ class ProductController extends Controller
     /**
      * Store a newly created product in storage
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'cost' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'is_available' => 'boolean'
-        ]);
+        $validated = $request->validated();
 
         // Handle image upload
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('products', $imageName, 'public');
-            $validated['image'] = $imagePath;
+            try {
+                $uploadResult = $this->imageService->upload(
+                    $request->file('image'), 
+                    'products',
+                    [
+                        'resize' => ['width' => 800, 'height' => 800, 'maintain_aspect_ratio' => true],
+                        'optimize' => true,
+                        'quality' => 85,
+                        'generate_thumbnails' => true,
+                        'thumbnail_sizes' => ['thumbnail', 'small', 'medium']
+                    ]
+                );
+                $validated['image'] = $uploadResult['path'];
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         $validated['is_available'] = $request->has('is_available');
@@ -142,30 +155,35 @@ class ProductController extends Controller
     /**
      * Update the specified product in storage
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'cost' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'is_available' => 'boolean'
-        ]);
+        $validated = $request->validated();
 
         // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($product->image && Storage::disk('public')->exists($product->image)) {
-                Storage::disk('public')->delete($product->image);
-            }
+            try {
+                // Delete old image if exists
+                if ($product->image) {
+                    $this->imageService->delete($product->image);
+                }
 
-            $image = $request->file('image');
-            $imageName = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('products', $imageName, 'public');
-            $validated['image'] = $imagePath;
+                $uploadResult = $this->imageService->upload(
+                    $request->file('image'), 
+                    'products',
+                    [
+                        'resize' => ['width' => 800, 'height' => 800, 'maintain_aspect_ratio' => true],
+                        'optimize' => true,
+                        'quality' => 85,
+                        'generate_thumbnails' => true,
+                        'thumbnail_sizes' => ['thumbnail', 'small', 'medium']
+                    ]
+                );
+                $validated['image'] = $uploadResult['path'];
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         $validated['is_available'] = $request->has('is_available');
@@ -188,8 +206,8 @@ class ProductController extends Controller
         }
 
         // Delete image if exists
-        if ($product->image && Storage::disk('public')->exists($product->image)) {
-            Storage::disk('public')->delete($product->image);
+        if ($product->image) {
+            $this->imageService->delete($product->image);
         }
 
         $product->delete();
