@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -69,21 +70,9 @@ class UserController extends Controller
     /**
      * Store a newly created user in storage
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        // Only admin can create users
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Unauthorized access.');
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'nullable|string|max:20|unique:users,phone',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,manager,cashier',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
+        $validated = $request->validated();
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
@@ -147,35 +136,9 @@ class UserController extends Controller
     /**
      * Update the specified user in storage
      */
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user)
     {
-        // Only admin can edit users, or users can edit themselves (limited)
-        if (!auth()->user()->isAdmin() && auth()->id() !== $user->id) {
-            abort(403, 'Unauthorized access.');
-        }
-
-        $rules = [
-            'name' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users')->ignore($user->id)
-            ],
-            'phone' => [
-                'nullable',
-                'string',
-                'max:20',
-                Rule::unique('users')->ignore($user->id)
-            ],
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        ];
-
-        // Only admin can change role
-        if (auth()->user()->isAdmin()) {
-            $rules['role'] = 'required|in:admin,manager,cashier';
-        }
-
-        $validated = $request->validate($rules);
+        $validated = $request->validated();
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {

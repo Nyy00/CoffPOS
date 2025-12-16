@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExpenseRequest;
 use App\Models\Expense;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -87,31 +88,18 @@ class ExpenseController extends Controller
      */
     public function create()
     {
-        $categories = [
-            'inventory' => 'Inventory',
-            'operational' => 'Operational',
-            'salary' => 'Salary',
-            'utilities' => 'Utilities',
-            'marketing' => 'Marketing',
-            'maintenance' => 'Maintenance',
-            'other' => 'Other'
-        ];
+        $categories = ExpenseRequest::getCategoryOptions();
+        $categoryDescriptions = ExpenseRequest::getCategoryDescriptions();
 
-        return view('admin.expenses.create', compact('categories'));
+        return view('admin.expenses.create', compact('categories', 'categoryDescriptions'));
     }
 
     /**
      * Store a newly created expense in storage
      */
-    public function store(Request $request)
+    public function store(ExpenseRequest $request)
     {
-        $validated = $request->validate([
-            'category' => 'required|in:inventory,operational,salary,utilities,marketing,maintenance,other',
-            'description' => 'required|string|max:500',
-            'amount' => 'required|numeric|min:0',
-            'expense_date' => 'required|date|before_or_equal:today',
-            'receipt_image' => 'nullable|image|mimes:jpeg,png,jpg,pdf|max:5120' // 5MB max
-        ]);
+        $validated = $request->validated();
 
         // Handle receipt upload
         if ($request->hasFile('receipt_image')) {
@@ -160,36 +148,23 @@ class ExpenseController extends Controller
             abort(403, 'Unauthorized access.');
         }
 
-        $categories = [
-            'inventory' => 'Inventory',
-            'operational' => 'Operational',
-            'salary' => 'Salary',
-            'utilities' => 'Utilities',
-            'marketing' => 'Marketing',
-            'maintenance' => 'Maintenance',
-            'other' => 'Other'
-        ];
+        $categories = ExpenseRequest::getCategoryOptions();
+        $categoryDescriptions = ExpenseRequest::getCategoryDescriptions();
 
-        return view('admin.expenses.edit', compact('expense', 'categories'));
+        return view('admin.expenses.edit', compact('expense', 'categories', 'categoryDescriptions'));
     }
 
     /**
      * Update the specified expense in storage
      */
-    public function update(Request $request, Expense $expense)
+    public function update(ExpenseRequest $request, Expense $expense)
     {
         // Only allow editing own expenses or admin can edit all
         if (!auth()->user()->isAdmin() && $expense->user_id !== auth()->id()) {
             abort(403, 'Unauthorized access.');
         }
 
-        $validated = $request->validate([
-            'category' => 'required|in:inventory,operational,salary,utilities,marketing,maintenance,other',
-            'description' => 'required|string|max:500',
-            'amount' => 'required|numeric|min:0',
-            'expense_date' => 'required|date|before_or_equal:today',
-            'receipt_image' => 'nullable|image|mimes:jpeg,png,jpg,pdf|max:5120'
-        ]);
+        $validated = $request->validated();
 
         // Handle receipt upload
         if ($request->hasFile('receipt_image')) {
