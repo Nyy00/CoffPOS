@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpenseRequest;
 use App\Models\Expense;
 use App\Models\User;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -13,6 +14,12 @@ use Carbon\Carbon;
 
 class ExpenseController extends Controller
 {
+    protected $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
     /**
      * Display a listing of expenses with filters
      */
@@ -103,10 +110,23 @@ class ExpenseController extends Controller
 
         // Handle receipt upload
         if ($request->hasFile('receipt_image')) {
-            $receipt = $request->file('receipt_image');
-            $receiptName = time() . '_' . Str::random(10) . '.' . $receipt->getClientOriginalExtension();
-            $receiptPath = $receipt->storeAs('receipts', $receiptName, 'public');
-            $validated['receipt_image'] = $receiptPath;
+            try {
+                // For receipts, we want to preserve quality and don't need thumbnails
+                $uploadResult = $this->imageService->upload(
+                    $request->file('receipt_image'), 
+                    'receipts',
+                    [
+                        'optimize' => true,
+                        'quality' => 95, // Higher quality for receipts
+                        'generate_thumbnails' => false
+                    ]
+                );
+                $validated['receipt_image'] = $uploadResult['path'];
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Receipt upload failed: ' . $e->getMessage());
+            }
         }
 
         $validated['user_id'] = auth()->id();
@@ -168,15 +188,27 @@ class ExpenseController extends Controller
 
         // Handle receipt upload
         if ($request->hasFile('receipt_image')) {
-            // Delete old receipt if exists
-            if ($expense->receipt_image && Storage::disk('public')->exists($expense->receipt_image)) {
-                Storage::disk('public')->delete($expense->receipt_image);
-            }
+            try {
+                // Delete old receipt if exists
+                if ($expense->receipt_image) {
+                    $this->imageService->delete($expense->receipt_image);
+                }
 
-            $receipt = $request->file('receipt_image');
-            $receiptName = time() . '_' . Str::random(10) . '.' . $receipt->getClientOriginalExtension();
-            $receiptPath = $receipt->storeAs('receipts', $receiptName, 'public');
-            $validated['receipt_image'] = $receiptPath;
+                $uploadResult = $this->imageService->upload(
+                    $request->file('receipt_image'), 
+                    'receipts',
+                    [
+                        'optimize' => true,
+                        'quality' => 95, // Higher quality for receipts
+                        'generate_thumbnails' => false
+                    ]
+                );
+                $validated['receipt_image'] = $uploadResult['path'];
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Receipt upload failed: ' . $e->getMessage());
+            }
         }
 
         $expense->update($validated);
@@ -196,8 +228,8 @@ class ExpenseController extends Controller
         }
 
         // Delete receipt if exists
-        if ($expense->receipt_image && Storage::disk('public')->exists($expense->receipt_image)) {
-            Storage::disk('public')->delete($expense->receipt_image);
+        if ($expense->receipt_image) {
+            $this->imageService->delete($expense->receipt_image);
         }
 
         $expense->delete();
@@ -216,19 +248,22 @@ class ExpenseController extends Controller
             abort(403, 'Unauthorized access.');
         }
 
-        if ($expense->receipt_image && Storage::disk('public')->exists($expense->receipt_image)) {
-            Storage::disk('public')->delete($expense->receipt_image);
-            $expense->update(['receipt_image' => null]);
+        if ($expense->receipt_image) {
+            $deleted = $this->imageService->delete($expense->receipt_image);
             
-            return response()->json([
-                'success' => true,
-                'message' => 'Receipt removed successfully'
-            ]);
+            if ($deleted) {
+                $expense->update(['receipt_image' => null]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Receipt removed successfully'
+                ]);
+            }
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'No receipt to remove'
+            'message' => 'No receipt to remove or deletion failed'
         ]);
     }
 
@@ -379,8 +414,8 @@ class ExpenseController extends Controller
 
         // Delete receipt files
         foreach ($expensesToDelete as $expense) {
-            if ($expense->receipt_image && Storage::disk('public')->exists($expense->receipt_image)) {
-                Storage::disk('public')->delete($expense->receipt_image);
+            if ($expense->receipt_image) {
+                $this->imageService->delete($expense->receipt_image);
             }
         }
 

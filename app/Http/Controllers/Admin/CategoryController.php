@@ -5,12 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
+    protected $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
     /**
      * Display a listing of categories
      */
@@ -58,10 +65,24 @@ class CategoryController extends Controller
 
         // Handle image upload
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('categories', $imageName, 'public');
-            $validated['image'] = $imagePath;
+            try {
+                $uploadResult = $this->imageService->upload(
+                    $request->file('image'), 
+                    'categories',
+                    [
+                        'resize' => ['width' => 600, 'height' => 400, 'maintain_aspect_ratio' => true],
+                        'optimize' => true,
+                        'quality' => 90,
+                        'generate_thumbnails' => true,
+                        'thumbnail_sizes' => ['thumbnail', 'small']
+                    ]
+                );
+                $validated['image'] = $uploadResult['path'];
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         Category::create($validated);
@@ -109,15 +130,29 @@ class CategoryController extends Controller
 
         // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($category->image && Storage::disk('public')->exists($category->image)) {
-                Storage::disk('public')->delete($category->image);
-            }
+            try {
+                // Delete old image if exists
+                if ($category->image) {
+                    $this->imageService->delete($category->image);
+                }
 
-            $image = $request->file('image');
-            $imageName = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('categories', $imageName, 'public');
-            $validated['image'] = $imagePath;
+                $uploadResult = $this->imageService->upload(
+                    $request->file('image'), 
+                    'categories',
+                    [
+                        'resize' => ['width' => 600, 'height' => 400, 'maintain_aspect_ratio' => true],
+                        'optimize' => true,
+                        'quality' => 90,
+                        'generate_thumbnails' => true,
+                        'thumbnail_sizes' => ['thumbnail', 'small']
+                    ]
+                );
+                $validated['image'] = $uploadResult['path'];
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         $category->update($validated);
@@ -138,8 +173,8 @@ class CategoryController extends Controller
         }
 
         // Delete image if exists
-        if ($category->image && Storage::disk('public')->exists($category->image)) {
-            Storage::disk('public')->delete($category->image);
+        if ($category->image) {
+            $this->imageService->delete($category->image);
         }
 
         $category->delete();
@@ -168,19 +203,22 @@ class CategoryController extends Controller
      */
     public function removeImage(Category $category)
     {
-        if ($category->image && Storage::disk('public')->exists($category->image)) {
-            Storage::disk('public')->delete($category->image);
-            $category->update(['image' => null]);
+        if ($category->image) {
+            $deleted = $this->imageService->delete($category->image);
             
-            return response()->json([
-                'success' => true,
-                'message' => 'Image removed successfully'
-            ]);
+            if ($deleted) {
+                $category->update(['image' => null]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Image removed successfully'
+                ]);
+            }
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'No image to remove'
+            'message' => 'No image to remove or deletion failed'
         ]);
     }
 }
