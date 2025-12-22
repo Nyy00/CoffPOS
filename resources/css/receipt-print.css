@@ -177,10 +177,12 @@
   font-size: 12px;
   color: #666;
 }
+
 .print-button {
   margin-bottom: 20px;
   text-align: center;
 }
+
 .print-button button {
   padding: 8px 16px;
   background: #3b82f6;
@@ -190,6 +192,7 @@
   cursor: pointer;
   font-size: 14px;
 }
+
 .print-button button:hover {
   background: #2563eb;
 }
