@@ -147,7 +147,6 @@
         background: white;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    
     .print-button {
         position: fixed;
         top: 20px;
@@ -161,7 +160,6 @@
         font-size: 14px;
         z-index: 1000;
     }
-    
     .print-button:hover {
         background: #1d4ed8;
     }
