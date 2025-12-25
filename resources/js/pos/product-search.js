@@ -140,8 +140,9 @@ class POSProductsSearch {
     }
     
     getProductCardHTML(product) {
+        // Use public images as primary in production
         const imageUrl = product.image 
-            ? `/storage/${product.image}` 
+            ? `/images/products/${product.image.replace('products/', '')}` 
             : '/images/placeholder-product.png';
         
         const stockClass = product.stock < 10 ? 'text-red-600' : 'text-green-600';
@@ -156,7 +157,7 @@ class POSProductsSearch {
                         <img src="${imageUrl}" 
                              alt="${product.name}" 
                              class="w-full h-24 object-cover rounded-md"
-                             onerror="this.onerror=null; this.src='/images/products/${product.image ? product.image.replace('products/', '') : 'placeholder-product.png'}';">
+                             onerror="this.onerror=null; this.src='/storage/${product.image || 'logo.png'}';">
                     </div>
                     <div class="space-y-1">
                         <h3 class="text-sm font-medium text-gray-900 truncate" title="${product.name}">
