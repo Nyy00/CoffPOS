@@ -9,12 +9,19 @@ class Product extends Model
     protected $fillable = [
         'category_id',
         'name',
+        'code',
         'description',
         'price',
         'cost',
         'stock',
+        'min_stock',
         'image',
         'is_available',
+    ];
+
+    protected $attributes = [
+        'image' => null,
+        'is_available' => true,
     ];
 
     protected $casts = [
