@@ -27,45 +27,49 @@
 
         <!-- Filters -->
         <x-card class="mb-6">
-            <form method="GET" action="{{ route('admin.products.index') }}" class="space-y-4 md:space-y-0 md:flex md:items-end md:space-x-4">
-                <div class="flex-1">
-                    <x-form.input 
-                        name="search" 
-                        placeholder="Search products by name, code, or description..."
-                        value="{{ request('search') }}"
-                        label="Search Products"
-                    />
-                </div>
-                <div class="w-full md:w-48">
-                    <x-form.select 
-                        name="category_id" 
-                        :options="$categories" 
-                        value="{{ request('category_id') }}"
-                        placeholder="All Categories"
-                        label="Category"
-                    />
-                </div>
-                <div class="w-full md:w-32">
-                    <x-form.select 
-                        name="is_available" 
-                        :options="['1' => 'Available', '0' => 'Unavailable']" 
-                        value="{{ request('is_available') }}"
-                        placeholder="All Status"
-                        label="Status"
-                    />
-                </div>
-                <div class="flex space-x-2">
-                    <x-button type="submit" variant="primary">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                        Search
-                    </x-button>
-                    @if(request()->hasAny(['search', 'category_id', 'is_available']))
-                        <x-button href="{{ route('admin.products.index') }}" variant="light">
-                            Clear
+            <form method="GET" action="{{ route('admin.products.index') }}" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="md:col-span-2 lg:col-span-1">
+                        <x-form.input 
+                            name="search" 
+                            placeholder="Search products..."
+                            value="{{ request('search') }}"
+                            label="Search Products"
+                        />
+                    </div>
+                    <div>
+                        <x-form.select 
+                            name="category_id" 
+                            :options="$categories" 
+                            value="{{ request('category_id') }}"
+                            placeholder="All Categories"
+                            label="Category"
+                        />
+                    </div>
+                    <div>
+                        <x-form.select 
+                            name="is_available" 
+                            :options="['1' => 'Available', '0' => 'Unavailable']" 
+                            value="{{ request('is_available') }}"
+                            placeholder="All Status"
+                            label="Status"
+                        />
+                    </div>
+                    <div class="flex items-end space-x-2">
+                        <x-button type="submit" variant="primary" class="flex-1">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <span class="hidden sm:inline">Search</span>
+                            <span class="sm:hidden">🔍</span>
                         </x-button>
-                    @endif
+                        @if(request()->hasAny(['search', 'category_id', 'is_available']))
+                            <x-button href="{{ route('admin.products.index') }}" variant="light">
+                                <span class="hidden sm:inline">Clear</span>
+                                <span class="sm:hidden">✕</span>
+                            </x-button>
+                        @endif
+                    </div>
                 </div>
             </form>
         </x-card>
@@ -73,105 +77,200 @@
         <!-- Products Table -->
         <x-card>
             @if($products->count() > 0)
-                <x-table :headers="[
-                    ['label' => 'Image', 'key' => 'image'],
-                    ['label' => 'Product', 'key' => 'name', 'sortable' => true],
-                    ['label' => 'Code', 'key' => 'code', 'sortable' => true],
-                    ['label' => 'Category', 'key' => 'category', 'sortable' => true],
-                    ['label' => 'Price', 'key' => 'price', 'sortable' => true],
-                    ['label' => 'Stock', 'key' => 'stock', 'sortable' => true],
-                    ['label' => 'Status', 'key' => 'status'],
-                    ['label' => 'Actions', 'key' => 'actions']
-                ]">
+                <!-- Mobile Cards View -->
+                <div class="block md:hidden space-y-4">
                     @foreach($products as $product)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @if($product->image)
-                                @php
-                                    $fallbackImage = 'placeholder-product.png';
-                                    $productName = strtolower($product->name);
-                                    if (str_contains($productName, 'cheesecake')) $fallbackImage = 'cheesecake.jpg';
-                                    elseif (str_contains($productName, 'sandwich')) $fallbackImage = 'sandwich.jpg';
-                                    elseif (str_contains($productName, 'tiramisu')) $fallbackImage = 'tiramisu.jpg';
-                                    elseif (str_contains($productName, 'chocolate')) $fallbackImage = 'chocolate.jpg';
-                                    elseif (str_contains($productName, 'croissant')) $fallbackImage = 'croissants.jpg';
-                                    elseif (str_contains($productName, 'americano')) $fallbackImage = 'americano.jpg';
-                                    elseif (str_contains($productName, 'latte')) $fallbackImage = 'latte.jpg';
-                                    elseif (str_contains($productName, 'cappuccino')) $fallbackImage = 'cappuccino.jpg';
-                                    elseif (str_contains($productName, 'espresso')) $fallbackImage = 'espresso.jpg';
-                                    elseif (str_contains($productName, 'mocha')) $fallbackImage = 'mocha.jpg';
-                                    elseif (str_contains($productName, 'tea')) $fallbackImage = 'green-tea.jpg';
-                                @endphp
-                                <img src="{{ asset('images/products/' . str_replace('products/', '', $product->image)) }}" 
-                                     alt="{{ $product->name }}" 
-                                     class="h-12 w-12 rounded-lg object-cover"
-                                     onerror="this.onerror=null; this.src='{{ asset('images/products/' . $fallbackImage) }}';">
-                            @else
-                                <div class="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center">
-                                    <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
-                                </div>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
-                            @if($product->description)
-                                <div class="text-sm text-gray-500">{{ Str::limit($product->description, 50) }}</div>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {{ $product->code }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <x-badge variant="light">{{ $product->category->name }}</x-badge>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            Rp {{ number_format($product->price, 0, ',', '.') }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <span class="{{ $product->stock <= $product->min_stock ? 'text-red-600 font-medium' : '' }}">
-                                {{ $product->stock }}
-                            </span>
-                            @if($product->stock <= $product->min_stock)
-                                <x-badge variant="danger" size="sm" class="ml-1">Low Stock</x-badge>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @if($product->is_available)
-                                <x-badge variant="success">Available</x-badge>
-                            @else
-                                <x-badge variant="danger">Unavailable</x-badge>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="flex items-center space-x-2">
-                                <x-button href="{{ route('admin.products.show', $product) }}" variant="ghost" size="sm">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                    </svg>
-                                </x-button>
-                                <x-button href="{{ route('admin.products.edit', $product) }}" variant="ghost" size="sm">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                </x-button>
-                                <x-button 
-                                    variant="ghost" 
-                                    size="sm"
-                                    onclick="confirmDelete('{{ $product->id }}', '{{ $product->name }}')"
-                                    class="text-red-600 hover:text-red-800"
-                                >
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg>
-                                </x-button>
+                    <div class="bg-white border rounded-lg p-4 shadow-sm">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0">
+                                @if($product->image)
+                                    @php
+                                        $fallbackImage = 'placeholder-product.png';
+                                        $productName = strtolower($product->name);
+                                        if (str_contains($productName, 'cheesecake')) $fallbackImage = 'cheesecake.jpg';
+                                        elseif (str_contains($productName, 'sandwich')) $fallbackImage = 'sandwich.jpg';
+                                        elseif (str_contains($productName, 'tiramisu')) $fallbackImage = 'tiramisu.jpg';
+                                        elseif (str_contains($productName, 'chocolate')) $fallbackImage = 'chocolate.jpg';
+                                        elseif (str_contains($productName, 'croissant')) $fallbackImage = 'croissants.jpg';
+                                        elseif (str_contains($productName, 'americano')) $fallbackImage = 'americano.jpg';
+                                        elseif (str_contains($productName, 'latte')) $fallbackImage = 'latte.jpg';
+                                        elseif (str_contains($productName, 'cappuccino')) $fallbackImage = 'cappuccino.jpg';
+                                        elseif (str_contains($productName, 'espresso')) $fallbackImage = 'espresso.jpg';
+                                        elseif (str_contains($productName, 'mocha')) $fallbackImage = 'mocha.jpg';
+                                        elseif (str_contains($productName, 'tea')) $fallbackImage = 'green-tea.jpg';
+                                    @endphp
+                                    <img src="{{ asset('images/products/' . str_replace('products/', '', $product->image)) }}" 
+                                         alt="{{ $product->name }}" 
+                                         class="h-16 w-16 rounded-lg object-cover"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/products/' . $fallbackImage) }}';">
+                                @else
+                                    <div class="h-16 w-16 rounded-lg bg-gray-200 flex items-center justify-center">
+                                        <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                @endif
                             </div>
-                        </td>
-                    </tr>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h3 class="text-sm font-medium text-gray-900">{{ $product->name }}</h3>
+                                        <p class="text-xs text-gray-500 mt-1">{{ $product->code }}</p>
+                                        @if($product->description)
+                                            <p class="text-xs text-gray-600 mt-1">{{ Str::limit($product->description, 50) }}</p>
+                                        @endif
+                                        <div class="flex items-center gap-2 mt-2">
+                                            <x-badge variant="light" size="sm">{{ $product->category->name }}</x-badge>
+                                            @if($product->is_available)
+                                                <x-badge variant="success" size="sm">Available</x-badge>
+                                            @else
+                                                <x-badge variant="danger" size="sm">Unavailable</x-badge>
+                                            @endif
+                                            @if($product->stock <= $product->min_stock)
+                                                <x-badge variant="danger" size="sm">Low Stock</x-badge>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between mt-3">
+                                    <div class="text-left">
+                                        <p class="text-sm font-medium text-gray-900">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                                        <p class="text-xs {{ $product->stock <= $product->min_stock ? 'text-red-600 font-medium' : 'text-gray-500' }}">
+                                            Stock: {{ $product->stock }}
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <x-button href="{{ route('admin.products.show', $product) }}" variant="ghost" size="sm">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </x-button>
+                                        <x-button href="{{ route('admin.products.edit', $product) }}" variant="ghost" size="sm">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </x-button>
+                                        <x-button 
+                                            variant="ghost" 
+                                            size="sm"
+                                            onclick="confirmDelete('{{ $product->id }}', '{{ $product->name }}')"
+                                            class="text-red-600 hover:text-red-800"
+                                        >
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </x-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     @endforeach
-                </x-table>
+                </div>
+
+                <!-- Desktop Table View -->
+                <div class="hidden md:block overflow-x-auto">
+                    <x-table :headers="[
+                        ['label' => 'Image', 'key' => 'image'],
+                        ['label' => 'Product', 'key' => 'name', 'sortable' => true],
+                        ['label' => 'Code', 'key' => 'code', 'sortable' => true],
+                        ['label' => 'Category', 'key' => 'category', 'sortable' => true],
+                        ['label' => 'Price', 'key' => 'price', 'sortable' => true],
+                        ['label' => 'Stock', 'key' => 'stock', 'sortable' => true],
+                        ['label' => 'Status', 'key' => 'status'],
+                        ['label' => 'Actions', 'key' => 'actions']
+                    ]">
+                        @foreach($products as $product)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($product->image)
+                                    @php
+                                        $fallbackImage = 'placeholder-product.png';
+                                        $productName = strtolower($product->name);
+                                        if (str_contains($productName, 'cheesecake')) $fallbackImage = 'cheesecake.jpg';
+                                        elseif (str_contains($productName, 'sandwich')) $fallbackImage = 'sandwich.jpg';
+                                        elseif (str_contains($productName, 'tiramisu')) $fallbackImage = 'tiramisu.jpg';
+                                        elseif (str_contains($productName, 'chocolate')) $fallbackImage = 'chocolate.jpg';
+                                        elseif (str_contains($productName, 'croissant')) $fallbackImage = 'croissants.jpg';
+                                        elseif (str_contains($productName, 'americano')) $fallbackImage = 'americano.jpg';
+                                        elseif (str_contains($productName, 'latte')) $fallbackImage = 'latte.jpg';
+                                        elseif (str_contains($productName, 'cappuccino')) $fallbackImage = 'cappuccino.jpg';
+                                        elseif (str_contains($productName, 'espresso')) $fallbackImage = 'espresso.jpg';
+                                        elseif (str_contains($productName, 'mocha')) $fallbackImage = 'mocha.jpg';
+                                        elseif (str_contains($productName, 'tea')) $fallbackImage = 'green-tea.jpg';
+                                    @endphp
+                                    <img src="{{ asset('images/products/' . str_replace('products/', '', $product->image)) }}" 
+                                         alt="{{ $product->name }}" 
+                                         class="h-12 w-12 rounded-lg object-cover"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/products/' . $fallbackImage) }}';">
+                                @else
+                                    <div class="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
+                                @if($product->description)
+                                    <div class="text-sm text-gray-500">{{ Str::limit($product->description, 50) }}</div>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ $product->code }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <x-badge variant="light">{{ $product->category->name }}</x-badge>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                Rp {{ number_format($product->price, 0, ',', '.') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <span class="{{ $product->stock <= $product->min_stock ? 'text-red-600 font-medium' : '' }}">
+                                    {{ $product->stock }}
+                                </span>
+                                @if($product->stock <= $product->min_stock)
+                                    <x-badge variant="danger" size="sm" class="ml-1">Low Stock</x-badge>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($product->is_available)
+                                    <x-badge variant="success">Available</x-badge>
+                                @else
+                                    <x-badge variant="danger">Unavailable</x-badge>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center space-x-2">
+                                    <x-button href="{{ route('admin.products.show', $product) }}" variant="ghost" size="sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </x-button>
+                                    <x-button href="{{ route('admin.products.edit', $product) }}" variant="ghost" size="sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </x-button>
+                                    <x-button 
+                                        variant="ghost" 
+                                        size="sm"
+                                        onclick="confirmDelete('{{ $product->id }}', '{{ $product->name }}')"
+                                        class="text-red-600 hover:text-red-800"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </x-button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </x-table>
+                </div>
 
                 <!-- Pagination -->
                 <div class="mt-6">
