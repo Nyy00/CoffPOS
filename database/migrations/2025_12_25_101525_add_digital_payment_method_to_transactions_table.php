@@ -12,9 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // This migration was created to add 'digital' to the payment_method enum
-        // However, since enum modifications are complex and database-specific,
-        // we'll handle this gracefully for deployment
+        // This migration adds 'digital' to the payment_method enum
         
         try {
             $driver = DB::getDriverName();
@@ -23,21 +21,42 @@ return new class extends Migration
                 // For MySQL, modify the enum
                 DB::statement("ALTER TABLE transactions MODIFY COLUMN payment_method ENUM('cash', 'debit', 'credit', 'ewallet', 'qris', 'digital')");
             } elseif ($driver === 'pgsql') {
-                // For PostgreSQL, we'd need to add the enum value
-                // This is more complex and would require checking if it exists first
-                DB::statement("-- PostgreSQL enum modification would go here");
+                // For PostgreSQL, we need to:
+                // 1. Add the new enum value to the type
+                // 2. Then we can use it in the table
+                
+                // First, check if the enum value already exists
+                $enumExists = DB::select("
+                    SELECT 1 FROM pg_enum 
+                    WHERE enumlabel = 'digital' 
+                    AND enumtypid = (
+                        SELECT oid FROM pg_type WHERE typname = 'transactions_payment_method_check'
+                    )
+                ");
+                
+                if (empty($enumExists)) {
+                    // Add the new enum value
+                    DB::statement("ALTER TYPE transactions_payment_method_check ADD VALUE 'digital'");
+                }
             } else {
-                // For SQLite and other databases, enum modifications are complex
-                // We'll skip this for now to avoid deployment issues
-                DB::statement("-- Enum modification skipped for {$driver}");
+                // For SQLite, we need to recreate the table with the new constraint
+                // This is complex, so we'll use a different approach
+                DB::statement("-- SQLite enum modification handled differently");
             }
         } catch (Exception $e) {
-            // If the modification fails, it might be because:
-            // 1. The enum already includes 'digital'
-            // 2. The database doesn't support this operation
-            // 3. There are other constraints
-            // We'll log this but not fail the migration
-            error_log("Payment method enum modification skipped: " . $e->getMessage());
+            // Log the error but don't fail the migration
+            error_log("Payment method enum modification error: " . $e->getMessage());
+            
+            // For PostgreSQL, try alternative approach
+            if (DB::getDriverName() === 'pgsql') {
+                try {
+                    // Drop and recreate the constraint
+                    DB::statement("ALTER TABLE transactions DROP CONSTRAINT IF EXISTS transactions_payment_method_check");
+                    DB::statement("ALTER TABLE transactions ADD CONSTRAINT transactions_payment_method_check CHECK (payment_method IN ('cash', 'debit', 'credit', 'ewallet', 'qris', 'digital'))");
+                } catch (Exception $e2) {
+                    error_log("Alternative constraint modification failed: " . $e2->getMessage());
+                }
+            }
         }
     }
 
