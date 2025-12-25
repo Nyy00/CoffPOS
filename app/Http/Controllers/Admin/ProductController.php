@@ -177,8 +177,6 @@ class ProductController extends Controller
             }
         }
 
-        $validated['is_available'] = $request->has('is_available');
-
         $product->update($validated);
 
         return redirect()->route('admin.products.index')
@@ -190,21 +188,28 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Check if product has transaction items
-        if ($product->transactionItems()->exists()) {
+        try {
+            // Check if product has transaction items
+            if ($product->transactionItems()->exists()) {
+                return redirect()->route('admin.products.index')
+                    ->with('error', 'Cannot delete product. It has transaction history.');
+            }
+
+            // Delete image if exists
+            if ($product->image) {
+                $this->imageService->delete($product->image);
+            }
+
+            $product->delete();
+
             return redirect()->route('admin.products.index')
-                ->with('error', 'Cannot delete product. It has transaction history.');
+                ->with('success', 'Product deleted successfully.');
+                
+        } catch (\Exception $e) {
+            \Log::error('Product deletion failed: ' . $e->getMessage());
+            return redirect()->route('admin.products.index')
+                ->with('error', 'Failed to delete product: ' . $e->getMessage());
         }
-
-        // Delete image if exists
-        if ($product->image) {
-            $this->imageService->delete($product->image);
-        }
-
-        $product->delete();
-
-        return redirect()->route('admin.products.index')
-            ->with('success', 'Product deleted successfully.');
     }
 
     /**

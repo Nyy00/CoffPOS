@@ -30,12 +30,7 @@ class ManagerAccessMiddleware
             
             // Restricted actions for managers
             $restrictedActions = [
-                // Products - can view but not create/edit/delete
-                'admin.products.create',
-                'admin.products.store', 
-                'admin.products.edit',
-                'admin.products.update',
-                'admin.products.destroy',
+                // Products - can view and manage but not bulk operations
                 'admin.products.bulk-delete',
                 'admin.products.bulk-update-stock',
                 
@@ -70,7 +65,6 @@ class ManagerAccessMiddleware
             // Additional method-based restrictions
             if ($method === 'POST' || $method === 'PUT' || $method === 'PATCH' || $method === 'DELETE') {
                 $readOnlyRoutes = [
-                    'admin.products',
                     'admin.customers', 
                     'admin.transactions'
                 ];

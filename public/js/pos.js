@@ -230,6 +230,8 @@ class POSSystem {
             return;
         }
         
+        console.log('Adding to cart:', { productId, quantity });
+        
         try {
             const response = await fetch('/cashier/pos/cart/add', {
                 method: 'POST',
@@ -248,6 +250,8 @@ class POSSystem {
             }
             
             const data = await response.json();
+            
+            console.log('Add to cart response:', data);
             
             if (data.success) {
                 this.cart = data.cart;
@@ -347,6 +351,8 @@ class POSSystem {
                 
                 const data = await response.json();
                 
+                console.log('Clear cart response:', data);
+                
                 if (data.success) {
                     this.cart = {};
                     this.updateCartDisplay();
@@ -365,6 +371,8 @@ class POSSystem {
         try {
             const response = await fetch('/cashier/pos/cart/items');
             const data = await response.json();
+            
+            console.log('Loading cart from server:', data);
             
             this.cart = data.cart || {};
             this.updateCartDisplay();
@@ -473,22 +481,32 @@ class POSSystem {
     selectPaymentMethod(method) {
         this.currentPaymentMethod = method;
         
-        // Update UI
+        // Update UI - use coffee theme colors
         document.querySelectorAll('.payment-method').forEach(btn => {
-            btn.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-700');
-            btn.classList.add('border-gray-200', 'bg-white', 'text-gray-700');
+            btn.classList.remove('border-gold', 'bg-light-coffee', 'text-coffee-dark', 'active');
+            btn.classList.add('border-light-coffee', 'bg-white', 'text-coffee-dark');
         });
         
         const selectedBtn = document.querySelector(`[data-method="${method}"]`);
         if (selectedBtn) {
-            selectedBtn.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-700');
-            selectedBtn.classList.remove('border-gray-200', 'bg-white', 'text-gray-700');
+            selectedBtn.classList.add('border-gold', 'bg-light-coffee', 'text-coffee-dark', 'active');
+            selectedBtn.classList.remove('border-light-coffee', 'bg-white');
         }
         
         // Show/hide cash payment section
         const cashPayment = document.getElementById('cash-payment');
         if (cashPayment) {
             cashPayment.style.display = method === 'cash' ? 'block' : 'none';
+        }
+        
+        // Update checkout button text based on payment method
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (checkoutBtn) {
+            if (method === 'digital') {
+                checkoutBtn.innerHTML = '💳 Bayar Digital';
+            } else {
+                checkoutBtn.innerHTML = '💰 Proses Pembayaran';
+            }
         }
     }
     
@@ -576,11 +594,27 @@ class POSSystem {
                 modalCustomerInfo.style.display = 'none';
             }
         }
+
+        // Show/hide digital payment info for sandbox
+        const modalDigitalInfo = document.getElementById('modal-digital-info');
+        if (modalDigitalInfo) {
+            if (this.currentPaymentMethod === 'digital') {
+                modalDigitalInfo.style.display = 'block';
+            } else {
+                modalDigitalInfo.style.display = 'none';
+            }
+        }
     }
     
     async processPayment() {
         try {
-            // Validate payment
+            // Check if digital payment method is selected
+            if (this.currentPaymentMethod === 'digital') {
+                await this.processDigitalPayment();
+                return;
+            }
+
+            // Validate cash payment
             if (this.currentPaymentMethod === 'cash') {
                 const paymentAmount = parseFloat(document.getElementById('payment-amount').value) || 0;
                 const total = parseFloat(document.getElementById('total').textContent.replace(/[^\d]/g, ''));
@@ -591,77 +625,185 @@ class POSSystem {
                 }
             }
             
-            // Prepare transaction data
+            // Process regular payment (cash, debit, credit)
+            await this.processRegularPayment();
+            
+        } catch (error) {
+            console.error('Error processing payment:', error);
+            this.showNotification('Gagal memproses pembayaran', 'error');
+        }
+    }
+
+    async processRegularPayment() {
+        // Prepare transaction data
+        const customerSelect = document.getElementById('customer-select');
+        const transactionNotes = document.getElementById('transaction-notes');
+        const paymentAmountEl = document.getElementById('payment-amount');
+        
+        const paymentAmount = this.currentPaymentMethod === 'cash' ? 
+            (paymentAmountEl ? parseFloat(paymentAmountEl.value) || 0 : 0) : 
+            parseFloat(document.getElementById('total').textContent.replace(/[^\d]/g, ''));
+        
+        const transactionData = {
+            customer_id: customerSelect ? customerSelect.value || null : null,
+            payment: {
+                method: this.currentPaymentMethod,
+                amount: paymentAmount,
+                reference: null
+            },
+            discount_amount: 0,
+            discount_percent: 0,
+            tax_percent: 10,
+            use_loyalty_points: false,
+            loyalty_points_used: 0,
+            notes: transactionNotes ? transactionNotes.value : ''
+        };
+        
+        // Process transaction
+        const response = await fetch('/cashier/pos/process-transaction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(transactionData)
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Server error response:', errorText);
+            throw new Error(`Server error: ${response.status} - ${errorText.substring(0, 100)}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const responseText = await response.text();
+            console.error('Non-JSON response:', responseText.substring(0, 200));
+            throw new Error('Server returned non-JSON response. Please check if you are logged in.');
+        }
+        
+        const data = await response.json();
+            
+        if (data.success) {
+            this.currentTransaction = data.transaction;
+            this.cart = {};
+            this.updateCartDisplay();
+            this.hidePaymentModal();
+            this.showReceiptModal();
+            this.showNotification('Transaksi berhasil diproses', 'success');
+        } else {
+            this.showNotification(data.error, 'error');
+        }
+    }
+
+    async processDigitalPayment() {
+        try {
             const customerSelect = document.getElementById('customer-select');
-            const transactionNotes = document.getElementById('transaction-notes');
-            const paymentAmountEl = document.getElementById('payment-amount');
             
-            const paymentAmount = this.currentPaymentMethod === 'cash' ? 
-                (paymentAmountEl ? parseFloat(paymentAmountEl.value) || 0 : 0) : 
-                parseFloat(document.getElementById('total').textContent.replace(/[^\d]/g, ''));
-            
-            const transactionData = {
-                customer_id: customerSelect ? customerSelect.value || null : null,
-                payment: {
-                    method: this.currentPaymentMethod,
-                    amount: paymentAmount,
-                    reference: null
-                },
-                discount_amount: 0,
-                discount_percent: 0,
-                tax_percent: 10,
-                use_loyalty_points: false,
-                loyalty_points_used: 0,
-                notes: transactionNotes ? transactionNotes.value : ''
-            };
-            
-            // Process transaction - Updated URL
-            console.log('Sending request to:', '/cashier/pos/process-transaction');
-            console.log('Transaction data:', transactionData);
-            const response = await fetch('/cashier/pos/process-transaction', {
+            // Create Midtrans token
+            const response = await fetch('/cashier/pos/midtrans/create-token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify(transactionData)
+                body: JSON.stringify({
+                    customer_id: customerSelect ? customerSelect.value || null : null
+                })
             });
-            
-            // Check response status and content type
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
-            
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Server error response:', errorText);
+                throw new Error(`Failed to create payment token: ${response.status} - ${errorText.substring(0, 100)}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Check if Midtrans Snap is loaded
+                if (typeof window.snap === 'undefined') {
+                    throw new Error('Midtrans Snap is not loaded. Please refresh the page and try again.');
+                }
+
+                // Hide payment modal
+                this.hidePaymentModal();
+                
+                // Show Midtrans Snap
+                window.snap.pay(data.snap_token, {
+                    onSuccess: (result) => {
+                        console.log('Payment success:', result);
+                        this.handleMidtransSuccess(result, data.order_id);
+                    },
+                    onPending: (result) => {
+                        console.log('Payment pending:', result);
+                        this.showNotification('Pembayaran sedang diproses', 'info');
+                    },
+                    onError: (result) => {
+                        console.log('Payment error:', result);
+                        this.showNotification('Pembayaran gagal', 'error');
+                    },
+                    onClose: () => {
+                        console.log('Payment popup closed');
+                        this.showNotification('Pembayaran dibatalkan', 'warning');
+                    }
+                });
+            } else {
+                throw new Error(data.error || 'Failed to create payment token');
+            }
+
+        } catch (error) {
+            console.error('Error processing digital payment:', error);
+            this.showNotification(`Gagal memproses pembayaran digital: ${error.message}`, 'error');
+        }
+    }
+
+    async handleMidtransSuccess(result, orderId) {
+        try {
+            const customerSelect = document.getElementById('customer-select');
+            const transactionNotes = document.getElementById('transaction-notes');
+
+            console.log('Processing Midtrans success:', result);
+
+            const response = await fetch('/cashier/pos/midtrans/process-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    order_id: orderId,
+                    transaction_status: result.transaction_status,
+                    transaction_id: result.transaction_id,
+                    payment_type: result.payment_type,
+                    customer_id: customerSelect ? customerSelect.value || null : null,
+                    notes: transactionNotes ? transactionNotes.value : ''
+                })
+            });
+
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Server error response:', errorText);
                 throw new Error(`Server error: ${response.status} - ${errorText.substring(0, 100)}`);
             }
-            
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                const responseText = await response.text();
-                console.error('Non-JSON response:', responseText.substring(0, 200));
-                throw new Error('Server returned non-JSON response. Please check if you are logged in.');
-            }
-            
+
             const data = await response.json();
-            console.log('Response data:', data);
-            
+
             if (data.success) {
                 this.currentTransaction = data.transaction;
                 this.cart = {};
                 this.updateCartDisplay();
-                this.hidePaymentModal();
                 this.showReceiptModal();
-                this.showNotification('Transaksi berhasil diproses', 'success');
+                this.showNotification('Pembayaran berhasil diproses', 'success');
             } else {
-                this.showNotification(data.error, 'error');
+                this.showNotification(data.error || 'Gagal memproses pembayaran', 'error');
             }
+
         } catch (error) {
-            console.error('Error processing payment:', error);
-            this.showNotification('Gagal memproses pembayaran', 'error');
+            console.error('Error handling Midtrans success:', error);
+            this.showNotification(`Gagal memproses hasil pembayaran: ${error.message}`, 'error');
         }
     }
     

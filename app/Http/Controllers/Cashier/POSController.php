@@ -12,6 +12,7 @@ use App\Services\TransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class POSController extends Controller
 {
@@ -171,6 +172,29 @@ class POSController extends Controller
         Session::forget('pos_cart');
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Force clear cart and all related sessions
+     */
+    public function forceClearCart()
+    {
+        // Clear all possible cart-related sessions
+        Session::forget('pos_cart');
+        Session::forget('cart');
+        Session::forget('shopping_cart');
+        
+        // Force save session
+        Session::save();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Cart forcefully cleared',
+            'debug' => [
+                'session_id' => Session::getId(),
+                'remaining_keys' => array_keys(Session::all())
+            ]
+        ]);
     }
 
     /**
@@ -638,6 +662,181 @@ class POSController extends Controller
                 'success' => false,
                 'error' => $e->getMessage()
             ], 400);
+        }
+    }
+
+    /**
+     * Create Midtrans Snap Token for digital payment
+     */
+    public function createMidtransToken(Request $request)
+    {
+        $validated = $request->validate([
+            'customer_id' => 'nullable|exists:customers,id'
+        ]);
+
+        $cart = Session::get('pos_cart', []);
+
+        if (empty($cart)) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Cart is empty'
+            ], 400);
+        }
+
+        // Check if Midtrans keys are properly configured
+        $serverKey = config('midtrans.server_key');
+        $clientKey = config('midtrans.client_key');
+        
+        if (empty($serverKey) || empty($clientKey) || 
+            $serverKey === 'your-sandbox-server-key-here' || 
+            $clientKey === 'your-sandbox-client-key-here') {
+            
+            return response()->json([
+                'success' => false,
+                'error' => 'Midtrans is not properly configured. Please set valid MIDTRANS_SERVER_KEY and MIDTRANS_CLIENT_KEY in your .env file. Visit https://dashboard.sandbox.midtrans.com to get your keys.'
+            ], 500);
+        }
+
+        try {
+            // Get customer if provided
+            $customer = null;
+            if ($validated['customer_id']) {
+                $customer = Customer::find($validated['customer_id']);
+            }
+
+            // Create snap token
+            $result = $this->transactionService->createMidtransSnapToken($cart, $customer);
+
+            return response()->json([
+                'success' => true,
+                'snap_token' => $result['snap_token'],
+                'order_id' => $result['order_id'],
+                'total_amount' => $result['total_amount'],
+                'client_key' => config('midtrans.client_key')
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error creating Midtrans token', [
+                'error' => $e->getMessage(),
+                'cart' => $cart,
+                'customer_id' => $validated['customer_id'] ?? null
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to create payment token: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Handle Midtrans payment notification (webhook)
+     */
+    public function handleMidtransNotification(Request $request)
+    {
+        try {
+            $notification = $request->all();
+            
+            // Convert to object for compatibility
+            $notification = (object) $notification;
+            
+            $status = $this->transactionService->processMidtransNotification($notification);
+            
+            return response()->json([
+                'success' => true,
+                'status' => $status
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Process Midtrans payment success
+     */
+    public function processMidtransPayment(Request $request)
+    {
+        $validated = $request->validate([
+            'order_id' => 'required|string',
+            'transaction_status' => 'required|string',
+            'transaction_id' => 'nullable|string',
+            'payment_type' => 'nullable|string',
+            'customer_id' => 'nullable|exists:customers,id',
+            'notes' => 'nullable|string|max:500'
+        ]);
+
+        $cart = Session::get('pos_cart', []);
+
+        if (empty($cart)) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Cart is empty'
+            ], 400);
+        }
+
+        try {
+            // Calculate payment amount from cart
+            $subtotal = 0;
+            foreach ($cart as $item) {
+                $subtotal += $item['price'] * $item['quantity'];
+            }
+            $taxAmount = $subtotal * 0.1; // 10% tax
+            $totalAmount = $subtotal + $taxAmount;
+
+            // Prepare transaction data for POS transaction
+            $transactionData = [
+                'customer_id' => $validated['customer_id'],
+                'items' => array_values($cart),
+                'payment' => [
+                    'method' => 'digital',
+                    'amount' => $totalAmount, // Set correct payment amount
+                    'reference' => $validated['order_id']
+                ],
+                'discount_amount' => 0,
+                'discount_percent' => 0,
+                'tax_percent' => 10,
+                'use_loyalty_points' => false,
+                'loyalty_points_used' => 0,
+                'notes' => $validated['notes'] ?? ''
+            ];
+
+            // Create transaction using the POS transaction service
+            $transaction = $this->transactionService->processPOSTransaction($transactionData);
+
+            // Update transaction with Midtrans specific data
+            $transaction->update([
+                'transaction_code' => $validated['order_id'],
+                'midtrans_transaction_id' => $validated['transaction_id'],
+                'midtrans_payment_type' => $validated['payment_type'],
+                'status' => $validated['transaction_status'] === 'settlement' ? 'completed' : 'pending',
+                'payment_status' => $validated['transaction_status'] === 'settlement' ? 'paid' : 'pending'
+            ]);
+
+            // Clear cart
+            Session::forget('pos_cart');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment processed successfully',
+                'transaction' => $transaction->load(['customer', 'user', 'transactionItems.product'])
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error processing Midtrans payment', [
+                'error' => $e->getMessage(),
+                'validated' => $validated,
+                'cart' => $cart,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

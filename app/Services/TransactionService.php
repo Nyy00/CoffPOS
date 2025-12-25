@@ -13,6 +13,12 @@ use Exception;
 
 class TransactionService
 {
+    protected $midtransService;
+
+    public function __construct(MidtransService $midtransService)
+    {
+        $this->midtransService = $midtransService;
+    }
     /**
      * Create a new transaction
      */
@@ -392,14 +398,23 @@ class TransactionService
         $paymentAmount = $payment['amount'];
         $totalAmount = $transaction->total_amount;
 
-        if ($paymentAmount < $totalAmount) {
-            throw new Exception('Insufficient payment amount');
-        }
-
-        // Validate payment method
-        $allowedMethods = ['cash', 'debit', 'credit', 'e-wallet', 'qris'];
+        // Validate payment method first
+        $allowedMethods = ['cash', 'debit', 'credit', 'digital', 'e-wallet', 'qris'];
         if (!in_array($payment['method'], $allowedMethods)) {
             throw new Exception('Invalid payment method');
+        }
+
+        // For digital payments, Midtrans handles the amount validation
+        if ($payment['method'] === 'digital') {
+            if (empty($payment['reference'])) {
+                throw new Exception('Payment reference required for digital payments');
+            }
+            return true;
+        }
+
+        // For other payment methods, check amount
+        if ($paymentAmount < $totalAmount) {
+            throw new Exception('Insufficient payment amount');
         }
 
         // For non-cash payments, validate additional data
@@ -611,5 +626,109 @@ class TransactionService
                 ];
             })
         ];
+    }
+
+    /**
+     * Create Midtrans Snap Token for digital payment
+     */
+    public function createMidtransSnapToken(array $cartItems, $customer = null, $orderId = null)
+    {
+        try {
+            // Calculate totals
+            $subtotal = 0;
+            foreach ($cartItems as $item) {
+                $subtotal += $item['price'] * $item['quantity'];
+            }
+
+            $taxAmount = $subtotal * 0.1; // 10% tax
+            $totalAmount = $subtotal + $taxAmount;
+
+            // Generate order ID if not provided
+            if (!$orderId) {
+                $orderId = 'POS-' . time() . '-' . rand(1000, 9999);
+            }
+
+            // Prepare transaction details
+            $transactionDetails = $this->midtransService->prepareTransactionDetails($orderId, $totalAmount);
+            
+            // Prepare customer details
+            $customerDetails = $this->midtransService->prepareCustomerDetails($customer);
+            
+            // Prepare item details
+            $itemDetails = $this->midtransService->prepareItemDetails($cartItems);
+            
+            // Add tax as separate item
+            $itemDetails[] = [
+                'id' => 'TAX',
+                'price' => (int) $taxAmount,
+                'quantity' => 1,
+                'name' => 'Tax (10%)',
+            ];
+
+            // Create snap token
+            $snapToken = $this->midtransService->createSnapToken($transactionDetails, $customerDetails, $itemDetails);
+
+            return [
+                'snap_token' => $snapToken,
+                'order_id' => $orderId,
+                'total_amount' => $totalAmount
+            ];
+
+        } catch (Exception $e) {
+            Log::error('Error creating Midtrans Snap Token: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Process Midtrans payment notification
+     */
+    public function processMidtransNotification($notification)
+    {
+        try {
+            $status = $this->midtransService->handleNotification($notification);
+            
+            // Find transaction by order_id
+            $transaction = Transaction::where('transaction_code', $notification->order_id)->first();
+            
+            if ($transaction) {
+                switch ($status) {
+                    case 'success':
+                        $transaction->update([
+                            'status' => 'completed',
+                            'payment_status' => 'paid',
+                            'midtrans_transaction_id' => $notification->transaction_id ?? null,
+                            'midtrans_payment_type' => $notification->payment_type ?? null,
+                        ]);
+                        break;
+                    
+                    case 'pending':
+                        $transaction->update([
+                            'status' => 'pending',
+                            'payment_status' => 'pending',
+                            'midtrans_transaction_id' => $notification->transaction_id ?? null,
+                            'midtrans_payment_type' => $notification->payment_type ?? null,
+                        ]);
+                        break;
+                    
+                    case 'denied':
+                    case 'cancelled':
+                    case 'expired':
+                        $transaction->update([
+                            'status' => 'cancelled',
+                            'payment_status' => 'failed',
+                            'midtrans_transaction_id' => $notification->transaction_id ?? null,
+                            'midtrans_payment_type' => $notification->payment_type ?? null,
+                        ]);
+                        break;
+                }
+            }
+
+            return $status;
+
+        } catch (Exception $e) {
+            Log::error('Error processing Midtrans notification: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }

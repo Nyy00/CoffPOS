@@ -24,8 +24,14 @@ class Transaction extends Model
         'payment_amount',
         'change_amount',
         'status',
+        'payment_status',
         'notes',
         'transaction_date',
+        // Midtrans fields
+        'midtrans_transaction_id',
+        'midtrans_payment_type',
+        'midtrans_snap_token',
+        'midtrans_response',
     ];
 
     protected $casts = [
@@ -42,6 +48,8 @@ class Transaction extends Model
         'payment_amount' => 'decimal:2',
         'change_amount' => 'decimal:2',
         'transaction_date' => 'datetime',
+        // Midtrans fields
+        'midtrans_response' => 'array',
     ];
 
     public function user()
