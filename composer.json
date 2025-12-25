@@ -48,10 +48,8 @@
             "@php artisan key:generate",
             "@php artisan storage:link",
             "@php -r \"if (!file_exists('database/database.sqlite')) { touch('database/database.sqlite'); }\"",
-            "@php artisan migrate --force || echo 'Migration failed, continuing...'",
-            "@php artisan db:seed --force || echo 'Seeding failed, continuing...'",
-            "npm install",
-            "npm run build"
+            "@php artisan migrate --force",
+            "@php artisan db:seed --force"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
@@ -73,7 +71,9 @@
         ],
         "post-install-cmd": [
             "@php artisan storage:link --force || echo 'Storage link failed, will use route fallback'",
-            "@php -r \"if (!file_exists('database/database.sqlite')) { touch('database/database.sqlite'); }\""
+            "@php -r \"if (!file_exists('database/database.sqlite')) { touch('database/database.sqlite'); }\"",
+            "@php artisan migrate --force || echo 'Migration failed'",
+            "@php artisan db:seed --force || echo 'Seeding failed'"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

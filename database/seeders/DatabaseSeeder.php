@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        echo "Starting database seeding...\n";
+        
         $this->call([
             UserSeeder::class,
             CategorySeeder::class,
@@ -22,5 +24,7 @@ class DatabaseSeeder extends Seeder
             CustomerSeeder::class,
             // POSDataSeeder::class, // Uncomment if you want to run POS test data
         ]);
+        
+        echo "Database seeding completed!\n";
     }
 }
