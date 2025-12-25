@@ -25,7 +25,8 @@ class ExpenseRequest extends FormRequest
             'description' => 'required|string|max:500|min:5',
             'amount' => 'required|numeric|min:0.01|max:999999.99',
             'expense_date' => 'required|date|before_or_equal:today|after_or_equal:' . Carbon::now()->subYear()->format('Y-m-d'),
-            'receipt_image' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120' // 5MB max
+            'receipt_image' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120', // 5MB max
+            'notes' => 'nullable|string|max:1000'
         ];
     }
 
@@ -47,11 +48,13 @@ class ExpenseRequest extends FormRequest
             'amount.max' => 'Amount cannot exceed 999,999.99.',
             'expense_date.required' => 'Expense date is required.',
             'expense_date.date' => 'Please enter a valid date.',
-            'expense_date.before_or_equal' => 'Expense date cannot be in the future.',
+            'expense_date.before_or_equal' => 'Expense date cannot be in the future. Please use today\'s date or earlier.',
             'expense_date.after_or_equal' => 'Expense date cannot be more than 1 year ago.',
             'receipt_image.file' => 'Receipt must be a valid file.',
             'receipt_image.mimes' => 'Receipt must be in JPEG, PNG, JPG, or PDF format.',
             'receipt_image.max' => 'Receipt file size cannot exceed 5MB.',
+            'notes.string' => 'Notes must be text.',
+            'notes.max' => 'Notes cannot exceed 1000 characters.',
         ];
     }
 
@@ -66,6 +69,7 @@ class ExpenseRequest extends FormRequest
             'amount' => 'expense amount',
             'expense_date' => 'expense date',
             'receipt_image' => 'receipt file',
+            'notes' => 'additional notes',
         ];
     }
 
@@ -94,6 +98,13 @@ class ExpenseRequest extends FormRequest
         if ($this->has('description')) {
             $this->merge([
                 'description' => trim($this->description)
+            ]);
+        }
+
+        // Clean notes
+        if ($this->has('notes')) {
+            $this->merge([
+                'notes' => trim($this->notes)
             ]);
         }
     }
