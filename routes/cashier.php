@@ -27,11 +27,28 @@ Route::controller(POSController::class)->prefix('pos')->name('pos.')->group(func
     Route::post('cart/update', 'updateCart')->name('cart.update');
     Route::post('cart/remove', 'removeFromCart')->name('cart.remove');
     Route::post('cart/clear', 'clearCart')->name('cart.clear');
+    Route::post('cart/force-clear', 'forceClearCart')->name('cart.force-clear');
     Route::get('cart/items', 'getCartItems')->name('cart.items');
     Route::get('cart/total', 'getCartTotal')->name('cart.total');
     
     // Transaction processing
     Route::post('process-transaction', 'processTransaction')->name('transaction.process');
+    
+    // Midtrans integration
+    Route::post('midtrans/create-token', 'createMidtransToken')->name('midtrans.create-token');
+    Route::post('midtrans/process-payment', 'processMidtransPayment')->name('midtrans.process-payment');
+    Route::post('midtrans/notification', 'handleMidtransNotification')->name('midtrans.notification');
+    
+    // Test Midtrans configuration
+    Route::get('midtrans/test', function() {
+        return response()->json([
+            'server_key' => config('midtrans.server_key') ? 'Set (' . substr(config('midtrans.server_key'), 0, 10) . '...)' : 'Not set',
+            'client_key' => config('midtrans.client_key') ? 'Set (' . substr(config('midtrans.client_key'), 0, 10) . '...)' : 'Not set',
+            'is_production' => config('midtrans.is_production'),
+            'is_sanitized' => config('midtrans.is_sanitized'),
+            'is_3ds' => config('midtrans.is_3ds'),
+        ]);
+    })->name('midtrans.test');
     
     // Test route
     Route::get('test-auth', function() {

@@ -22,11 +22,7 @@
                 <div class="flex items-center">
                     <!-- Logo -->
                     <a href="{{ route('home') }}" class="flex items-center hover:opacity-80 transition">
-                        <div class="w-10 h-10 bg-gradient-to-br from-gold to-yellow-400 rounded-lg flex items-center justify-center shadow-lg">
-                            <svg class="w-6 h-6 text-coffee-dark" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10.5 1.5H5.75A2.25 2.25 0 003.5 3.75v2.5a.75.75 0 001.5 0v-2.5a.75.75 0 01.75-.75h4.75a.75.75 0 01.75.75v7a.75.75 0 01-.75.75H5.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-1.5 0v2.5A2.25 2.25 0 005.5 16.25h4.75a2.25 2.25 0 002.25-2.25v-7a2.25 2.25 0 00-2.25-2.25zm5.25 3a.75.75 0 01.75.75v9a.75.75 0 01-1.5 0V5.25a.75.75 0 01.75-.75z"/>
-                            </svg>
-                        </div>
+                        <x-application-logo class="h-10 w-auto" />
                         <span class="ml-3 text-2xl font-bold text-gold">CoffPOS</span>
                     </a>
                 </div>
@@ -156,11 +152,7 @@
                 <!-- Brand -->
                 <div>
                     <div class="flex items-center gap-2 mb-4">
-                        <div class="w-10 h-10 bg-gradient-to-br from-gold to-yellow-400 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-coffee-dark" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10.5 1.5H5.75A2.25 2.25 0 003.5 3.75v2.5a.75.75 0 001.5 0v-2.5a.75.75 0 01.75-.75h4.75a.75.75 0 01.75.75v7a.75.75 0 01-.75.75H5.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-1.5 0v2.5A2.25 2.25 0 005.5 16.25h4.75a2.25 2.25 0 002.25-2.25v-7a2.25 2.25 0 00-2.25-2.25zm5.25 3a.75.75 0 01.75.75v9a.75.75 0 01-1.5 0V5.25a.75.75 0 01.75-.75z"/>
-                            </svg>
-                        </div>
+                        <x-application-logo class="h-10 w-auto" />
                         <span class="text-2xl font-bold text-gold">CoffPOS</span>
                     </div>
                     <p class="text-sm text-cream/80 leading-relaxed">

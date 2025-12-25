@@ -48,12 +48,6 @@
                     </svg>
                     Kosongkan
                 </button>
-                <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-coffee-dark text-cream rounded-lg hover:opacity-90 transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Dasbor
-                </a>
                 <!-- Logout Form -->
                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                     @csrf
@@ -242,11 +236,11 @@
                             </svg>
                             Kredit
                         </button>
-                        <button class="payment-method py-2 px-3 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-sm font-medium hover:border-gold flex items-center gap-2" data-method="qris">
+                        <button class="payment-method py-2 px-3 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-sm font-medium hover:border-gold flex items-center gap-2" data-method="digital">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                             </svg>
-                            QRIS
+                            Digital
                         </button>
                     </div>
                 </div>
@@ -274,6 +268,13 @@
 @include('cashier.partials.payment-modal')
 @include('cashier.partials.receipt-modal')
 @include('cashier.partials.hold-transaction-modal')
+
+<!-- Midtrans Snap Script -->
+@if(config('midtrans.is_production'))
+<script type="text/javascript" src="https://app.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+@else
+<script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+@endif
 
 <script src="{{ asset('js/pos.js') }}?v={{ time() }}&r={{ rand() }}"></script>
 </body>

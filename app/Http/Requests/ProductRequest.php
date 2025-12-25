@@ -24,8 +24,8 @@ class ProductRequest extends FormRequest
             'code' => 'required|string|max:50|unique:products,code,' . ($this->product ? $this->product->id : 'NULL'),
             'description' => 'nullable|string|max:1000',
             'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0|max:999999.99',
-            'cost' => 'nullable|numeric|min:0|max:999999.99',
+            'price' => 'required|numeric|min:0|max:99999999.99',
+            'cost' => 'nullable|numeric|min:0|max:99999999.99',
             'stock' => 'required|integer|min:0|max:999999',
             'min_stock' => 'required|integer|min:0|max:999999',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -50,7 +50,7 @@ class ProductRequest extends FormRequest
             'price.required' => 'Product price is required.',
             'price.numeric' => 'Price must be a valid number.',
             'price.min' => 'Price cannot be negative.',
-            'price.max' => 'Price cannot exceed 999,999.99.',
+            'price.max' => 'Price cannot exceed 99,999,999.99.',
             'stock.required' => 'Stock quantity is required.',
             'stock.integer' => 'Stock must be a whole number.',
             'stock.min' => 'Stock cannot be negative.',
@@ -80,9 +80,9 @@ class ProductRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        // Convert checkbox to boolean
+        // Convert checkbox to boolean - with hidden input, we get '0' or '1'
         $this->merge([
-            'is_available' => $this->has('is_available') ? true : false,
+            'is_available' => $this->input('is_available') === '1',
         ]);
 
         // Clean numeric inputs

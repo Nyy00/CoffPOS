@@ -23,7 +23,7 @@ class ExpenseRequest extends FormRequest
         return [
             'category' => 'required|in:inventory,operational,salary,utilities,marketing,maintenance,other',
             'description' => 'required|string|max:500|min:5',
-            'amount' => 'required|numeric|min:0.01|max:999999.99',
+            'amount' => 'required|numeric|min:0.01|max:99999999.99',
             'expense_date' => 'required|date|before_or_equal:today|after_or_equal:' . Carbon::now()->subYear()->format('Y-m-d'),
             'receipt_image' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120', // 5MB max
             'notes' => 'nullable|string|max:1000'
@@ -45,7 +45,7 @@ class ExpenseRequest extends FormRequest
             'amount.required' => 'Expense amount is required.',
             'amount.numeric' => 'Amount must be a valid number.',
             'amount.min' => 'Amount must be at least 0.01 (1 cent).',
-            'amount.max' => 'Amount cannot exceed 999,999.99.',
+            'amount.max' => 'Amount cannot exceed 99,999,999.99.',
             'expense_date.required' => 'Expense date is required.',
             'expense_date.date' => 'Please enter a valid date.',
             'expense_date.before_or_equal' => 'Expense date cannot be in the future. Please use today\'s date or earlier.',

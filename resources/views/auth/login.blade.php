@@ -60,13 +60,4 @@
         </div>
     </form>
 
-    <!-- Demo Credentials -->
-    <div class="mt-6 p-4 bg-cream rounded-lg">
-        <p class="text-xs font-semibold text-coffee-dark mb-2">Demo Credentials:</p>
-        <div class="text-xs text-gray-600 space-y-1">
-            <p><strong>Admin:</strong> admin@coffpos.com / password</p>
-            <p><strong>Manager:</strong> manager@coffpos.com / password</p>
-            <p><strong>Cashier:</strong> cashier@coffpos.com / password</p>
-        </div>
-    </div>
 </x-guest-layout>
