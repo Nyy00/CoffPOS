@@ -125,3 +125,38 @@ Route::get('/health/midtrans/test', function () {
         ], 500);
     }
 });
+
+// Fix payment method enum
+Route::get('/admin/fix-payment-enum', function () {
+    try {
+        $output = [];
+        $driver = DB::getDriverName();
+        $output[] = "Database Driver: $driver";
+        
+        if ($driver === 'pgsql') {
+            $output[] = "Attempting to fix PostgreSQL enum constraint...";
+            
+            try {
+                DB::statement("ALTER TABLE transactions DROP CONSTRAINT IF EXISTS transactions_payment_method_check");
+                $output[] = "✅ Dropped existing constraint";
+                
+                DB::statement("ALTER TABLE transactions ADD CONSTRAINT transactions_payment_method_check CHECK (payment_method IN ('cash', 'debit', 'credit', 'ewallet', 'qris', 'digital'))");
+                $output[] = "✅ Added new constraint with 'digital' option";
+                
+                $output[] = "🎉 Payment method enum fix completed successfully!";
+                
+            } catch (Exception $e) {
+                $output[] = "❌ Error: " . $e->getMessage();
+                return response()->json(['success' => false, 'output' => $output], 500);
+            }
+            
+        } else {
+            $output[] = "⚠️ Only PostgreSQL fix is implemented";
+        }
+        
+        return response()->json(['success' => true, 'output' => $output]);
+        
+    } catch (Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+    }
+})->middleware(['auth', 'role:admin']);
