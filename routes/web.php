@@ -53,7 +53,26 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-// Storage file serving route (for when symbolic links don't work)
-Route::get('/storage/{path}', [App\Http\Controllers\StorageController::class, 'serve'])
-    ->where('path', '.*')
-    ->name('storage.serve');
+// Simple storage route for specific files (fallback when symlink fails)
+Route::get('/storage/logo.png', function () {
+    $file = storage_path('app/public/logo.png');
+    if (!file_exists($file)) {
+        abort(404);
+    }
+    return response()->file($file, [
+        'Content-Type' => 'image/png',
+        'Cache-Control' => 'public, max-age=31536000',
+    ]);
+})->name('storage.logo');
+
+Route::get('/storage/products/{filename}', function ($filename) {
+    $file = storage_path('app/public/products/' . $filename);
+    if (!file_exists($file)) {
+        abort(404);
+    }
+    $mimeType = mime_content_type($file);
+    return response()->file($file, [
+        'Content-Type' => $mimeType,
+        'Cache-Control' => 'public, max-age=31536000',
+    ]);
+})->where('filename', '[A-Za-z0-9\-_\.]+')->name('storage.products');

@@ -64,7 +64,7 @@
             "@php artisan package:discover --ansi"
         ],
         "post-install-cmd": [
-            "@php artisan storage:link --force"
+            "@php artisan storage:link --force || echo 'Storage link failed, will use route fallback'"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
