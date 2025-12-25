@@ -3,8 +3,6 @@
 ## 🔧 Konfigurasi Sandbox
 
 Sistem sudah dikonfigurasi dengan Midtrans Sandbox:
-- **Server Key**: `SB-Mid-server-GwQCiI8m8gHvnpWRkzqHVfcZcBRRXbaV`
-- **Client Key**: `SB-Mid-client-61XuGAwQ8Bj8LxBa`
 - **Environment**: Sandbox (Development)
 
 ## 🧪 Cara Testing
