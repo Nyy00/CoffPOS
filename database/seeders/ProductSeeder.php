@@ -35,7 +35,10 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($products as $product) {
-            \App\Models\Product::create($product);
+            \App\Models\Product::firstOrCreate(
+                ['code' => $product['code']],
+                $product
+            );
         }
     }
 }
