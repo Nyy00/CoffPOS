@@ -51,6 +51,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Debug routes
+require __DIR__.'/debug.php';
+
 require __DIR__.'/auth.php';
 
 // Simple storage route for specific files (fallback when symlink fails)
