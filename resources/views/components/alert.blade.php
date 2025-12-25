@@ -1,7 +1,6 @@
 @props(['type' => 'info', 'dismissible' => true, 'message' => ''])
 
 @php
-// Class CSS berdasarkan tipe alert
 $classes = [
     'info' => 'bg-blue-50 border-blue-200 text-blue-800',
     'success' => 'bg-green-50 border-green-200 text-green-800',
@@ -9,7 +8,6 @@ $classes = [
     'error' => 'bg-red-50 border-red-200 text-red-800',
 ];
 
-// Warna ikon berdasarkan tipe alert
 $iconClasses = [
     'info' => 'text-blue-400',
     'success' => 'text-green-400',
@@ -17,7 +15,6 @@ $iconClasses = [
     'error' => 'text-red-400',
 ];
 
-// Path SVG ikon untuk setiap tipe alert
 $icons = [
     'info' => 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
     'success' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
@@ -26,50 +23,31 @@ $icons = [
 ];
 @endphp
 
-{{-- Container utama alert --}}
 <div {{ $attributes->merge(['class' => 'border rounded-lg p-4 ' . $classes[$type]]) }} role="alert">
     <div class="flex">
-
-        {{-- Ikon alert --}}
         <div class="flex-shrink-0">
             <svg class="h-5 w-5 {{ $iconClasses[$type] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icons[$type] }}" />
             </svg>
         </div>
-
-        {{-- Pesan alert --}}
         <div class="ml-3 flex-1">
             @if($message)
-                {{-- Jika message diisi lewat props --}}
                 <p class="text-sm font-medium">{{ $message }}</p>
             @else
-                {{-- Jika tidak, gunakan slot --}}
                 {{ $slot }}
             @endif
         </div>
-
-        {{-- Tombol close (jika dismissible = true) --}}
         @if($dismissible)
             <div class="ml-auto pl-3">
                 <div class="-mx-1.5 -my-1.5">
-                    <button
-                        type="button"
-                        class="inline-flex rounded-md p-1.5 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
-                        {{-- Menghapus elemen alert dari DOM --}}
-                        onclick="this.parentElement.parentElement.parentElement.remove()"
-                    >
+                    <button type="button" class="inline-flex rounded-md p-1.5 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600" onclick="this.parentElement.parentElement.parentElement.remove()">
                         <span class="sr-only">Dismiss</span>
-
-                        {{-- Ikon close --}}
                         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                  clip-rule="evenodd" />
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
                     </button>
                 </div>
             </div>
         @endif
-
     </div>
 </div>
