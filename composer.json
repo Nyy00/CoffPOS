@@ -47,8 +47,9 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
             "@php artisan storage:link",
-            "@php artisan migrate --force",
-            "@php artisan db:seed --force",
+            "@php -r \"if (!file_exists('database/database.sqlite')) { touch('database/database.sqlite'); }\"",
+            "@php artisan migrate --force || echo 'Migration failed, continuing...'",
+            "@php artisan db:seed --force || echo 'Seeding failed, continuing...'",
             "npm install",
             "npm run build"
         ],
