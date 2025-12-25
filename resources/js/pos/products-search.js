@@ -156,7 +156,7 @@ class POSProductsSearch {
                         <img src="${imageUrl}" 
                              alt="${product.name}" 
                              class="w-full h-24 object-cover rounded-md"
-                             onerror="this.onerror=null; this.src='/images/${product.image || 'placeholder-product.png'}';">
+                             onerror="this.onerror=null; this.src='/images/products/${product.image ? product.image.replace('products/', '') : 'placeholder-product.png'}';">
                     </div>
                     <div class="space-y-1">
                         <h3 class="text-sm font-medium text-gray-900 truncate" title="${product.name}">

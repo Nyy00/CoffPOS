@@ -197,7 +197,7 @@ class ProductsSearch {
                             <img class="h-16 w-16 rounded-lg object-cover" 
                                  src="${imageUrl}" 
                                  alt="${product.name}"
-                                 onerror="this.onerror=null; this.src='/images/${product.image || 'placeholder-product.png'}';">
+                                 onerror="this.onerror=null; this.src='/images/products/${product.image ? product.image.replace('products/', '') : 'placeholder-product.png'}';">
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-start justify-between">

@@ -171,6 +171,45 @@ Route::get('/admin/fix-payment-enum', function () {
     }
 })->middleware(['auth', 'role:admin']);
 
+// Fix storage link
+Route::get('/admin/fix-storage-link', function () {
+    try {
+        $output = [];
+        
+        // Create storage link
+        $output[] = "Creating storage link...";
+        try {
+            Artisan::call('storage:link');
+            $output[] = "✅ Storage link created successfully";
+        } catch (Exception $e) {
+            $output[] = "⚠️ Storage link creation failed: " . $e->getMessage();
+        }
+        
+        // Check if link exists
+        $linkExists = is_link(public_path('storage'));
+        $output[] = "Storage link exists: " . ($linkExists ? 'YES' : 'NO');
+        
+        // Check specific files
+        $logoExists = file_exists(public_path('storage/logo.png'));
+        $output[] = "Logo accessible via storage: " . ($logoExists ? 'YES' : 'NO');
+        
+        $productsDir = public_path('storage/products');
+        $productsDirExists = is_dir($productsDir);
+        $output[] = "Products directory accessible: " . ($productsDirExists ? 'YES' : 'NO');
+        
+        if ($productsDirExists) {
+            $productFiles = glob($productsDir . '/*.jpg');
+            $output[] = "Product images found: " . count($productFiles);
+        }
+        
+        $output[] = "🎉 Storage link fix completed!";
+        return response()->json(['success' => true, 'output' => $output]);
+        
+    } catch (Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+    }
+})->middleware(['auth', 'role:admin']);
+
 // Debug logo and storage
 Route::get('/debug/logo', function () {
     $storagePath = storage_path('app/public/logo.png');
@@ -191,5 +230,35 @@ Route::get('/debug/logo', function () {
         'storage_url' => asset('storage/logo.png'),
         'fallback_url' => asset('images/logo-fallback.png'),
         'placeholder_url' => asset('images/placeholder-product.png'),
+    ]);
+});
+
+// Test product images
+Route::get('/debug/products', function () {
+    $publicProductsDir = public_path('images/products');
+    $storageProductsDir = public_path('storage/products');
+    
+    $publicImages = [];
+    $storageImages = [];
+    
+    if (is_dir($publicProductsDir)) {
+        $publicImages = array_map('basename', glob($publicProductsDir . '/*.jpg'));
+    }
+    
+    if (is_dir($storageProductsDir)) {
+        $storageImages = array_map('basename', glob($storageProductsDir . '/*.jpg'));
+    }
+    
+    return response()->json([
+        'public_products_dir_exists' => is_dir($publicProductsDir),
+        'storage_products_dir_exists' => is_dir($storageProductsDir),
+        'public_images_count' => count($publicImages),
+        'storage_images_count' => count($storageImages),
+        'public_images' => $publicImages,
+        'storage_images' => $storageImages,
+        'sample_urls' => [
+            'storage_espresso' => asset('storage/products/espresso.jpg'),
+            'public_espresso' => asset('images/products/espresso.jpg'),
+        ]
     ]);
 });
