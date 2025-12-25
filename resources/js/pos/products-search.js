@@ -161,6 +161,8 @@ class POSProductsSearch {
             ? `/images/products/${product.image.replace('products/', '')}` 
             : '/images/placeholder-product.png';
         
+        const fallbackUrl = this.getFallbackImage(product.name);
+        
         const stockClass = product.stock < 10 ? 'text-red-600' : 'text-green-600';
         const isOutOfStock = product.stock === 0;
         
@@ -173,7 +175,7 @@ class POSProductsSearch {
                         <img src="${imageUrl}" 
                              alt="${product.name}" 
                              class="w-full h-24 object-cover rounded-md"
-                             onerror="this.onerror=null; this.src=this.getFallbackImage('${product.name}');">
+                             onerror="this.onerror=null; this.src='${fallbackUrl}';">
                     </div>
                     <div class="space-y-1">
                         <h3 class="text-sm font-medium text-gray-900 truncate" title="${product.name}">

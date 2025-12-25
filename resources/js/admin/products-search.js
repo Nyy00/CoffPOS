@@ -200,6 +200,7 @@ class ProductsSearch {
         const imageUrl = product.image 
             ? `/images/products/${product.image.replace('products/', '')}` 
             : '/images/placeholder-product.png';
+        const fallbackUrl = this.getFallbackImage(product.name);
             
         const stockClass = product.stock < 10 ? 'text-red-600' : 'text-green-600';
         const availabilityBadge = product.is_available 
@@ -214,7 +215,7 @@ class ProductsSearch {
                             <img class="h-16 w-16 rounded-lg object-cover" 
                                  src="${imageUrl}" 
                                  alt="${product.name}"
-                                 onerror="this.onerror=null; this.src=this.getFallbackImage('${product.name}');">
+                                 onerror="this.onerror=null; this.src='${fallbackUrl}';">
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-start justify-between">

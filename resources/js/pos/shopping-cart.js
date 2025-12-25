@@ -145,6 +145,7 @@ class POSShoppingCart {
         const imageUrl = item.image 
             ? `/images/products/${item.image.replace('products/', '')}` 
             : '/images/placeholder-product.png';
+        const fallbackUrl = this.getFallbackImage(item.name);
         const subtotal = item.price * item.quantity;
         
         return `
@@ -153,7 +154,7 @@ class POSShoppingCart {
                     <img src="${imageUrl}" 
                          alt="${item.name}" 
                          class="w-12 h-12 rounded-md object-cover"
-                         onerror="this.onerror=null; this.src=this.getFallbackImage('${item.name}');">
+                         onerror="this.onerror=null; this.src='${fallbackUrl}';">
                 </div>
                 <div class="flex-1 min-w-0">
                     <h4 class="text-sm font-medium text-gray-900 truncate">${item.name}</h4>
