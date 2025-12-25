@@ -287,7 +287,7 @@ class POSController extends Controller
     {
         $validated = $request->validate([
             'reason' => 'required|string|max:255',
-            'customer_id' => 'nullable|exists:customers,id',
+            'customer_name' => 'nullable|string|max:255',
             'discount_amount' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string|max:500'
         ]);
@@ -301,7 +301,7 @@ class POSController extends Controller
         try {
             $holdData = [
                 'items' => array_values($cart),
-                'customer_id' => $validated['customer_id'],
+                'customer_name' => $validated['customer_name'],
                 'discount_amount' => $validated['discount_amount'] ?? 0,
                 'notes' => $validated['notes'],
                 'reason' => $validated['reason']
@@ -374,7 +374,7 @@ class POSController extends Controller
             return response()->json([
                 'success' => true,
                 'cart' => $cart,
-                'customer_id' => $heldTransaction['customer_id'],
+                'customer_name' => $heldTransaction['customer_name'],
                 'discount_amount' => $heldTransaction['discount_amount'],
                 'notes' => $heldTransaction['notes'],
                 'message' => 'Transaction resumed successfully'

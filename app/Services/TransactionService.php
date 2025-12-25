@@ -462,11 +462,12 @@ class TransactionService
     {
         $holdData = [
             'items' => $data['items'],
-            'customer_id' => $data['customer_id'] ?? null,
+            'customer_name' => $data['customer_name'] ?? null,
             'discount_amount' => $data['discount_amount'] ?? 0,
             'notes' => $data['notes'] ?? null,
+            'reason' => $data['reason'],
             'held_at' => now(),
-            'held_by' => auth()->id()
+            'held_by' => auth()->user()->name ?? 'Unknown'
         ];
 
         // Store in session or cache
@@ -499,10 +500,19 @@ class TransactionService
     {
         $allHolds = session()->get('transaction_hold', []);
         $userHolds = [];
+        $currentUserName = auth()->user()->name ?? 'Unknown';
 
         foreach ($allHolds as $holdId => $holdData) {
-            if ($holdData['held_by'] === auth()->id()) {
-                $userHolds[$holdId] = $holdData;
+            if ($holdData['held_by'] === $currentUserName) {
+                $holdData['id'] = $holdId;
+                $holdData['cart'] = [];
+                
+                // Convert items array to cart format for JavaScript compatibility
+                foreach ($holdData['items'] as $item) {
+                    $holdData['cart'][$item['product_id']] = $item;
+                }
+                
+                $userHolds[] = $holdData;
             }
         }
 

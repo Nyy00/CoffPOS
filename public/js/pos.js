@@ -781,6 +781,7 @@ class POSSystem {
     async holdTransaction() {
         const holdReason = document.getElementById('hold-reason');
         const holdCustomerName = document.getElementById('hold-customer-name');
+        const holdNotes = document.getElementById('hold-notes');
         
         if (!holdReason || !holdReason.value.trim()) {
             this.showNotification('Silakan masukkan alasan penahanan', 'error');
@@ -788,17 +789,25 @@ class POSSystem {
         }
         
         try {
+            const requestData = {
+                reason: holdReason.value,
+                customer_name: holdCustomerName ? holdCustomerName.value : '',
+                notes: holdNotes ? holdNotes.value : ''
+            };
+
             const response = await fetch('/cashier/pos/hold-transaction', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({
-                    reason: holdReason.value,
-                    customer_name: holdCustomerName ? holdCustomerName.value : ''
-                })
+                body: JSON.stringify(requestData)
             });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
             
             const data = await response.json();
             
@@ -811,12 +820,13 @@ class POSSystem {
                 // Clear hold form
                 if (holdReason) holdReason.value = '';
                 if (holdCustomerName) holdCustomerName.value = '';
+                if (holdNotes) holdNotes.value = '';
             } else {
-                this.showNotification(data.error, 'error');
+                this.showNotification(data.error || 'Gagal menahan transaksi', 'error');
             }
         } catch (error) {
             console.error('Error holding transaction:', error);
-            this.showNotification('Gagal menahan transaksi', 'error');
+            this.showNotification(error.message || 'Gagal menahan transaksi', 'error');
         }
     }
     
