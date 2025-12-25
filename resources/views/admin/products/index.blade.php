@@ -87,7 +87,10 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($product->image)
-                                <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="h-12 w-12 rounded-lg object-cover">
+                                <img src="{{ asset('images/products/' . str_replace('products/', '', $product->image)) }}" 
+                                     alt="{{ $product->name }}" 
+                                     class="h-12 w-12 rounded-lg object-cover"
+                                     onerror="this.onerror=null; this.src='{{ Storage::url($product->image) }}';">
                             @else
                                 <div class="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center">
                                     <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -28,7 +28,10 @@
                 <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
                     <div class="relative h-40 bg-gradient-to-br from-light-coffee to-coffee-brown flex items-center justify-center overflow-hidden group">
                         @if($product->image)
-                            <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                            <img src="{{ asset('images/products/' . str_replace('products/', '', $product->image)) }}" 
+                                 alt="{{ $product->name }}" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                                 onerror="this.onerror=null; this.src='{{ Storage::url($product->image) }}';">
                         @else
                             <svg class="w-20 h-20 text-cream" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10.5 1.5H5.75A2.25 2.25 0 003.5 3.75v2.5a.75.75 0 001.5 0v-2.5a.75.75 0 01.75-.75h4.75a.75.75 0 01.75.75v7a.75.75 0 01-.75.75H5.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-1.5 0v2.5A2.25 2.25 0 005.5 16.25h4.75a2.25 2.25 0 002.25-2.25v-7a2.25 2.25 0 00-2.25-2.25zm5.25 3a.75.75 0 01.75.75v9a.75.75 0 01-1.5 0V5.25a.75.75 0 01.75-.75z"/>

@@ -71,7 +71,10 @@
                 <!-- Product Image -->
                 <div class="relative h-56 bg-gradient-to-br from-light-coffee to-coffee-brown overflow-hidden">
                     @if($product->image)
-                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                        <img src="{{ asset('images/products/' . str_replace('products/', '', $product->image)) }}" 
+                             alt="{{ $product->name }}" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                             onerror="this.onerror=null; this.src='{{ Storage::url($product->image) }}';">
                     @else
                         <div class="w-full h-full flex items-center justify-center">
                             <svg class="w-24 h-24 text-cream/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
