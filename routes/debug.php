@@ -176,6 +176,7 @@ Route::get('/debug/logo', function () {
     $storagePath = storage_path('app/public/logo.png');
     $publicPath = public_path('storage/logo.png');
     $fallbackPath = public_path('images/logo-fallback.png');
+    $placeholderPath = public_path('images/placeholder-product.png');
     
     return response()->json([
         'storage_logo_exists' => file_exists($storagePath),
@@ -184,8 +185,11 @@ Route::get('/debug/logo', function () {
         'public_logo_size' => file_exists($publicPath) ? filesize($publicPath) : 0,
         'fallback_logo_exists' => file_exists($fallbackPath),
         'fallback_logo_size' => file_exists($fallbackPath) ? filesize($fallbackPath) : 0,
+        'placeholder_exists' => file_exists($placeholderPath),
+        'placeholder_size' => file_exists($placeholderPath) ? filesize($placeholderPath) : 0,
         'storage_link_exists' => is_link(public_path('storage')),
         'storage_url' => asset('storage/logo.png'),
         'fallback_url' => asset('images/logo-fallback.png'),
+        'placeholder_url' => asset('images/placeholder-product.png'),
     ]);
 });

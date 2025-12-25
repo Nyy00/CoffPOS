@@ -194,7 +194,10 @@ class ProductsSearch {
                 <div class="p-4">
                     <div class="flex items-start space-x-4">
                         <div class="flex-shrink-0">
-                            <img class="h-16 w-16 rounded-lg object-cover" src="${imageUrl}" alt="${product.name}">
+                            <img class="h-16 w-16 rounded-lg object-cover" 
+                                 src="${imageUrl}" 
+                                 alt="${product.name}"
+                                 onerror="this.onerror=null; this.src='/images/placeholder-product.png';">
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-start justify-between">

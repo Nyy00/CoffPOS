@@ -155,7 +155,8 @@ class POSProductsSearch {
                     <div class="aspect-w-1 aspect-h-1 mb-3">
                         <img src="${imageUrl}" 
                              alt="${product.name}" 
-                             class="w-full h-24 object-cover rounded-md">
+                             class="w-full h-24 object-cover rounded-md"
+                             onerror="this.onerror=null; this.src='/images/placeholder-product.png';">
                     </div>
                     <div class="space-y-1">
                         <h3 class="text-sm font-medium text-gray-900 truncate" title="${product.name}">
