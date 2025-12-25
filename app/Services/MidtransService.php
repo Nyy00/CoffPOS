@@ -20,6 +20,15 @@ class MidtransService
         Config::$isSanitized = config('midtrans.is_sanitized');
         // Set 3DS transaction for credit card to true
         Config::$is3ds = config('midtrans.is_3ds');
+        
+        // Debug logging
+        Log::info('MidtransService initialized', [
+            'server_key_set' => !empty(Config::$serverKey),
+            'server_key_prefix' => Config::$serverKey ? substr(Config::$serverKey, 0, 15) . '...' : 'NOT SET',
+            'is_production' => Config::$isProduction,
+            'is_sanitized' => Config::$isSanitized,
+            'is_3ds' => Config::$is3ds
+        ]);
     }
 
     /**
@@ -27,6 +36,12 @@ class MidtransService
      */
     public function createSnapToken($transactionDetails, $customerDetails = null, $itemDetails = null)
     {
+        // Re-initialize config to ensure fresh values
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = config('midtrans.is_sanitized');
+        Config::$is3ds = config('midtrans.is_3ds');
+        
         $params = [
             'transaction_details' => $transactionDetails,
             'customer_details' => $customerDetails,
@@ -49,7 +64,10 @@ class MidtransService
             Log::info('Creating Midtrans Snap Token', [
                 'order_id' => $transactionDetails['order_id'] ?? 'unknown',
                 'amount' => $transactionDetails['gross_amount'] ?? 0,
-                'is_production' => Config::$isProduction
+                'server_key_prefix' => substr(Config::$serverKey, 0, 15) . '...',
+                'is_production' => Config::$isProduction,
+                'is_sanitized' => Config::$isSanitized,
+                'is_3ds' => Config::$is3ds
             ]);
 
             $snapToken = Snap::getSnapToken($params);
@@ -63,6 +81,7 @@ class MidtransService
             Log::error('Midtrans Snap Token Error: ' . $e->getMessage(), [
                 'params' => $params,
                 'config' => [
+                    'server_key_prefix' => Config::$serverKey ? substr(Config::$serverKey, 0, 15) . '...' : 'NOT SET',
                     'server_key_set' => !empty(Config::$serverKey),
                     'is_production' => Config::$isProduction,
                     'is_sanitized' => Config::$isSanitized,

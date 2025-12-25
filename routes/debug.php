@@ -80,3 +80,48 @@ Route::get('/health/midtrans/html', function () {
     
     return response($html)->header('Content-Type', 'text/html');
 });
+
+// Test Midtrans API connection
+Route::get('/health/midtrans/test', function () {
+    try {
+        $serverKey = config('midtrans.server_key');
+        $isProduction = config('midtrans.is_production');
+        
+        if (empty($serverKey)) {
+            return response()->json(['error' => 'Server key not configured'], 500);
+        }
+        
+        // Test with a simple API call to check if credentials work
+        $url = $isProduction ? 'https://api.midtrans.com/v2/ping' : 'https://api.sandbox.midtrans.com/v2/ping';
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: application/json',
+            'Content-Type: application/json',
+            'Authorization: Basic ' . base64_encode($serverKey . ':')
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+        
+        return response()->json([
+            'server_key_prefix' => substr($serverKey, 0, 15) . '...',
+            'is_production' => $isProduction,
+            'api_url' => $url,
+            'http_code' => $httpCode,
+            'response' => $response,
+            'curl_error' => $error,
+            'success' => $httpCode === 200
+        ]);
+        
+    } catch (Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
