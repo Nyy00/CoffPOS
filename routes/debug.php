@@ -210,6 +210,40 @@ Route::get('/admin/fix-storage-link', function () {
     }
 })->middleware(['auth', 'role:admin']);
 
+// Clear cache and optimize
+Route::get('/admin/clear-cache', function () {
+    try {
+        $output = [];
+        
+        // Clear various caches
+        $output[] = "Clearing application cache...";
+        Artisan::call('cache:clear');
+        $output[] = "✅ Application cache cleared";
+        
+        $output[] = "Clearing config cache...";
+        Artisan::call('config:clear');
+        $output[] = "✅ Config cache cleared";
+        
+        $output[] = "Clearing view cache...";
+        Artisan::call('view:clear');
+        $output[] = "✅ View cache cleared";
+        
+        $output[] = "Clearing route cache...";
+        Artisan::call('route:clear');
+        $output[] = "✅ Route cache cleared";
+        
+        $output[] = "Optimizing for production...";
+        Artisan::call('optimize');
+        $output[] = "✅ Application optimized";
+        
+        $output[] = "🎉 Cache clearing completed!";
+        return response()->json(['success' => true, 'output' => $output]);
+        
+    } catch (Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+    }
+})->middleware(['auth', 'role:admin']);
+
 // Debug logo and storage
 Route::get('/debug/logo', function () {
     $storagePath = storage_path('app/public/logo.png');
