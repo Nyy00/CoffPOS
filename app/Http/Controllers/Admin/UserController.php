@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use App\Services\ImageService;
+use App\Services\SimpleImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +16,7 @@ class UserController extends Controller
 {
     protected $imageService;
 
-    public function __construct(ImageService $imageService)
+    public function __construct(SimpleImageService $imageService)
     {
         $this->imageService = $imageService;
     }
@@ -86,14 +86,7 @@ class UserController extends Controller
             try {
                 $uploadResult = $this->imageService->upload(
                     $request->file('avatar'), 
-                    'users',
-                    [
-                        'resize' => ['width' => 300, 'height' => 300, 'maintain_aspect_ratio' => false],
-                        'optimize' => true,
-                        'quality' => 90,
-                        'generate_thumbnails' => true,
-                        'thumbnail_sizes' => ['thumbnail']
-                    ]
+                    'users'
                 );
                 $validated['avatar'] = $uploadResult['path'];
             } catch (\Exception $e) {
@@ -171,14 +164,7 @@ class UserController extends Controller
 
                 $uploadResult = $this->imageService->upload(
                     $request->file('avatar'), 
-                    'users',
-                    [
-                        'resize' => ['width' => 300, 'height' => 300, 'maintain_aspect_ratio' => false],
-                        'optimize' => true,
-                        'quality' => 90,
-                        'generate_thumbnails' => true,
-                        'thumbnail_sizes' => ['thumbnail']
-                    ]
+                    'users'
                 );
                 $validated['avatar'] = $uploadResult['path'];
             } catch (\Exception $e) {

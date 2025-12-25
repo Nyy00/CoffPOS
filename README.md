@@ -37,20 +37,6 @@ CoffPOS adalah sistem POS komprehensif yang dibangun dengan Laravel 12, Blade, d
 
 ### Installation
 
-#### Option 1: Quick Setup with Laravel Herd (Recommended) ⚡
-**5-minute setup!**
-
-1. Install [Laravel Herd](https://herd.laravel.com/) and [TablePlus](https://tableplus.com/)
-2. Move project to Herd directory
-3. Run setup commands
-4. Access at http://coffpos.test
-
-**Full Guide**: [QUICK_SETUP_HERD.md](QUICK_SETUP_HERD.md)
-
----
-
-#### Option 2: Traditional Setup
-
 1. **Clone Repository**
 ```bash
 git clone https://github.com/your-team/CoffPOS.git
