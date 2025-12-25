@@ -125,7 +125,10 @@ class POSShoppingCart {
     }
     
     getCartItemHTML(item) {
-        const imageUrl = item.image ? `/storage/${item.image}` : '/images/placeholder-product.png';
+        // Use public images as primary in production
+        const imageUrl = item.image 
+            ? `/images/products/${item.image.replace('products/', '')}` 
+            : '/images/placeholder-product.png';
         const subtotal = item.price * item.quantity;
         
         return `

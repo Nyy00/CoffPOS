@@ -108,9 +108,10 @@
                              data-category="{{ $product->category_id }}">
                             <div class="aspect-square relative overflow-hidden rounded-t-lg">
                                 @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" 
+                                    <img src="{{ asset('images/products/' . str_replace('products/', '', $product->image)) }}" 
                                          alt="{{ $product->name }}" 
-                                         class="w-full h-full object-cover">
+                                         class="w-full h-full object-cover"
+                                         onerror="this.onerror=null; this.src='{{ asset('storage/' . $product->image) }}';">
                                 @else
                                     <div class="w-full h-full bg-gray-100 flex items-center justify-center">
                                         <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">

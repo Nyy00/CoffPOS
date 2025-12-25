@@ -217,9 +217,10 @@
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 @if(isset($product['image']) && $product['image'])
-                                    <img src="{{ asset('storage/' . $product['image']) }}" 
+                                    <img src="{{ asset('images/products/' . str_replace('products/', '', $product['image'])) }}" 
                                          alt="{{ $product['name'] }}" 
-                                         class="h-8 w-8 rounded object-cover">
+                                         class="h-8 w-8 rounded object-cover"
+                                         onerror="this.onerror=null; this.src='{{ asset('storage/' . $product['image']) }}';">
                                 @else
                                     <div class="h-8 w-8 rounded bg-gray-200 flex items-center justify-center">
                                         <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
