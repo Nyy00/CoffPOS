@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 // Debug routes - only for development/testing
 if (app()->environment(['local', 'staging'])) {
@@ -126,12 +128,21 @@ Route::get('/health/midtrans/test', function () {
     }
 });
 
-// Fix payment method enum
+// Fix payment method enum and missing columns
 Route::get('/admin/fix-payment-enum', function () {
     try {
         $output = [];
         $driver = DB::getDriverName();
         $output[] = "Database Driver: $driver";
+        
+        // First, run the missing columns migration
+        $output[] = "Running missing columns migration...";
+        try {
+            Artisan::call('migrate', ['--path' => 'database/migrations/2025_12_25_151500_add_missing_payment_columns_to_transactions_table.php']);
+            $output[] = "✅ Missing columns migration completed";
+        } catch (Exception $e) {
+            $output[] = "⚠️ Migration may have already run: " . $e->getMessage();
+        }
         
         if ($driver === 'pgsql') {
             $output[] = "Attempting to fix PostgreSQL enum constraint...";
@@ -143,10 +154,8 @@ Route::get('/admin/fix-payment-enum', function () {
                 DB::statement("ALTER TABLE transactions ADD CONSTRAINT transactions_payment_method_check CHECK (payment_method IN ('cash', 'debit', 'credit', 'ewallet', 'qris', 'digital'))");
                 $output[] = "✅ Added new constraint with 'digital' option";
                 
-                $output[] = "🎉 Payment method enum fix completed successfully!";
-                
             } catch (Exception $e) {
-                $output[] = "❌ Error: " . $e->getMessage();
+                $output[] = "❌ Constraint error: " . $e->getMessage();
                 return response()->json(['success' => false, 'output' => $output], 500);
             }
             
@@ -154,6 +163,7 @@ Route::get('/admin/fix-payment-enum', function () {
             $output[] = "⚠️ Only PostgreSQL fix is implemented";
         }
         
+        $output[] = "🎉 Payment system fix completed successfully!";
         return response()->json(['success' => true, 'output' => $output]);
         
     } catch (Exception $e) {
