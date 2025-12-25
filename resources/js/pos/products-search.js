@@ -139,6 +139,22 @@ class POSProductsSearch {
         this.productsGrid.innerHTML = html;
     }
     
+    getFallbackImage(productName) {
+        const name = productName.toLowerCase();
+        if (name.includes('cheesecake')) return '/images/products/cheesecake.jpg';
+        if (name.includes('sandwich')) return '/images/products/sandwich.jpg';
+        if (name.includes('tiramisu')) return '/images/products/tiramisu.jpg';
+        if (name.includes('chocolate')) return '/images/products/chocolate.jpg';
+        if (name.includes('croissant')) return '/images/products/croissants.jpg';
+        if (name.includes('americano')) return '/images/products/americano.jpg';
+        if (name.includes('latte')) return '/images/products/latte.jpg';
+        if (name.includes('cappuccino')) return '/images/products/cappuccino.jpg';
+        if (name.includes('espresso')) return '/images/products/espresso.jpg';
+        if (name.includes('mocha')) return '/images/products/mocha.jpg';
+        if (name.includes('tea')) return '/images/products/green-tea.jpg';
+        return '/images/placeholder-product.png';
+    }
+    
     getProductCardHTML(product) {
         // Use public images as primary in production, with storage as fallback
         const imageUrl = product.image 
@@ -157,7 +173,7 @@ class POSProductsSearch {
                         <img src="${imageUrl}" 
                              alt="${product.name}" 
                              class="w-full h-24 object-cover rounded-md"
-                             onerror="this.onerror=null; this.src='/storage/${product.image || 'logo.png'}';">
+                             onerror="this.onerror=null; this.src=this.getFallbackImage('${product.name}');">
                     </div>
                     <div class="space-y-1">
                         <h3 class="text-sm font-medium text-gray-900 truncate" title="${product.name}">
