@@ -52,3 +52,8 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Storage file serving route (for when symbolic links don't work)
+Route::get('/storage/{path}', [App\Http\Controllers\StorageController::class, 'serve'])
+    ->where('path', '.*')
+    ->name('storage.serve');
