@@ -18,7 +18,11 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
             <div>
                 <a href="{{ route('home') }}" class="flex items-center">
-                    <span class="text-5xl">☕</span>
+                    <div class="w-12 h-12 bg-gradient-to-br from-gold to-yellow-400 rounded-lg flex items-center justify-center">
+                        <svg class="w-8 h-8 text-coffee-dark" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.5 1.5H5.75A2.25 2.25 0 003.5 3.75v2.5a.75.75 0 001.5 0v-2.5a.75.75 0 01.75-.75h4.75a.75.75 0 01.75.75v7a.75.75 0 01-.75.75H5.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-1.5 0v2.5A2.25 2.25 0 005.5 16.25h4.75a2.25 2.25 0 002.25-2.25v-7a2.25 2.25 0 00-2.25-2.25zm5.25 3a.75.75 0 01.75.75v9a.75.75 0 01-1.5 0V5.25a.75.75 0 01.75-.75z"/>
+                        </svg>
+                    </div>
                     <span class="ml-2 text-3xl font-bold text-coffee-dark">CoffPOS</span>
                 </a>
             </div>

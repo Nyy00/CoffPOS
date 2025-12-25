@@ -1,0 +1,460 @@
+/* ============================================
+   CoffPOS - Simple Point of Sale Styles
+   ============================================ */
+
+/* ============================================
+   SIMPLE CSS VARIABLES
+   ============================================ */
+:root {
+  /* Simple Colors */
+  --primary: #3B82F6;      /* Blue-500 */
+  --secondary: #6B7280;    /* Gray-500 */
+  --accent: #F59E0B;       /* Amber-500 */
+  --success: #10B981;      /* Green-500 */
+  --error: #EF4444;        /* Red-500 */
+  
+  /* Backgrounds */
+  --bg-white: #FFFFFF;
+  --bg-gray: #F9FAFB;
+  --bg-light: #F3F4F6;
+  
+  /* Text */
+  --text-dark: #111827;
+  --text-gray: #6B7280;
+  --text-light: #9CA3AF;
+  
+  /* Borders */
+  --border: #E5E7EB;
+  --border-dark: #D1D5DB;
+  
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  
+  /* Radius */
+  --radius: 6px;
+  --radius-lg: 8px;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-dark);
+  background: var(--bg-gray);
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+.pos-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  height: calc(100vh - 64px);
+  background: var(--bg-gray);
+}
+
+.pos-grid > div:first-child {
+  background: var(--bg-white);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pos-grid > div:last-child {
+  background: var(--bg-white);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Cart structure untuk scroll */
+.pos-grid > div:last-child > div:first-child {
+  flex-shrink: 0;
+}
+
+.pos-grid > div:last-child > div:nth-child(2) {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.pos-grid > div:last-child > div:last-child {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   FORM INPUTS
+   ============================================ */
+.input-enhanced {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+.input-enhanced:hover {
+  border-color: var(--accent);
+}
+
+.input-enhanced:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Dropdown */
+select.input-enhanced {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+  appearance: none;
+}
+
+
+/* ============================================
+   SEARCH & CATEGORIES
+   ============================================ */
+.search-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-white);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.category-tabs {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: var(--space-2) 0;
+}
+
+.category-tab {
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-gray);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.category-tab:hover {
+  background: var(--bg-white);
+  border-color: var(--primary);
+}
+
+.category-tab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* ============================================
+   PRODUCTS
+   ============================================ */
+.products-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-dark) var(--bg-light);
+}
+
+/* Custom scrollbar untuk products section */
+.products-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.products-section::-webkit-scrollbar-track {
+  background: var(--bg-light);
+  border-radius: 3px;
+}
+
+.products-section::-webkit-scrollbar-thumb {
+  background: var(--border-dark);
+  border-radius: 3px;
+}
+
+.products-section::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+
+.product-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.product-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.product-info {
+  padding: var(--space-3);
+}
+
+.product-name {
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: var(--space-1);
+  font-size: 14px;
+}
+
+.product-category {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: var(--space-2);
+}
+
+.product-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-price {
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 16px;
+}
+
+.add-to-cart-btn {
+  width: 32px;
+  height: 32px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.add-to-cart-btn:hover {
+  background: #2563EB;
+}
+
+/* ============================================
+   CART
+   ============================================ */
+.cart-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-light);
+}
+
+.cart-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cart-count {
+  background: var(--primary);
+  color: white;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-dark) var(--bg-light);
+}
+
+/* Custom scrollbar untuk cart items */
+.cart-items::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cart-items::-webkit-scrollbar-track {
+  background: var(--bg-light);
+  border-radius: 3px;
+}
+
+.cart-items::-webkit-scrollbar-thumb {
+  background: var(--border-dark);
+  border-radius: 3px;
+}
+
+.cart-items::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-3);
+}
+
+.cart-item-details {
+  flex: 1;
+}
+
+.cart-item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: var(--space-1);
+}
+
+.cart-item-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.cart-footer {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border);
+  background: var(--bg-light);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  color: var(--text-gray);
+  font-size: 14px;
+}
+
+.summary-row.total {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-3);
+  margin-top: var(--space-3);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  background: var(--bg-white);
+  color: var(--text-dark);
+}
+
+.btn:hover {
+  background: var(--bg-light);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background: #2563EB;
+}
+
+.btn-primary:disabled {
+  background: var(--text-light);
+  border-color: var(--text-light);
+  cursor: not-allowed;
+}
+
+.payment-methods {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.payment-method {
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-white);
+  color: var(--text-gray);
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.payment-method:hover {
+  border-color: var(--primary);
+  background: var(--bg-light);
+}
+
+.payment-method.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .pos-grid {
+    grid-template-columns: 1fr 300px;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+  
+  .payment-methods {
+    grid-template-columns: 1fr;
+  }
+}
