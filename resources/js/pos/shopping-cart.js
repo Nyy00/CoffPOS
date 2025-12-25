@@ -124,6 +124,22 @@ class POSShoppingCart {
         this.calculateTotals();
     }
     
+    getFallbackImage(productName) {
+        const name = productName.toLowerCase();
+        if (name.includes('cheesecake')) return '/images/products/cheesecake.jpg';
+        if (name.includes('sandwich')) return '/images/products/sandwich.jpg';
+        if (name.includes('tiramisu')) return '/images/products/tiramisu.jpg';
+        if (name.includes('chocolate')) return '/images/products/chocolate.jpg';
+        if (name.includes('croissant')) return '/images/products/croissants.jpg';
+        if (name.includes('americano')) return '/images/products/americano.jpg';
+        if (name.includes('latte')) return '/images/products/latte.jpg';
+        if (name.includes('cappuccino')) return '/images/products/cappuccino.jpg';
+        if (name.includes('espresso')) return '/images/products/espresso.jpg';
+        if (name.includes('mocha')) return '/images/products/mocha.jpg';
+        if (name.includes('tea')) return '/images/products/green-tea.jpg';
+        return '/images/placeholder-product.png';
+    }
+    
     getCartItemHTML(item) {
         // Use public images as primary in production
         const imageUrl = item.image 
@@ -134,7 +150,10 @@ class POSShoppingCart {
         return `
             <div class="cart-item flex items-center space-x-3 p-3 bg-gray-50 rounded-lg" data-product-id="${item.product_id}">
                 <div class="flex-shrink-0">
-                    <img src="${imageUrl}" alt="${item.name}" class="w-12 h-12 rounded-md object-cover">
+                    <img src="${imageUrl}" 
+                         alt="${item.name}" 
+                         class="w-12 h-12 rounded-md object-cover"
+                         onerror="this.onerror=null; this.src=this.getFallbackImage('${item.name}');">
                 </div>
                 <div class="flex-1 min-w-0">
                     <h4 class="text-sm font-medium text-gray-900 truncate">${item.name}</h4>

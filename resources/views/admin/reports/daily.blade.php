@@ -146,10 +146,25 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 @if(isset($product['image']) && $product['image'])
+                                    @php
+                                        $fallbackImage = 'placeholder-product.png';
+                                        $productName = strtolower($product['name']);
+                                        if (str_contains($productName, 'cheesecake')) $fallbackImage = 'cheesecake.jpg';
+                                        elseif (str_contains($productName, 'sandwich')) $fallbackImage = 'sandwich.jpg';
+                                        elseif (str_contains($productName, 'tiramisu')) $fallbackImage = 'tiramisu.jpg';
+                                        elseif (str_contains($productName, 'chocolate')) $fallbackImage = 'chocolate.jpg';
+                                        elseif (str_contains($productName, 'croissant')) $fallbackImage = 'croissants.jpg';
+                                        elseif (str_contains($productName, 'americano')) $fallbackImage = 'americano.jpg';
+                                        elseif (str_contains($productName, 'latte')) $fallbackImage = 'latte.jpg';
+                                        elseif (str_contains($productName, 'cappuccino')) $fallbackImage = 'cappuccino.jpg';
+                                        elseif (str_contains($productName, 'espresso')) $fallbackImage = 'espresso.jpg';
+                                        elseif (str_contains($productName, 'mocha')) $fallbackImage = 'mocha.jpg';
+                                        elseif (str_contains($productName, 'tea')) $fallbackImage = 'green-tea.jpg';
+                                    @endphp
                                     <img src="{{ asset('images/products/' . str_replace('products/', '', $product['image'])) }}" 
                                          alt="{{ $product['name'] }}" 
                                          class="h-8 w-8 rounded object-cover mr-3"
-                                         onerror="this.onerror=null; this.src='{{ asset('storage/' . $product['image']) }}';">
+                                         onerror="this.onerror=null; this.src='{{ asset('images/products/' . $fallbackImage) }}';">
                                 @else
                                     <div class="h-8 w-8 rounded bg-gray-200 flex items-center justify-center mr-3">
                                         <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

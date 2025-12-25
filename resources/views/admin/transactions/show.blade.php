@@ -121,11 +121,26 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         @if($item->product && $item->product->image)
+                                            @php
+                                                $fallbackImage = 'placeholder-product.png';
+                                                $productName = strtolower($item->product->name);
+                                                if (str_contains($productName, 'cheesecake')) $fallbackImage = 'cheesecake.jpg';
+                                                elseif (str_contains($productName, 'sandwich')) $fallbackImage = 'sandwich.jpg';
+                                                elseif (str_contains($productName, 'tiramisu')) $fallbackImage = 'tiramisu.jpg';
+                                                elseif (str_contains($productName, 'chocolate')) $fallbackImage = 'chocolate.jpg';
+                                                elseif (str_contains($productName, 'croissant')) $fallbackImage = 'croissants.jpg';
+                                                elseif (str_contains($productName, 'americano')) $fallbackImage = 'americano.jpg';
+                                                elseif (str_contains($productName, 'latte')) $fallbackImage = 'latte.jpg';
+                                                elseif (str_contains($productName, 'cappuccino')) $fallbackImage = 'cappuccino.jpg';
+                                                elseif (str_contains($productName, 'espresso')) $fallbackImage = 'espresso.jpg';
+                                                elseif (str_contains($productName, 'mocha')) $fallbackImage = 'mocha.jpg';
+                                                elseif (str_contains($productName, 'tea')) $fallbackImage = 'green-tea.jpg';
+                                            @endphp
                                             <div class="flex-shrink-0 h-10 w-10">
                                                 <img class="h-10 w-10 rounded-full object-cover" 
                                                      src="{{ asset('images/products/' . str_replace('products/', '', $item->product->image)) }}" 
                                                      alt="{{ $item->product->name }}"
-                                                     onerror="this.onerror=null; this.src='{{ Storage::url($item->product->image) }}';">
+                                                     onerror="this.onerror=null; this.src='{{ asset('images/products/' . $fallbackImage) }}';">
                                             </div>
                                         @endif
                                         <div class="ml-4">

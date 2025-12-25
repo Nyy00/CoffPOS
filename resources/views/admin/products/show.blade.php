@@ -151,10 +151,25 @@
             <div class="lg:col-span-1">
                 <x-card title="Product Image">
                     @if($product->image)
+                        @php
+                            $fallbackImage = 'placeholder-product.png';
+                            $productName = strtolower($product->name);
+                            if (str_contains($productName, 'cheesecake')) $fallbackImage = 'cheesecake.jpg';
+                            elseif (str_contains($productName, 'sandwich')) $fallbackImage = 'sandwich.jpg';
+                            elseif (str_contains($productName, 'tiramisu')) $fallbackImage = 'tiramisu.jpg';
+                            elseif (str_contains($productName, 'chocolate')) $fallbackImage = 'chocolate.jpg';
+                            elseif (str_contains($productName, 'croissant')) $fallbackImage = 'croissants.jpg';
+                            elseif (str_contains($productName, 'americano')) $fallbackImage = 'americano.jpg';
+                            elseif (str_contains($productName, 'latte')) $fallbackImage = 'latte.jpg';
+                            elseif (str_contains($productName, 'cappuccino')) $fallbackImage = 'cappuccino.jpg';
+                            elseif (str_contains($productName, 'espresso')) $fallbackImage = 'espresso.jpg';
+                            elseif (str_contains($productName, 'mocha')) $fallbackImage = 'mocha.jpg';
+                            elseif (str_contains($productName, 'tea')) $fallbackImage = 'green-tea.jpg';
+                        @endphp
                         <img src="{{ asset('images/products/' . str_replace('products/', '', $product->image)) }}" 
                              alt="{{ $product->name }}" 
                              class="w-full h-auto rounded-lg"
-                             onerror="this.onerror=null; this.src='{{ Storage::url($product->image) }}';">
+                             onerror="this.onerror=null; this.src='{{ asset('images/products/' . $fallbackImage) }}';">
                     @else
                         <div class="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
                             <svg class="h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
