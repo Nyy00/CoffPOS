@@ -141,10 +141,15 @@ class POSShoppingCart {
     }
     
     getCartItemHTML(item) {
-        // Use public images as primary in production
-        const imageUrl = item.image 
-            ? `/images/products/${item.image.replace('products/', '')}` 
-            : '/images/placeholder-product.png';
+        // Fix image path - ensure proper URL construction
+        let imageUrl = '/images/placeholder-product.png'; // Default fallback
+        
+        if (item.image) {
+            // Clean the image path and construct proper URL
+            const cleanImagePath = item.image.replace(/^products\//, '');
+            imageUrl = `/images/products/${cleanImagePath}`;
+        }
+        
         const fallbackUrl = this.getFallbackImage(item.name);
         const subtotal = item.price * item.quantity;
         

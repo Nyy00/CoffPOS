@@ -14,6 +14,22 @@ class POSSystem {
         this.init();
     }
     
+    getFallbackImage(productName) {
+        const name = productName.toLowerCase();
+        if (name.includes('cheesecake')) return '/images/products/cheesecake.jpg';
+        if (name.includes('sandwich')) return '/images/products/sandwich.jpg';
+        if (name.includes('tiramisu')) return '/images/products/tiramisu.jpg';
+        if (name.includes('chocolate')) return '/images/products/chocolate.jpg';
+        if (name.includes('croissant')) return '/images/products/croissants.jpg';
+        if (name.includes('americano')) return '/images/products/americano.jpg';
+        if (name.includes('latte')) return '/images/products/latte.jpg';
+        if (name.includes('cappuccino')) return '/images/products/cappuccino.jpg';
+        if (name.includes('espresso')) return '/images/products/espresso.jpg';
+        if (name.includes('mocha')) return '/images/products/mocha.jpg';
+        if (name.includes('tea')) return '/images/products/green-tea.jpg';
+        return '/images/placeholder-product.png';
+    }
+    
     init() {
         this.setupEventListeners();
         this.loadCart();
@@ -403,13 +419,24 @@ class POSSystem {
         
         Object.values(this.cart).forEach(item => {
             totalItems += item.quantity;
+            
+            // Fix image path - ensure proper URL construction
+            let imageUrl = '/images/placeholder-product.png'; // Default fallback
+            let fallbackUrl = this.getFallbackImage(item.name);
+            
+            if (item.image) {
+                // Clean the image path and construct proper URL
+                const cleanImagePath = item.image.replace(/^products\//, '');
+                imageUrl = `/images/products/${cleanImagePath}`;
+            }
+            
             html += `
                 <div class="cart-item flex items-center space-x-3 p-3 border rounded-lg">
                     <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                        ${item.image ? 
-                            `<img src="/storage/${item.image}" alt="${item.name}" class="w-full h-full object-cover rounded-lg">` : 
-                            '<span class="text-xl">☕</span>'
-                        }
+                        <img src="${imageUrl}" 
+                             alt="${item.name}" 
+                             class="w-full h-full object-cover rounded-lg"
+                             onerror="this.onerror=null; this.src='${fallbackUrl}';">
                     </div>
                     <div class="flex-1 min-w-0">
                         <h4 class="text-sm font-medium text-gray-900 truncate">${item.name}</h4>

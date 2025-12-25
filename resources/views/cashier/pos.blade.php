@@ -222,9 +222,9 @@
         </div>
 
         <!-- Right Panel - Cart & Checkout -->
-        <div id="cart-panel" class="hidden lg:flex lg:w-80 xl:w-96 bg-white border-l flex-col">
+        <div id="cart-panel" class="hidden lg:flex lg:w-80 xl:w-96 bg-white border-l flex-col" style="height: calc(100vh - 64px);">
             <!-- Cart Header -->
-            <div class="p-4 sm:p-6 border-b bg-cream">
+            <div class="p-4 sm:p-6 border-b bg-cream flex-shrink-0">
                 <div class="flex items-center justify-between">
                     <h2 class="text-base sm:text-lg font-semibold text-coffee-dark">🛒 Keranjang</h2>
                     <div class="flex items-center gap-2">
@@ -238,24 +238,24 @@
                 </div>
             </div>
 
-            <!-- Cart Items -->
-            <div class="flex-1 overflow-y-auto custom-scrollbar">
-                <div id="cart-items" class="p-6 space-y-3">
+            <!-- Cart Items - Scrollable -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar" style="max-height: calc(100vh - 400px);">
+                <div id="cart-items" class="p-4 space-y-3">
                     <!-- Cart items will be populated by JavaScript -->
-                    <div id="empty-cart" class="text-center py-12">
-                        <div class="text-gray-400 text-6xl mb-4">🛒</div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">Keranjang kosong</h3>
-                        <p class="text-gray-500">Tambahkan produk untuk memulai transaksi</p>
+                    <div id="empty-cart" class="text-center py-8">
+                        <div class="text-gray-400 text-4xl mb-3">🛒</div>
+                        <h3 class="text-base font-medium text-gray-900 mb-2">Keranjang kosong</h3>
+                        <p class="text-sm text-gray-500">Tambahkan produk untuk memulai transaksi</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Cart Summary -->
-            <div class="border-t p-6 space-y-4">
+            <!-- Cart Summary - Fixed at bottom -->
+            <div class="border-t p-4 space-y-3 bg-white" style="flex-shrink: 0;">
                 <!-- Customer Selection -->
                 <div>
                     <label class="block text-sm font-medium text-coffee-dark mb-2">Pelanggan (Opsional)</label>
-                    <select id="customer-select" class="input-enhanced w-full py-2 px-3">
+                    <select id="customer-select" class="input-enhanced w-full py-2 px-3 text-sm">
                         <option value="">Pelanggan Umum</option>
                         <!-- Customers will be loaded via AJAX -->
                     </select>
@@ -276,7 +276,7 @@
                         <span id="tax">Rp 0</span>
                     </div>
                     <div class="border-t border-light-coffee pt-2">
-                        <div class="flex justify-between text-lg font-bold">
+                        <div class="flex justify-between text-base font-bold">
                             <span class="text-coffee-dark">Total:</span>
                             <span id="total" class="text-gold">Rp 0</span>
                         </div>
@@ -286,24 +286,24 @@
                 <!-- Payment Method -->
                 <div>
                     <label class="block text-sm font-medium text-coffee-dark mb-2">Metode Pembayaran</label>
-                    <div class="payment-methods">
-                        <button class="payment-method active py-2 px-3 border-2 border-gold bg-light-coffee text-coffee-dark rounded-lg text-sm font-medium" data-method="cash">
+                    <div class="payment-methods grid grid-cols-2 gap-2">
+                        <button class="payment-method active py-2 px-2 border-2 border-gold bg-light-coffee text-coffee-dark rounded-lg text-xs font-medium" data-method="cash">
                             💵 Tunai
                         </button>
-                        <button class="payment-method py-2 px-3 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-sm font-medium hover:border-gold flex items-center gap-2" data-method="debit">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button class="payment-method py-2 px-2 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-xs font-medium hover:border-gold flex items-center justify-center gap-1" data-method="debit">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                             </svg>
                             Debit
                         </button>
-                        <button class="payment-method py-2 px-3 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-sm font-medium hover:border-gold flex items-center gap-2" data-method="credit">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button class="payment-method py-2 px-2 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-xs font-medium hover:border-gold flex items-center justify-center gap-1" data-method="credit">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                             </svg>
                             Kredit
                         </button>
-                        <button class="payment-method py-2 px-3 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-sm font-medium hover:border-gold flex items-center gap-2" data-method="digital">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button class="payment-method py-2 px-2 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-xs font-medium hover:border-gold flex items-center justify-center gap-1" data-method="digital">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                             </svg>
                             Digital
@@ -314,7 +314,7 @@
                 <!-- Payment Amount (for cash) -->
                 <div id="cash-payment" class="space-y-2">
                     <label class="block text-sm font-medium text-coffee-dark">Uang Diterima</label>
-                    <input type="number" id="payment-amount" class="input-enhanced w-full py-2 px-3" placeholder="0">
+                    <input type="number" id="payment-amount" class="input-enhanced w-full py-2 px-3 text-sm" placeholder="0">
                     <div class="flex justify-between text-sm">
                         <span class="text-coffee-brown">Kembalian:</span>
                         <span id="change" class="font-medium text-gold">Rp 0</span>
@@ -322,7 +322,7 @@
                 </div>
 
                 <!-- Checkout Button -->
-                <button id="checkout-btn" class="checkout-btn w-full py-3 bg-coffee-brown text-cream rounded-lg font-bold disabled:bg-light-coffee disabled:cursor-not-allowed" disabled>
+                <button id="checkout-btn" class="checkout-btn w-full py-3 bg-coffee-brown text-cream rounded-lg font-bold text-sm disabled:bg-light-coffee disabled:cursor-not-allowed" disabled>
                     💰 Proses Pembayaran
                 </button>
             </div>
@@ -367,6 +367,11 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleCartBtn.addEventListener('click', function() {
             cartPanel.classList.remove('hidden');
             cartPanel.classList.add('fixed', 'inset-0', 'z-50', 'lg:relative', 'lg:inset-auto', 'lg:z-auto');
+            // Ensure proper height and flex structure for mobile
+            cartPanel.style.height = '100vh';
+            cartPanel.style.maxHeight = '100vh';
+            cartPanel.style.display = 'flex';
+            cartPanel.style.flexDirection = 'column';
         });
     }
     
@@ -426,6 +431,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (cartPanel) {
                 cartPanel.classList.remove('hidden', 'fixed', 'inset-0', 'z-50');
                 cartPanel.classList.add('lg:flex');
+                // Reset height for desktop
+                cartPanel.style.height = 'calc(100vh - 64px)';
             }
         } else {
             if (cartPanel && !cartPanel.classList.contains('fixed')) {
@@ -433,6 +440,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    
+    // Ensure proper cart scrolling on mobile
+    if (cartPanel) {
+        const cartItems = cartPanel.querySelector('#cart-items');
+        if (cartItems) {
+            // Add touch scrolling support
+            cartItems.style.webkitOverflowScrolling = 'touch';
+            cartItems.style.overscrollBehavior = 'contain';
+        }
+    }
 });
 </script>
 </body>
