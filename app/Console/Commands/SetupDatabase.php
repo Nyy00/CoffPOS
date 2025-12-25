@@ -14,6 +14,16 @@ class SetupDatabase extends Command
     {
         $this->info('Setting up database...');
         
+        // Create storage link
+        $this->info('Creating storage link...');
+        try {
+            Artisan::call('storage:link');
+            $this->info('Storage link created.');
+        } catch (\Exception $e) {
+            $this->warn('Storage link creation failed: ' . $e->getMessage());
+            $this->info('This might be normal if link already exists.');
+        }
+        
         // Run migrations
         $this->info('Running migrations...');
         try {

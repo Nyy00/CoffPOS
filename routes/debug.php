@@ -170,3 +170,22 @@ Route::get('/admin/fix-payment-enum', function () {
         return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
     }
 })->middleware(['auth', 'role:admin']);
+
+// Debug logo and storage
+Route::get('/debug/logo', function () {
+    $storagePath = storage_path('app/public/logo.png');
+    $publicPath = public_path('storage/logo.png');
+    $fallbackPath = public_path('images/logo-fallback.png');
+    
+    return response()->json([
+        'storage_logo_exists' => file_exists($storagePath),
+        'storage_logo_size' => file_exists($storagePath) ? filesize($storagePath) : 0,
+        'public_logo_exists' => file_exists($publicPath),
+        'public_logo_size' => file_exists($publicPath) ? filesize($publicPath) : 0,
+        'fallback_logo_exists' => file_exists($fallbackPath),
+        'fallback_logo_size' => file_exists($fallbackPath) ? filesize($fallbackPath) : 0,
+        'storage_link_exists' => is_link(public_path('storage')),
+        'storage_url' => asset('storage/logo.png'),
+        'fallback_url' => asset('images/logo-fallback.png'),
+    ]);
+});
