@@ -17,65 +17,112 @@
 <body class="font-sans antialiased bg-gray-50">
 <div class="min-h-screen bg-gray-50">
     <!-- Header -->
-    <div class="bg-white shadow-sm border-b px-6 py-4">
+    <div class="bg-white shadow-sm border-b px-3 sm:px-6 py-3 sm:py-4">
         <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2 sm:space-x-4">
                 <div class="flex items-center space-x-2">
-                    <x-application-logo class="h-8 w-auto" />
-                    <h1 class="text-2xl font-bold text-gray-900">CoffPOS</h1>
+                    <x-application-logo class="h-6 sm:h-8 w-auto" />
+                    <h1 class="text-lg sm:text-2xl font-bold text-gray-900">CoffPOS</h1>
                 </div>
-                <div class="hidden md:flex items-center space-x-2 text-sm text-gray-500">
+                <div class="hidden lg:flex items-center space-x-2 text-sm text-gray-500">
                     <span>•</span>
                     <span>Kasir: {{ auth()->user()->name }}</span>
                     <span>•</span>
                     <span id="current-time">{{ now()->format('d M Y, H:i') }}</span>
                 </div>
             </div>
-            <div class="flex items-center space-x-3">
-                <button id="hold-transaction" class="px-4 py-2 bg-gold text-coffee-dark rounded-lg hover:opacity-90 transition-colors font-semibold">
-                    📋 Tahan
+            
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button id="mobile-menu-btn" class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
                 </button>
-                <button id="view-held-transactions" class="px-4 py-2 bg-coffee-brown text-cream rounded-lg hover:opacity-90 transition-colors font-semibold">
-                    📋 Ditahan
+            </div>
+            
+            <!-- Desktop Actions -->
+            <div class="hidden md:flex items-center space-x-2 lg:space-x-3">
+                <button id="hold-transaction" class="px-2 lg:px-4 py-2 bg-gold text-coffee-dark rounded-lg hover:opacity-90 transition-colors font-semibold text-sm lg:text-base">
+                    <span class="hidden lg:inline">📋 Tahan</span>
+                    <span class="lg:hidden">📋</span>
                 </button>
-                <button id="clear-cart" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button id="view-held-transactions" class="px-2 lg:px-4 py-2 bg-coffee-brown text-cream rounded-lg hover:opacity-90 transition-colors font-semibold text-sm lg:text-base">
+                    <span class="hidden lg:inline">📋 Ditahan</span>
+                    <span class="lg:hidden">📋</span>
+                </button>
+                <button id="clear-cart" class="px-2 lg:px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-1 lg:gap-2 text-sm lg:text-base">
+                    <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
-                    Kosongkan
+                    <span class="hidden lg:inline">Kosongkan</span>
                 </button>
                 <!-- Logout Form -->
                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                     @csrf
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2" onclick="return confirm('Apakah Anda yakin ingin keluar?')">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button type="submit" class="px-2 lg:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-1 lg:gap-2 text-sm lg:text-base" onclick="return confirm('Apakah Anda yakin ingin keluar?')">
+                        <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                         </svg>
-                        Keluar
+                        <span class="hidden lg:inline">Keluar</span>
                     </button>
                 </form>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden mt-3 pt-3 border-t border-gray-200">
+            <div class="flex flex-wrap gap-2">
+                <button id="hold-transaction-mobile" class="flex-1 px-3 py-2 bg-gold text-coffee-dark rounded-lg hover:opacity-90 transition-colors font-semibold text-sm">
+                    📋 Tahan
+                </button>
+                <button id="view-held-transactions-mobile" class="flex-1 px-3 py-2 bg-coffee-brown text-cream rounded-lg hover:opacity-90 transition-colors font-semibold text-sm">
+                    📋 Ditahan
+                </button>
+                <button id="clear-cart-mobile" class="flex-1 px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm">
+                    🗑️ Kosongkan
+                </button>
+                <form method="POST" action="{{ route('logout') }}" class="flex-1">
+                    @csrf
+                    <button type="submit" class="w-full px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm" onclick="return confirm('Apakah Anda yakin ingin keluar?')">
+                        🚪 Keluar
+                    </button>
+                </form>
+            </div>
+            <div class="mt-2 text-xs text-gray-500 text-center">
+                Kasir: {{ auth()->user()->name }} • {{ now()->format('d M Y, H:i') }}
             </div>
         </div>
     </div>
 
     <!-- Main POS Interface -->
-    <div class="pos-grid">
+    <div class="flex flex-col lg:flex-row h-full">
+        <!-- Mobile Cart Toggle Button -->
+        <div class="lg:hidden bg-white border-b px-4 py-2">
+            <button id="toggle-cart" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                Lihat Keranjang (<span id="mobile-cart-count">0</span>)
+            </button>
+        </div>
+        
         <!-- Left Panel - Products -->
-        <div class="flex flex-col bg-white">
+        <div class="flex-1 flex flex-col bg-white lg:border-r">
             <!-- Search and Filters -->
-            <div class="p-6 border-b bg-cream">
-                <div class="flex flex-col lg:flex-row gap-4">
+            <div class="p-3 sm:p-6 border-b bg-cream">
+                <div class="flex flex-col gap-3 sm:gap-4">
                     <!-- Search Bar -->
-                    <div class="flex-1 relative">
+                    <div class="relative">
                         <input type="text" 
                                id="product-search" 
                                placeholder="Cari produk..." 
-                               class="search-input input-enhanced w-full pl-4 pr-4 py-3">
+                               class="search-input input-enhanced w-full pl-4 pr-4 py-2 sm:py-3 text-sm sm:text-base">
                     </div>
                     
                     <!-- Category Filter -->
-                    <div class="lg:w-48">
-                        <select id="category-filter" class="input-enhanced w-full py-3 px-4">
+                    <div class="w-full">
+                        <select id="category-filter" class="input-enhanced w-full py-2 sm:py-3 px-4 text-sm sm:text-base">
                             <option value="">Semua Kategori</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -86,13 +133,13 @@
             </div>
 
             <!-- Category Tabs -->
-            <div class="px-6 py-4 border-b bg-cream">
-                <div class="category-tabs">
-                    <button class="category-tab active px-4 py-2 rounded-lg whitespace-nowrap font-semibold" data-category="">
+            <div class="px-3 sm:px-6 py-2 sm:py-4 border-b bg-cream">
+                <div class="category-tabs overflow-x-auto">
+                    <button class="category-tab active px-3 sm:px-4 py-2 rounded-lg whitespace-nowrap font-semibold text-sm sm:text-base" data-category="">
                         Semua Produk
                     </button>
                     @foreach($categories as $category)
-                        <button class="category-tab px-4 py-2 rounded-lg whitespace-nowrap" data-category="{{ $category->id }}">
+                        <button class="category-tab px-3 sm:px-4 py-2 rounded-lg whitespace-nowrap text-sm sm:text-base" data-category="{{ $category->id }}">
                             {{ $category->name }}
                         </button>
                     @endforeach
@@ -100,8 +147,8 @@
             </div>
 
             <!-- Products Grid -->
-            <div class="flex-1 p-6 overflow-y-auto custom-scrollbar">
-                <div id="products-grid" class="products-grid">
+            <div class="flex-1 p-3 sm:p-6 overflow-y-auto custom-scrollbar">
+                <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
                     @foreach($products as $product)
                         <div class="product-card bg-white rounded-lg shadow-sm border hover:shadow-md transition-all cursor-pointer" 
                              data-product-id="{{ $product->id }}"
@@ -129,32 +176,32 @@
                                          onerror="this.onerror=null; this.src='{{ asset('images/products/' . $fallbackImage) }}';">
                                 @else
                                     <div class="w-full h-full bg-gray-100 flex items-center justify-center">
-                                        <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M10.5 1.5H5.75A2.25 2.25 0 003.5 3.75v2.5a.75.75 0 001.5 0v-2.5a.75.75 0 01.75-.75h4.75a.75.75 0 01.75.75v7a.75.75 0 01-.75.75H5.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-1.5 0v2.5A2.25 2.25 0 005.5 16.25h4.75a2.25 2.25 0 002.25-2.25v-7a2.25 2.25 0 00-2.25-2.25zm5.25 3a.75.75 0 01.75.75v9a.75.75 0 01-1.5 0V5.25a.75.75 0 01.75-.75z"/>
                                         </svg>
                                     </div>
                                 @endif
                                 
                                 <!-- Stock Badge -->
-                                <div class="absolute top-2 right-2">
+                                <div class="absolute top-1 sm:top-2 right-1 sm:right-2">
                                     @if($product->stock <= 5)
-                                        <span class="px-2 py-1 bg-red-500 text-white text-xs rounded-full font-semibold">
-                                            {{ $product->stock }} tersisa
+                                        <span class="px-1 sm:px-2 py-0.5 sm:py-1 bg-red-500 text-white text-xs rounded-full font-semibold">
+                                            {{ $product->stock }}
                                         </span>
                                     @else
-                                        <span class="px-2 py-1 bg-coffee-brown text-cream text-xs rounded-full font-semibold">
+                                        <span class="px-1 sm:px-2 py-0.5 sm:py-1 bg-coffee-brown text-cream text-xs rounded-full font-semibold">
                                             {{ $product->stock }}
                                         </span>
                                     @endif
                                 </div>
                             </div>
                             
-                            <div class="p-3">
-                                <h3 class="font-medium text-gray-900 text-sm mb-1 line-clamp-2">{{ $product->name }}</h3>
-                                <p class="text-xs text-gray-500 mb-2">{{ $product->category->name }}</p>
+                            <div class="p-2 sm:p-3">
+                                <h3 class="font-medium text-gray-900 text-xs sm:text-sm mb-1 line-clamp-2">{{ $product->name }}</h3>
+                                <p class="text-xs text-gray-500 mb-2 hidden sm:block">{{ $product->category->name }}</p>
                                 <div class="flex items-center justify-between">
-                                    <span class="text-lg font-bold text-gold">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                                    <button class="add-to-cart-btn w-8 h-8 bg-gold text-coffee-dark rounded-full hover:opacity-90 transition-colors flex items-center justify-center font-bold">
+                                    <span class="text-sm sm:text-lg font-bold text-gold">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                                    <button class="add-to-cart-btn w-6 h-6 sm:w-8 sm:h-8 bg-gold text-coffee-dark rounded-full hover:opacity-90 transition-colors flex items-center justify-center font-bold text-sm sm:text-base">
                                         +
                                     </button>
                                 </div>
@@ -164,23 +211,30 @@
                 </div>
                 
                 <!-- No Products Found -->
-                <div id="no-products" class="hidden text-center py-12">
-                    <svg class="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div id="no-products" class="hidden text-center py-8 sm:py-12">
+                    <svg class="w-16 h-16 sm:w-24 sm:h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Produk tidak ditemukan</h3>
-                    <p class="text-gray-500">Coba sesuaikan pencarian atau kriteria filter Anda</p>
+                    <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Produk tidak ditemukan</h3>
+                    <p class="text-sm text-gray-500">Coba sesuaikan pencarian atau kriteria filter Anda</p>
                 </div>
             </div>
         </div>
 
         <!-- Right Panel - Cart & Checkout -->
-        <div class="bg-white border-l flex flex-col">
+        <div id="cart-panel" class="hidden lg:flex lg:w-80 xl:w-96 bg-white border-l flex-col">
             <!-- Cart Header -->
-            <div class="p-6 border-b bg-cream">
+            <div class="p-4 sm:p-6 border-b bg-cream">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-lg font-semibold text-coffee-dark">🛒 Keranjang</h2>
-                    <span id="cart-count" class="px-3 py-1 bg-light-coffee text-coffee-dark rounded-full text-sm font-medium">0 item</span>
+                    <h2 class="text-base sm:text-lg font-semibold text-coffee-dark">🛒 Keranjang</h2>
+                    <div class="flex items-center gap-2">
+                        <span id="cart-count" class="px-2 sm:px-3 py-1 bg-light-coffee text-coffee-dark rounded-full text-xs sm:text-sm font-medium">0 item</span>
+                        <button id="close-cart" class="lg:hidden p-1 text-gray-500 hover:text-gray-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -289,5 +343,97 @@
 @endif
 
 <script src="{{ asset('js/pos.js') }}?v={{ time() }}&r={{ rand() }}"></script>
+
+<!-- Mobile POS JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+    
+    // Mobile cart toggle
+    const toggleCartBtn = document.getElementById('toggle-cart');
+    const cartPanel = document.getElementById('cart-panel');
+    const closeCartBtn = document.getElementById('close-cart');
+    const mobileCartCount = document.getElementById('mobile-cart-count');
+    
+    if (toggleCartBtn && cartPanel) {
+        toggleCartBtn.addEventListener('click', function() {
+            cartPanel.classList.remove('hidden');
+            cartPanel.classList.add('fixed', 'inset-0', 'z-50', 'lg:relative', 'lg:inset-auto', 'lg:z-auto');
+        });
+    }
+    
+    if (closeCartBtn && cartPanel) {
+        closeCartBtn.addEventListener('click', function() {
+            cartPanel.classList.add('hidden');
+            cartPanel.classList.remove('fixed', 'inset-0', 'z-50');
+        });
+    }
+    
+    // Sync mobile cart count with main cart count
+    const mainCartCount = document.getElementById('cart-count');
+    if (mainCartCount && mobileCartCount) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                    mobileCartCount.textContent = mainCartCount.textContent.replace(' item', '');
+                }
+            });
+        });
+        
+        observer.observe(mainCartCount, {
+            childList: true,
+            subtree: true,
+            characterData: true
+        });
+    }
+    
+    // Mobile button handlers
+    const mobileButtons = {
+        'hold-transaction-mobile': 'hold-transaction',
+        'view-held-transactions-mobile': 'view-held-transactions',
+        'clear-cart-mobile': 'clear-cart'
+    };
+    
+    Object.entries(mobileButtons).forEach(([mobileId, desktopId]) => {
+        const mobileBtn = document.getElementById(mobileId);
+        const desktopBtn = document.getElementById(desktopId);
+        
+        if (mobileBtn && desktopBtn) {
+            mobileBtn.addEventListener('click', function() {
+                desktopBtn.click();
+            });
+        }
+    });
+    
+    // Auto-hide mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (mobileMenu && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+            mobileMenu.classList.add('hidden');
+        }
+    });
+    
+    // Handle screen resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 1024) { // lg breakpoint
+            if (cartPanel) {
+                cartPanel.classList.remove('hidden', 'fixed', 'inset-0', 'z-50');
+                cartPanel.classList.add('lg:flex');
+            }
+        } else {
+            if (cartPanel && !cartPanel.classList.contains('fixed')) {
+                cartPanel.classList.add('hidden');
+            }
+        }
+    });
+});
+</script>
 </body>
 </html>
