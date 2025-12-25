@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             ProductSeeder::class,
             CustomerSeeder::class,
+            // POSDataSeeder::class, // Uncomment if you want to run POS test data
         ]);
     }
 }
