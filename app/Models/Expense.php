@@ -13,6 +13,7 @@ class Expense extends Model
         'amount',
         'receipt_image',
         'expense_date',
+        'notes',
     ];
 
     protected $casts = [
