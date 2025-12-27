@@ -55,7 +55,7 @@ class GoogleController extends Controller
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
-                    'role' => 'customer', // Role default untuk user yang login via Google
+                    'role' => 'cashier', // Role default untuk user yang login via Google (changed from 'customer' to 'cashier')
                     'password' => Hash::make(Str::random(16)), // Password acak
                     'avatar' => $googleUser->getAvatar(), // Simpan foto profil dari Google
                     'phone' => null, // Phone dibiarkan kosong dulu
@@ -91,8 +91,11 @@ class GoogleController extends Controller
             } elseif ($user->role === 'manager') {
                 \Log::info('Redirecting manager to dashboard');
                 return redirect()->intended('/admin/dashboard-manager');
+            } elseif ($user->role === 'cashier') {
+                \Log::info('Redirecting cashier to POS');
+                return redirect()->intended('/cashier/pos');
             } else {
-                \Log::info('Redirecting customer to homepage');
+                \Log::info('Redirecting user to homepage');
                 return redirect()->intended('/'); // Halaman Frontend / Menu
             }
 
