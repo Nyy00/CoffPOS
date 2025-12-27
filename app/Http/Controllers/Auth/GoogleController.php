@@ -24,8 +24,16 @@ class GoogleController extends Controller
      */
     public function handleGoogleCallback()
     {
+        // Log bahwa callback dimulai
+        \Log::info('Google OAuth Callback Started', [
+            'request_url' => request()->fullUrl(),
+            'request_method' => request()->method(),
+            'user_agent' => request()->userAgent(),
+        ]);
+
         try {
             // 1. Ambil data user dari Google
+            \Log::info('Attempting to get Google user data');
             $googleUser = Socialite::driver('google')->user();
 
             // Debug: Log Google user data
@@ -37,10 +45,12 @@ class GoogleController extends Controller
             ]);
 
             // 2. Cari user di database berdasarkan email
+            \Log::info('Searching for existing user', ['email' => $googleUser->getEmail()]);
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if (!$user) {
                 // 3. Jika user belum ada, buat user baru
+                \Log::info('Creating new user');
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
@@ -54,6 +64,7 @@ class GoogleController extends Controller
                 \Log::info('New Google user created', ['user_id' => $user->id, 'email' => $user->email]);
             } else {
                 // 4. Jika user sudah ada (email sama), update google_id dan avatar-nya
+                \Log::info('Updating existing user', ['user_id' => $user->id]);
                 $user->update([
                     'google_id' => $googleUser->getId(),
                     'avatar' => $googleUser->getAvatar(), // Update avatar jika user ganti foto di Google
@@ -63,6 +74,7 @@ class GoogleController extends Controller
             }
 
             // 5. Login-kan user ke sistem
+            \Log::info('Attempting to login user', ['user_id' => $user->id]);
             Auth::login($user);
             
             // Debug: Verify user is logged in
@@ -84,9 +96,26 @@ class GoogleController extends Controller
                 return redirect()->intended('/'); // Halaman Frontend / Menu
             }
 
+        } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
+            \Log::error('Google OAuth Invalid State Exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return redirect()->route('login')->with('error', 'Google login session expired. Please try again.');
+            
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            \Log::error('Google OAuth HTTP Client Exception', [
+                'message' => $e->getMessage(),
+                'response' => $e->hasResponse() ? $e->getResponse()->getBody()->getContents() : 'No response',
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return redirect()->route('login')->with('error', 'Google login failed. Please try again.');
+            
         } catch (\Exception $e) {
             // Log the actual error for debugging
-            \Log::error('Google OAuth Error', [
+            \Log::error('Google OAuth General Exception', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -94,7 +123,7 @@ class GoogleController extends Controller
             ]);
             
             // Jika terjadi error atau user membatalkan login
-            return redirect()->route('login')->with('error', 'Login Google gagal atau dibatalkan: ' . $e->getMessage());
+            return redirect()->route('login')->with('error', 'Login Google gagal: ' . $e->getMessage());
         }
     }
 }
