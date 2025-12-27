@@ -270,6 +270,5 @@ export class DashboardChartsManager {
     }
 }
 
-// Mengekspor instance DashboardChartsManager
-// agar bisa langsung digunakan
+// Initialize when document loads
 export default new DashboardChartsManager();

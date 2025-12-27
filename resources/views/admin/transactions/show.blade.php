@@ -119,8 +119,84 @@
             </div>
         </div>
 
-        {{-- Bagian item transaksi, ringkasan, catatan, dan aksi --}}
-        {{-- (Struktur & logika tetap sama, hanya tampilan) --}}
+        <!-- Transaction Items -->
+        <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Item</h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">Produk yang dibeli dalam transaksi ini</p>
+            </div>
+            <div class="border-t border-gray-200">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($transaction->transactionItems as $item)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        @if($item->product && $item->product->image)
+                                            @php
+                                                $fallbackImage = 'placeholder-product.png';
+                                                $productName = strtolower($item->product->name);
+                                                if (str_contains($productName, 'cheesecake')) $fallbackImage = 'cheesecake.jpg';
+                                                elseif (str_contains($productName, 'sandwich')) $fallbackImage = 'sandwich.jpg';
+                                                elseif (str_contains($productName, 'tiramisu')) $fallbackImage = 'tiramisu.jpg';
+                                                elseif (str_contains($productName, 'chocolate')) $fallbackImage = 'chocolate.jpg';
+                                                elseif (str_contains($productName, 'croissant')) $fallbackImage = 'croissants.jpg';
+                                                elseif (str_contains($productName, 'americano')) $fallbackImage = 'americano.jpg';
+                                                elseif (str_contains($productName, 'latte')) $fallbackImage = 'latte.jpg';
+                                                elseif (str_contains($productName, 'cappuccino')) $fallbackImage = 'cappuccino.jpg';
+                                                elseif (str_contains($productName, 'espresso')) $fallbackImage = 'espresso.jpg';
+                                                elseif (str_contains($productName, 'mocha')) $fallbackImage = 'mocha.jpg';
+                                                elseif (str_contains($productName, 'tea')) $fallbackImage = 'green-tea.jpg';
+                                            @endphp
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <img class="h-10 w-10 rounded-full object-cover" 
+                                                     src="{{ asset('images/products/' . str_replace('products/', '', $item->product->image)) }}" 
+                                                     alt="{{ $item->product->name }}"
+                                                     onerror="this.onerror=null; this.src='{{ asset('images/products/' . $fallbackImage) }}';">
+                                            </div>
+                                        @endif
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                @if($item->product)
+                                                    <a href="{{ route('admin.products.show', $item->product) }}" class="text-blue-600 hover:text-blue-900">
+                                                        {{ $item->product->name }}
+                                                    </a>
+                                                @else
+                                                    {{ $item->product_name }}
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ $item->product->category->name ?? 'No Category' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    Rp {{ number_format($item->price, 0, ',', '.') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ $item->quantity }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>

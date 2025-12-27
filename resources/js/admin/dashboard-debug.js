@@ -178,5 +178,4 @@ window.addEventListener('load', function() {
     }, 1000);
 });
 
-// Mengekspor DashboardDebug agar bisa digunakan sebagai module
 export default window.DashboardDebug;

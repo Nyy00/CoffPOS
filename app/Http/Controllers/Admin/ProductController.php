@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Models\Category;
-use App\Services\ImageService;
+use App\Services\SimpleImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -15,7 +15,7 @@ class ProductController extends Controller
 {
     protected $imageService;
 
-    public function __construct(ImageService $imageService)
+    public function __construct(SimpleImageService $imageService)
     {
         $this->imageService = $imageService;
     }
@@ -70,7 +70,7 @@ class ProductController extends Controller
         }
 
         $products = $query->paginate(15)->withQueryString();
-        $categories = Category::all();
+        $categories = Category::all()->pluck('name', 'id');
 
         return view('admin.products.index', compact('products', 'categories'));
     }
@@ -80,7 +80,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::all()->pluck('name', 'id');
         return view('admin.products.create', compact('categories'));
     }
 
@@ -96,14 +96,7 @@ class ProductController extends Controller
             try {
                 $uploadResult = $this->imageService->upload(
                     $request->file('image'), 
-                    'products',
-                    [
-                        'resize' => ['width' => 800, 'height' => 800, 'maintain_aspect_ratio' => true],
-                        'optimize' => true,
-                        'quality' => 85,
-                        'generate_thumbnails' => true,
-                        'thumbnail_sizes' => ['thumbnail', 'small', 'medium']
-                    ]
+                    'products'
                 );
                 $validated['image'] = $uploadResult['path'];
             } catch (\Exception $e) {
@@ -114,6 +107,11 @@ class ProductController extends Controller
         }
 
         $validated['is_available'] = $request->has('is_available');
+        
+        // Set default cost if not provided (70% of price)
+        if (!isset($validated['cost']) || $validated['cost'] === null) {
+            $validated['cost'] = $validated['price'] * 0.7;
+        }
 
         Product::create($validated);
 
@@ -148,7 +146,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Category::all();
+        $categories = Category::all()->pluck('name', 'id');
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
@@ -169,14 +167,7 @@ class ProductController extends Controller
 
                 $uploadResult = $this->imageService->upload(
                     $request->file('image'), 
-                    'products',
-                    [
-                        'resize' => ['width' => 800, 'height' => 800, 'maintain_aspect_ratio' => true],
-                        'optimize' => true,
-                        'quality' => 85,
-                        'generate_thumbnails' => true,
-                        'thumbnail_sizes' => ['thumbnail', 'small', 'medium']
-                    ]
+                    'products'
                 );
                 $validated['image'] = $uploadResult['path'];
             } catch (\Exception $e) {
@@ -185,8 +176,6 @@ class ProductController extends Controller
                     ->with('error', 'Image upload failed: ' . $e->getMessage());
             }
         }
-
-        $validated['is_available'] = $request->has('is_available');
 
         $product->update($validated);
 
@@ -199,21 +188,28 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Check if product has transaction items
-        if ($product->transactionItems()->exists()) {
+        try {
+            // Check if product has transaction items
+            if ($product->transactionItems()->exists()) {
+                return redirect()->route('admin.products.index')
+                    ->with('error', 'Cannot delete product. It has transaction history.');
+            }
+
+            // Delete image if exists
+            if ($product->image) {
+                $this->imageService->delete($product->image);
+            }
+
+            $product->delete();
+
             return redirect()->route('admin.products.index')
-                ->with('error', 'Cannot delete product. It has transaction history.');
+                ->with('success', 'Product deleted successfully.');
+                
+        } catch (\Exception $e) {
+            \Log::error('Product deletion failed: ' . $e->getMessage());
+            return redirect()->route('admin.products.index')
+                ->with('error', 'Failed to delete product: ' . $e->getMessage());
         }
-
-        // Delete image if exists
-        if ($product->image) {
-            $this->imageService->delete($product->image);
-        }
-
-        $product->delete();
-
-        return redirect()->route('admin.products.index')
-            ->with('success', 'Product deleted successfully.');
     }
 
     /**
@@ -227,16 +223,106 @@ class ProductController extends Controller
             $search = $request->q;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhereHas('category', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by availability (for admin search)
+        if ($request->filled('available_only') && $request->available_only) {
+            $query->where('is_available', true)->where('stock', '>', 0);
+        }
+
+        // Pagination for search results
+        $perPage = $request->get('per_page', 10);
+        $products = $query->orderBy('name')
+            ->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $products->items(),
+            'pagination' => [
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'per_page' => $products->perPage(),
+                'total' => $products->total(),
+                'has_more' => $products->hasMorePages()
+            ]
+        ]);
+    }
+
+    /**
+     * API endpoint for advanced product filtering
+     */
+    public function filter(Request $request)
+    {
+        $query = Product::with('category');
+
+        // Category filter
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Availability filter
+        if ($request->filled('is_available')) {
+            $query->where('is_available', $request->boolean('is_available'));
+        }
+
+        // Stock level filter
+        if ($request->filled('stock_min')) {
+            $query->where('stock', '>=', $request->stock_min);
+        }
+        if ($request->filled('stock_max')) {
+            $query->where('stock', '<=', $request->stock_max);
+        }
+
+        // Price range filter
+        if ($request->filled('price_min')) {
+            $query->where('price', '>=', $request->price_min);
+        }
+        if ($request->filled('price_max')) {
+            $query->where('price', '<=', $request->price_max);
+        }
+
+        // Search query
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
-        $products = $query->where('is_available', true)
-            ->where('stock', '>', 0)
-            ->limit(10)
-            ->get();
+        // Sorting
+        $sortBy = $request->get('sort_by', 'name');
+        $sortOrder = $request->get('sort_order', 'asc');
+        $allowedSorts = ['name', 'price', 'stock', 'created_at'];
+        
+        if (in_array($sortBy, $allowedSorts)) {
+            $query->orderBy($sortBy, $sortOrder);
+        }
 
-        return response()->json($products);
+        $perPage = $request->get('per_page', 15);
+        $products = $query->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $products->items(),
+            'pagination' => [
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'per_page' => $products->perPage(),
+                'total' => $products->total(),
+                'from' => $products->firstItem(),
+                'to' => $products->lastItem()
+            ],
+            'filters_applied' => $request->only([
+                'category_id', 'is_available', 'stock_min', 'stock_max', 
+                'price_min', 'price_max', 'search', 'sort_by', 'sort_order'
+            ])
+        ]);
     }
 
     /**

@@ -111,16 +111,10 @@
                         <div class="flex items-center space-x-4">
                             <div class="flex-1">
                                 <label class="flex items-center">
-                                    <input type="checkbox"
-                                           name="is_available"
-                                           value="1"
-                                           {{ $product->is_available ? 'checked' : '' }}
-                                           class="rounded border-gray-300 text-blue-600 shadow-sm
-                                                  focus:border-blue-300 focus:ring focus:ring-blue-200
-                                                  focus:ring-opacity-50">
-                                    <span class="ml-2 text-sm text-gray-700">
-                                        Available for sale
-                                    </span>
+                                    <!-- Hidden input to ensure false value is sent when checkbox is unchecked -->
+                                    <input type="hidden" name="is_available" value="0">
+                                    <input type="checkbox" name="is_available" value="1" {{ $product->is_available ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                    <span class="ml-2 text-sm text-gray-700">Available for sale</span>
                                 </label>
                             </div>
                         </div>
@@ -185,7 +179,7 @@
                         name="image" 
                         label="Product Image"
                         accept="image/*"
-                        :current-image="$product->image ? Storage::url($product->image) : ''"
+                        :current-image="$product->image ? asset('images/products/' . str_replace('products/', '', $product->image)) : ''"
                     />
                     <p class="mt-2 text-sm text-gray-500">
                         Upload a new image to replace the current one, or leave empty to keep the existing image.

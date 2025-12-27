@@ -25,23 +25,18 @@ Route::get('/dashboard', function () {
     $user = auth()->user();
     
     if ($user->isAdmin() || $user->isManager()) {
-        return view('admin.dashboard');
+        return redirect()->route('admin.dashboard');
     } elseif ($user->isCashier()) {
-        return redirect()->route('pos.index');
+        return redirect()->route('cashier.pos.index');
     }
     
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// POS Route (for cashier)
-Route::middleware(['auth', 'role:cashier,admin'])->group(function () {
-    Route::get('/pos', function () {
-        return view('cashier.pos');
-    })->name('pos.index');
-});
+// POS routes are defined in routes/cashier.php
 
 // Admin Routes
-Route::middleware(['auth', 'role:admin,manager'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin,manager', 'manager.access'])->prefix('admin')->name('admin.')->group(function () {
     require __DIR__.'/admin.php';
 });
 
@@ -56,4 +51,31 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Debug routes
+require __DIR__.'/debug.php';
+
 require __DIR__.'/auth.php';
+
+// Simple storage route for specific files (fallback when symlink fails)
+Route::get('/storage/logo.png', function () {
+    $file = storage_path('app/public/logo.png');
+    if (!file_exists($file)) {
+        abort(404);
+    }
+    return response()->file($file, [
+        'Content-Type' => 'image/png',
+        'Cache-Control' => 'public, max-age=31536000',
+    ]);
+})->name('storage.logo');
+
+Route::get('/storage/products/{filename}', function ($filename) {
+    $file = storage_path('app/public/products/' . $filename);
+    if (!file_exists($file)) {
+        abort(404);
+    }
+    $mimeType = mime_content_type($file);
+    return response()->file($file, [
+        'Content-Type' => $mimeType,
+        'Cache-Control' => 'public, max-age=31536000',
+    ]);
+})->where('filename', '[A-Za-z0-9\-_\.]+')->name('storage.products');

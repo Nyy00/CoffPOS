@@ -57,6 +57,7 @@
 function previewImage(input, previewId) {
     const preview = document.getElementById(previewId);
     const file = input.files[0];
+    
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
