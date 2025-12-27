@@ -1,11 +1,13 @@
 /**
  * Dashboard Chart Debugging Helper
- * Gunakan di browser console untuk debugging
+ * File ini digunakan untuk membantu proses debugging chart pada dashboard
+ * melalui browser console (DevTools).
  */
 
 window.DashboardDebug = {
     /**
-     * Check if Chart.js is loaded
+     * Mengecek apakah library Chart.js sudah berhasil dimuat
+     * dan menampilkan versinya jika tersedia
      */
     checkChartJs: function() {
         if (typeof Chart !== 'undefined') {
@@ -17,7 +19,8 @@ window.DashboardDebug = {
     },
 
     /**
-     * Check chart data
+     * Menampilkan seluruh data chart yang tersedia
+     * dari variabel global window.chartDataGlobal
      */
     checkData: function() {
         console.log('📊 Chart Data:');
@@ -25,7 +28,9 @@ window.DashboardDebug = {
     },
 
     /**
-     * Check specific chart data
+     * Mengecek data chart berdasarkan tipe tertentu
+     * Contoh: revenue, topProducts, dll
+     * @param {string} type - tipe data chart
      */
     checkChartData: function(type) {
         const data = window.chartDataGlobal?.[type];
@@ -38,19 +43,24 @@ window.DashboardDebug = {
     },
 
     /**
-     * Check canvas elements
+     * Mengecek semua elemen <canvas> yang ada di halaman
+     * Digunakan untuk memastikan canvas chart tersedia
      */
     checkCanvases: function() {
         const canvases = document.querySelectorAll('canvas');
         console.log(`Found ${canvases.length} canvas elements:`, canvases);
         
+        // Menampilkan detail setiap canvas
         canvases.forEach((canvas, index) => {
-            console.log(`  Canvas ${index + 1}: id="${canvas.id}", width=${canvas.width}, height=${canvas.height}`);
+            console.log(
+                `Canvas ${index + 1}: id="${canvas.id}", width=${canvas.width}, height=${canvas.height}`
+            );
         });
     },
 
     /**
-     * Get all active charts
+     * Menampilkan semua instance chart yang sedang aktif
+     * Berguna untuk debugging chart ganda atau memory leak
      */
     getActiveCharts: function() {
         if (window.Chart && window.Chart.instances) {
@@ -63,7 +73,8 @@ window.DashboardDebug = {
     },
 
     /**
-     * Test data format
+     * Menguji format data chart (khusus contoh data revenue)
+     * Digunakan untuk memastikan struktur data sesuai
      */
     testDataFormat: function() {
         const sampleRevenue = window.chartDataGlobal?.revenue?.[0];
@@ -77,7 +88,8 @@ window.DashboardDebug = {
     },
 
     /**
-     * Full dashboard health check
+     * Menjalankan pengecekan kesehatan dashboard secara keseluruhan
+     * Meliputi Chart.js, canvas, data, dan format data
      */
     healthCheck: function() {
         console.log('🏥 Dashboard Health Check:');
@@ -99,12 +111,13 @@ window.DashboardDebug = {
     },
 
     /**
-     * Reload charts with new data
+     * Memuat ulang seluruh chart pada dashboard
+     * Digunakan ketika data berubah atau perlu refresh chart
      */
     reloadCharts: async function() {
         console.log('🔄 Reloading charts...');
         
-        // Check if reload function exists
+        // Mengecek apakah dashboard chart manager tersedia
         if (window.DashboardCharts && window.DashboardCharts.destroyAllCharts) {
             window.DashboardCharts.destroyAllCharts();
             await window.DashboardCharts.initializeCharts();
@@ -115,7 +128,8 @@ window.DashboardDebug = {
     },
 
     /**
-     * Export chart data as JSON
+     * Mengekspor data chart dalam format JSON
+     * Berguna untuk debugging atau dokumentasi
      */
     exportData: function() {
         const data = window.chartDataGlobal;
@@ -126,34 +140,43 @@ window.DashboardDebug = {
     },
 
     /**
-     * Help menu
+     * Menampilkan daftar perintah debugging yang tersedia
+     * di browser console
      */
     help: function() {
         console.clear();
-        console.log('%c📊 Dashboard Debug Commands', 'font-size: 16px; font-weight: bold; color: #3B82F6;');
+        console.log(
+            '%c📊 Dashboard Debug Commands',
+            'font-size: 16px; font-weight: bold; color: #3B82F6;'
+        );
         console.log('');
         console.log('Available commands:');
-        console.log('  • DashboardDebug.checkChartJs()      - Check if Chart.js is loaded');
-        console.log('  • DashboardDebug.checkData()         - Display all chart data');
-        console.log('  • DashboardDebug.checkChartData(type) - Check specific chart data (revenue, topProducts, etc)');
-        console.log('  • DashboardDebug.checkCanvases()     - List all canvas elements');
-        console.log('  • DashboardDebug.getActiveCharts()   - Get active Chart instances');
-        console.log('  • DashboardDebug.testDataFormat()    - Check data format');
-        console.log('  • DashboardDebug.healthCheck()       - Full health check');
-        console.log('  • DashboardDebug.reloadCharts()      - Reload charts');
-        console.log('  • DashboardDebug.exportData()        - Export data as JSON');
-        console.log('  • DashboardDebug.help()              - Show this help');
+        console.log('  • DashboardDebug.checkChartJs()       - Check if Chart.js is loaded');
+        console.log('  • DashboardDebug.checkData()          - Display all chart data');
+        console.log('  • DashboardDebug.checkChartData(type) - Check specific chart data');
+        console.log('  • DashboardDebug.checkCanvases()      - List all canvas elements');
+        console.log('  • DashboardDebug.getActiveCharts()    - Get active Chart instances');
+        console.log('  • DashboardDebug.testDataFormat()     - Check data format');
+        console.log('  • DashboardDebug.healthCheck()        - Full health check');
+        console.log('  • DashboardDebug.reloadCharts()       - Reload charts');
+        console.log('  • DashboardDebug.exportData()         - Export data as JSON');
+        console.log('  • DashboardDebug.help()               - Show this help');
         console.log('');
         console.log('Example: DashboardDebug.checkChartData("revenue")');
     }
 };
 
-// Run health check on page load
+// Event listener yang dijalankan setelah halaman selesai dimuat
+// Menampilkan tips penggunaan debugging di console
 window.addEventListener('load', function() {
     setTimeout(() => {
         console.log('');
-        console.log('%c💡 Tip: Type DashboardDebug.help() to see debug commands', 'color: #10B981; font-style: italic;');
+        console.log(
+            '%c💡 Tip: Type DashboardDebug.help() to see debug commands',
+            'color: #10B981; font-style: italic;'
+        );
     }, 1000);
 });
 
+// Mengekspor DashboardDebug agar bisa digunakan sebagai module
 export default window.DashboardDebug;
