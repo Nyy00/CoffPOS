@@ -54,6 +54,18 @@ Route::middleware('auth')->group(function () {
 // Debug routes
 require __DIR__.'/debug.php';
 
+// Google OAuth debug route (remove after testing)
+Route::get('/debug/google-oauth', function () {
+    return response()->json([
+        'google_client_id' => config('services.google.client_id') ? 'Set (' . substr(config('services.google.client_id'), 0, 10) . '...)' : 'Not Set',
+        'google_client_secret' => config('services.google.client_secret') ? 'Set' : 'Not Set',
+        'google_redirect_url' => config('services.google.redirect'),
+        'app_url' => config('app.url'),
+        'app_env' => config('app.env'),
+        'socialite_installed' => class_exists('Laravel\Socialite\Facades\Socialite'),
+    ]);
+})->middleware('auth');
+
 require __DIR__.'/auth.php';
 
 // Simple storage route for specific files (fallback when symlink fails)
