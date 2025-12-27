@@ -11,6 +11,8 @@ class POSSystem {
         this.currentPaymentMethod = 'cash';
         this.currentTransaction = null;
         
+        console.log('POSSystem initialized with currentPaymentMethod:', this.currentPaymentMethod);
+        
         this.init();
     }
     
@@ -582,12 +584,16 @@ class POSSystem {
         if (modalTax) modalTax.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(tax)}`;
         if (modalDiscount) modalDiscount.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(discount)}`;
         if (modalTotal) modalTotal.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(total)}`;
-        if (modalPaymentMethod) modalPaymentMethod.textContent = this.currentPaymentMethod.charAt(0).toUpperCase() + this.currentPaymentMethod.slice(1);
+        
+        // Ensure currentPaymentMethod has a default value
+        const paymentMethod = this.currentPaymentMethod || 'cash';
+        console.log('updatePaymentModalContent - currentPaymentMethod:', this.currentPaymentMethod, 'using:', paymentMethod);
+        if (modalPaymentMethod) modalPaymentMethod.textContent = paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1);
         
         // Update cash details if cash payment
         const modalCashDetails = document.getElementById('modal-cash-details');
         if (modalCashDetails) {
-            if (this.currentPaymentMethod === 'cash') {
+            if (paymentMethod === 'cash') {
                 modalCashDetails.style.display = 'block';
                 
                 const paymentAmount = parseFloat(document.getElementById('payment-amount').value) || 0;
@@ -625,7 +631,7 @@ class POSSystem {
         // Show/hide digital payment info for sandbox
         const modalDigitalInfo = document.getElementById('modal-digital-info');
         if (modalDigitalInfo) {
-            if (this.currentPaymentMethod === 'digital') {
+            if (paymentMethod === 'digital') {
                 modalDigitalInfo.style.display = 'block';
             } else {
                 modalDigitalInfo.style.display = 'none';
