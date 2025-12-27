@@ -82,6 +82,21 @@ Route::get('/debug/session', function () {
     ]);
 });
 
+// Test manual login (remove after testing)
+Route::get('/debug/test-login', function () {
+    $user = \App\Models\User::first();
+    if ($user) {
+        \Auth::login($user);
+        return response()->json([
+            'message' => 'Manual login successful',
+            'user' => $user->only(['id', 'name', 'email', 'role']),
+            'auth_check' => auth()->check(),
+            'session_id' => session()->getId(),
+        ]);
+    }
+    return response()->json(['message' => 'No user found']);
+});
+
 require __DIR__.'/auth.php';
 
 // Simple storage route for specific files (fallback when symlink fails)
