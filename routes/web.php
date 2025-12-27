@@ -63,8 +63,24 @@ Route::get('/debug/google-oauth', function () {
         'app_url' => config('app.url'),
         'app_env' => config('app.env'),
         'socialite_installed' => class_exists('Laravel\Socialite\Facades\Socialite'),
+        'session_driver' => config('session.driver'),
+        'session_lifetime' => config('session.lifetime'),
+        'auth_user' => auth()->check() ? auth()->user()->only(['id', 'name', 'email', 'role']) : null,
+        'database_connection' => config('database.default'),
+        'session_table_exists' => \Schema::hasTable('sessions'),
     ]);
-})->middleware('auth');
+});
+
+// Debug session route
+Route::get('/debug/session', function () {
+    return response()->json([
+        'session_id' => session()->getId(),
+        'session_data' => session()->all(),
+        'auth_check' => auth()->check(),
+        'auth_user' => auth()->user() ? auth()->user()->only(['id', 'name', 'email', 'role']) : null,
+        'csrf_token' => csrf_token(),
+    ]);
+});
 
 require __DIR__.'/auth.php';
 
