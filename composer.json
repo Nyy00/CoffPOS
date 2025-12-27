@@ -10,9 +10,15 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "intervention/image": "^3.11",
-        "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1"
+        "barryvdh/laravel-dompdf": "^3.1",
+        "laravel/framework": "^11.0",
+        "laravel/tinker": "^2.10.1",
+        "midtrans/midtrans-php": "^2.6",
+        "symfony/clock": "^6.0|^7.0",
+        "symfony/css-selector": "^6.0|^7.0",
+        "symfony/event-dispatcher": "^6.0|^7.0",
+        "symfony/string": "^6.0|^7.0",
+        "symfony/translation": "^6.0|^7.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -21,9 +27,7 @@
         "laravel/pint": "^1.24",
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.6",
-        "pestphp/pest": "^4.1",
-        "pestphp/pest-plugin-laravel": "^4.0"
+        "nunomaduro/collision": "^8.6"
     },
     "autoload": {
         "psr-4": {
@@ -42,9 +46,10 @@
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
+            "@php artisan storage:link",
+            "@php -r \"if (!file_exists('database/database.sqlite')) { touch('database/database.sqlite'); }\"",
             "@php artisan migrate --force",
-            "npm install",
-            "npm run build"
+            "@php artisan db:seed --force"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
@@ -54,9 +59,23 @@
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
+        "seed": [
+            "@php artisan db:seed --force"
+        ],
+        "fresh-seed": [
+            "@php artisan migrate:fresh --seed --force"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan migrate --force",
+            "@php artisan db:seed --force"
+        ],
+        "post-install-cmd": [
+            "@php artisan storage:link --force || echo 'Storage link failed, will use route fallback'",
+            "@php -r \"if (!file_exists('database/database.sqlite')) { touch('database/database.sqlite'); }\"",
+            "@php artisan migrate --force || echo 'Migration failed'",
+            "@php artisan db:seed --force || echo 'Seeding failed'"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

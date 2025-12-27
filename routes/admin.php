@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\SettingsController;
+// use App\Http\Controllers\Admin\SettingsController; // Commented out - controller doesn't exist
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,14 +23,20 @@ use Illuminate\Support\Facades\Route;
 
 // Dashboard Routes
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
-Route::get('/dashboard/charts/{type}', [DashboardController::class, 'getChartData'])->name('dashboard.charts');
-Route::get('/dashboard/recent-activities', [DashboardController::class, 'getRecentActivities'])->name('dashboard.recent-activities');
+Route::controller(DashboardController::class)->prefix('dashboard')->name('dashboard.')->group(function () {
+    Route::get('stats', 'getStats')->name('stats');
+    Route::get('charts/{type}', 'getChartData')->name('charts');
+    Route::get('recent-activities', 'getRecentActivities')->name('recent-activities');
+    Route::get('top-customers', 'getTopCustomers')->name('top-customers');
+    Route::get('low-stock-alerts', 'getLowStockAlerts')->name('low-stock-alerts');
+    Route::get('performance-metrics', 'getPerformanceMetrics')->name('performance-metrics');
+});
 
 // Products Management
 Route::resource('products', ProductController::class);
 Route::controller(ProductController::class)->prefix('products')->name('products.')->group(function () {
     Route::get('search/api', 'search')->name('search.api');
+    Route::get('filter', 'filter')->name('filter.api');
     Route::post('{product}/update-stock', 'updateStock')->name('update-stock');
     Route::get('export/csv', 'export')->name('export');
     Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
@@ -54,6 +60,7 @@ Route::controller(CategoryController::class)->prefix('categories')->name('catego
 Route::resource('customers', CustomerController::class);
 Route::controller(CustomerController::class)->prefix('customers')->name('customers.')->group(function () {
     Route::get('search/api', 'search')->name('search.api');
+    Route::get('filter', 'filter')->name('filter.api');
     Route::get('{customer}/transactions', 'getTransactionHistory')->name('transactions');
     Route::post('{customer}/update-points', 'updatePoints')->name('update-points');
     Route::get('export/csv', 'export')->name('export');
@@ -66,10 +73,14 @@ Route::controller(CustomerController::class)->prefix('customers')->name('custome
 // Expenses Management
 Route::resource('expenses', ExpenseController::class);
 Route::controller(ExpenseController::class)->prefix('expenses')->name('expenses.')->group(function () {
+    Route::get('search/api', 'search')->name('search.api');
+    Route::get('filter', 'filter')->name('filter.api');
     Route::delete('{expense}/remove-receipt', 'removeReceipt')->name('remove-receipt');
     Route::get('stats/api', 'getStats')->name('stats.api');
+    Route::get('dashboard/api', 'getDashboardData')->name('dashboard.api');
     Route::get('export/csv', 'export')->name('export');
     Route::get('chart-data/api', 'getChartData')->name('chart-data.api');
+    Route::get('profit-loss/api', 'getProfitLossData')->name('profit-loss.api');
     Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
     Route::get('categories/stats', 'getCategoryStats')->name('categories.stats');
     Route::get('monthly/comparison', 'getMonthlyComparison')->name('monthly.comparison');
@@ -82,6 +93,7 @@ Route::controller(TransactionController::class)->prefix('transactions')->name('t
     Route::post('{transaction}/void', 'void')->name('void');
     Route::get('export/csv', 'export')->name('export');
     Route::get('search/api', 'search')->name('search.api');
+    Route::get('filter', 'filter')->name('filter.api');
     Route::get('stats/api', 'getStats')->name('stats.api');
     Route::post('{transaction}/reprint-receipt', 'reprintReceipt')->name('reprint-receipt');
     Route::get('daily/summary', 'getDailySummary')->name('daily.summary');
@@ -107,21 +119,20 @@ Route::middleware('role:admin')->group(function () {
 // Reports Routes
 Route::controller(ReportController::class)->prefix('reports')->name('reports.')->group(function () {
     Route::get('/', 'index')->name('index');
-    Route::get('sales-daily', 'dailySales')->name('sales.daily');
-    Route::get('sales-monthly', 'monthlySales')->name('sales.monthly');
+    Route::get('daily', 'daily')->name('daily');
+    Route::get('monthly', 'monthly')->name('monthly');
     Route::get('products', 'products')->name('products');
     Route::get('stock', 'stock')->name('stock');
     Route::get('profit-loss', 'profitLoss')->name('profit-loss');
     Route::get('customers', 'customers')->name('customers');
     Route::get('expenses', 'expenses')->name('expenses');
     Route::get('cashier-performance', 'cashierPerformance')->name('cashier-performance');
-    Route::post('generate-pdf', 'generatePDF')->name('generate-pdf');
-    Route::get('export/{type}', 'export')->name('export');
     Route::get('custom', 'customReport')->name('custom');
-    Route::post('custom/generate', 'generateCustomReport')->name('custom.generate');
+    Route::get('data/{type}', 'getReportData')->name('data');
 });
 
-// Settings Routes (Admin Only)
+// Settings Routes (Admin Only) - Commented out until SettingsController is created
+/*
 Route::middleware('role:admin')->controller(SettingsController::class)->prefix('settings')->name('settings.')->group(function () {
     Route::get('/', 'index')->name('index');
     Route::post('update', 'update')->name('update');
@@ -132,6 +143,7 @@ Route::middleware('role:admin')->controller(SettingsController::class)->prefix('
     Route::get('logs', 'getLogs')->name('logs');
     Route::post('maintenance-mode', 'toggleMaintenanceMode')->name('maintenance-mode');
 });
+*/
 
 // Bulk Operations Routes
 Route::prefix('bulk')->name('bulk.')->group(function () {
@@ -150,7 +162,8 @@ Route::prefix('quick')->name('quick.')->group(function () {
     Route::post('expense/add', [ExpenseController::class, 'quickAdd'])->name('expense.add');
 });
 
-// Import/Export Routes
+// Import/Export Routes - Commented out until ImportExportController is created
+/*
 Route::prefix('import-export')->name('import-export.')->group(function () {
     Route::get('/', [ImportExportController::class, 'index'])->name('index');
     Route::post('products/import', [ImportExportController::class, 'importProducts'])->name('products.import');
@@ -158,3 +171,4 @@ Route::prefix('import-export')->name('import-export.')->group(function () {
     Route::get('template/{type}', [ImportExportController::class, 'downloadTemplate'])->name('template');
     Route::get('export-all', [ImportExportController::class, 'exportAll'])->name('export-all');
 });
+*/

@@ -18,20 +18,66 @@ use Illuminate\Support\Facades\Route;
 // POS System Routes
 Route::controller(POSController::class)->prefix('pos')->name('pos.')->group(function () {
     Route::get('/', 'index')->name('index');
+    
+    // Product search and management
     Route::get('products/search', 'searchProducts')->name('products.search');
-    Route::get('products/barcode/{barcode}', 'getProductByBarcode')->name('products.barcode');
+    
+    // Cart management
     Route::post('cart/add', 'addToCart')->name('cart.add');
     Route::post('cart/update', 'updateCart')->name('cart.update');
-    Route::delete('cart/remove', 'removeFromCart')->name('cart.remove');
-    Route::delete('cart/clear', 'clearCart')->name('cart.clear');
+    Route::post('cart/remove', 'removeFromCart')->name('cart.remove');
+    Route::post('cart/clear', 'clearCart')->name('cart.clear');
+    Route::post('cart/force-clear', 'forceClearCart')->name('cart.force-clear');
     Route::get('cart/items', 'getCartItems')->name('cart.items');
     Route::get('cart/total', 'getCartTotal')->name('cart.total');
-    Route::post('transaction/process', 'processTransaction')->name('transaction.process');
-    Route::post('transaction/hold', 'holdTransaction')->name('transaction.hold');
-    Route::get('transaction/held', 'getHeldTransactions')->name('transaction.held');
-    Route::post('transaction/resume/{id}', 'resumeTransaction')->name('transaction.resume');
+    
+    // Transaction processing
+    Route::post('process-transaction', 'processTransaction')->name('transaction.process');
+    
+    // Midtrans integration
+    Route::post('midtrans/create-token', 'createMidtransToken')->name('midtrans.create-token');
+    Route::post('midtrans/process-payment', 'processMidtransPayment')->name('midtrans.process-payment');
+    Route::post('midtrans/notification', 'handleMidtransNotification')->name('midtrans.notification');
+    
+    // Test Midtrans configuration
+    Route::get('midtrans/test', function() {
+        return response()->json([
+            'server_key' => config('midtrans.server_key') ? 'Set (' . substr(config('midtrans.server_key'), 0, 10) . '...)' : 'Not set',
+            'client_key' => config('midtrans.client_key') ? 'Set (' . substr(config('midtrans.client_key'), 0, 10) . '...)' : 'Not set',
+            'is_production' => config('midtrans.is_production'),
+            'is_sanitized' => config('midtrans.is_sanitized'),
+            'is_3ds' => config('midtrans.is_3ds'),
+        ]);
+    })->name('midtrans.test');
+    
+    // Test route
+    Route::get('test-auth', function() {
+        return response()->json([
+            'authenticated' => auth()->check(),
+            'user' => auth()->user(),
+            'role' => auth()->user()->role ?? null
+        ]);
+    })->name('test.auth');
+    Route::post('calculate-totals', 'calculateTotals')->name('calculate.totals');
+    
+    // Hold transactions
+    Route::post('hold-transaction', 'holdTransaction')->name('transaction.hold');
+    Route::get('held-transactions', 'getHeldTransactions')->name('transaction.held');
+    Route::post('resume-transaction/{holdId}', 'resumeTransaction')->name('transaction.resume');
+    Route::delete('held-transaction/{holdId}', 'deleteHeldTransaction')->name('transaction.held.delete');
+    
+    // Receipt management
     Route::get('receipt/{transaction}', 'printReceipt')->name('receipt.print');
     Route::get('receipt/{transaction}/preview', 'previewReceipt')->name('receipt.preview');
+    Route::get('receipt-data/{transactionId}', 'getReceiptData')->name('receipt.data');
+    
+    // Customer management for POS
+    Route::get('customers/search', 'searchCustomers')->name('customers.search');
+    Route::post('customers/quick-add', 'quickAddCustomer')->name('customers.quick-add');
+    Route::get('customer/{customerId}/loyalty', 'getCustomerLoyalty')->name('customer.loyalty');
+    
+    // Daily summary
+    Route::get('daily-summary', 'getDailySummary')->name('daily.summary');
 });
 
 // Cashier Transaction Management
@@ -53,7 +99,8 @@ Route::controller(CustomerController::class)->prefix('customers')->name('custome
     Route::post('{customer}/apply-points', 'applyLoyaltyPoints')->name('apply-points');
 });
 
-// Shift Management
+// Shift Management - Commented out until ShiftController is created
+/*
 Route::prefix('shift')->name('shift.')->group(function () {
     Route::post('start', [ShiftController::class, 'startShift'])->name('start');
     Route::post('end', [ShiftController::class, 'endShift'])->name('end');
@@ -61,7 +108,7 @@ Route::prefix('shift')->name('shift.')->group(function () {
     Route::get('history', [ShiftController::class, 'getShiftHistory'])->name('history');
 });
 
-// Cash Drawer Management
+// Cash Drawer Management - Commented out until CashDrawerController is created
 Route::prefix('cash-drawer')->name('cash-drawer.')->group(function () {
     Route::post('open', [CashDrawerController::class, 'openDrawer'])->name('open');
     Route::post('close', [CashDrawerController::class, 'closeDrawer'])->name('close');
@@ -69,7 +116,7 @@ Route::prefix('cash-drawer')->name('cash-drawer.')->group(function () {
     Route::post('count', [CashDrawerController::class, 'recordCashCount'])->name('count');
 });
 
-// Quick Reports (Cashier Level)
+// Quick Reports (Cashier Level) - Commented out until CashierReportController is created
 Route::prefix('reports')->name('reports.')->group(function () {
     Route::get('daily-sales', [CashierReportController::class, 'dailySales'])->name('daily-sales');
     Route::get('shift-summary', [CashierReportController::class, 'shiftSummary'])->name('shift-summary');
@@ -77,9 +124,10 @@ Route::prefix('reports')->name('reports.')->group(function () {
     Route::get('top-products', [CashierReportController::class, 'topProducts'])->name('top-products');
 });
 
-// Notifications (Cashier Specific)
+// Notifications (Cashier Specific) - Commented out until NotificationController is created
 Route::prefix('notifications')->name('notifications.')->group(function () {
     Route::get('/', [NotificationController::class, 'getCashierNotifications'])->name('index');
     Route::post('{id}/mark-read', [NotificationController::class, 'markAsRead'])->name('mark-read');
     Route::get('low-stock', [NotificationController::class, 'getLowStockNotifications'])->name('low-stock');
 });
+*/

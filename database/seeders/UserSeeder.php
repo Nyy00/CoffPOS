@@ -12,28 +12,37 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\User::create([
-            'name' => 'Admin CoffPOS',
-            'email' => 'admin@coffpos.com',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-            'phone' => '081234567890',
-        ]);
+        // Create admin user if not exists
+        \App\Models\User::firstOrCreate(
+            ['email' => 'admin@coffpos.com'],
+            [
+                'name' => 'Admin CoffPOS',
+                'password' => bcrypt('password'),
+                'role' => 'admin',
+                'phone' => '081234567890',
+            ]
+        );
 
-        \App\Models\User::create([
-            'name' => 'Manager CoffPOS',
-            'email' => 'manager@coffpos.com',
-            'password' => bcrypt('password'),
-            'role' => 'manager',
-            'phone' => '081234567891',
-        ]);
+        // Create manager user if not exists
+        \App\Models\User::firstOrCreate(
+            ['email' => 'manager@coffpos.com'],
+            [
+                'name' => 'Manager CoffPOS',
+                'password' => bcrypt('password'),
+                'role' => 'manager',
+                'phone' => '081234567891',
+            ]
+        );
 
-        \App\Models\User::create([
-            'name' => 'Kasir 1',
-            'email' => 'cashier@coffpos.com',
-            'password' => bcrypt('password'),
-            'role' => 'cashier',
-            'phone' => '081234567892',
-        ]);
+        // Create cashier user if not exists
+        \App\Models\User::firstOrCreate(
+            ['email' => 'cashier@coffpos.com'],
+            [
+                'name' => 'Kasir 1',
+                'password' => bcrypt('password'),
+                'role' => 'cashier',
+                'phone' => '081234567892',
+            ]
+        );
     }
 }

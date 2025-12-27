@@ -60,11 +60,25 @@
 
                         {{-- Jika produk memiliki gambar --}}
                         @if($product->image)
-                            <img 
-                                src="{{ Storage::url($product->image) }}" 
-                                alt="{{ $product->name }}" 
-                                class="w-full h-full object-cover group-hover:scale-110 transition duration-300"
-                            >
+                            @php
+                                $fallbackImage = 'placeholder-product.png';
+                                $productName = strtolower($product->name);
+                                if (str_contains($productName, 'cheesecake')) $fallbackImage = 'cheesecake.jpg';
+                                elseif (str_contains($productName, 'sandwich')) $fallbackImage = 'sandwich.jpg';
+                                elseif (str_contains($productName, 'tiramisu')) $fallbackImage = 'tiramisu.jpg';
+                                elseif (str_contains($productName, 'chocolate')) $fallbackImage = 'chocolate.jpg';
+                                elseif (str_contains($productName, 'croissant')) $fallbackImage = 'croissants.jpg';
+                                elseif (str_contains($productName, 'americano')) $fallbackImage = 'americano.jpg';
+                                elseif (str_contains($productName, 'latte')) $fallbackImage = 'latte.jpg';
+                                elseif (str_contains($productName, 'cappuccino')) $fallbackImage = 'cappuccino.jpg';
+                                elseif (str_contains($productName, 'espresso')) $fallbackImage = 'espresso.jpg';
+                                elseif (str_contains($productName, 'mocha')) $fallbackImage = 'mocha.jpg';
+                                elseif (str_contains($productName, 'tea')) $fallbackImage = 'green-tea.jpg';
+                            @endphp
+                            <img src="{{ asset('images/products/' . str_replace('products/', '', $product->image)) }}" 
+                                 alt="{{ $product->name }}" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                                 onerror="this.onerror=null; this.src='{{ asset('images/products/' . $fallbackImage) }}';">
                         @else
                             {{-- Icon default jika tidak ada gambar --}}
                             <svg class="w-20 h-20 text-cream" fill="currentColor" viewBox="0 0 20 20">
@@ -127,5 +141,4 @@
         @endforelse
     </div>
 </section>
-
 @endsection

@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'manager.access' => \App\Http\Middleware\ManagerAccessMiddleware::class,
             'api.rate.limit' => \App\Http\Middleware\ApiRateLimitMiddleware::class,
         ]);
         

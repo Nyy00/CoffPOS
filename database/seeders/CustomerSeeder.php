@@ -37,7 +37,10 @@ class CustomerSeeder extends Seeder
         ];
 
         foreach ($customers as $customer) {
-            \App\Models\Customer::create($customer);
+            \App\Models\Customer::firstOrCreate(
+                ['email' => $customer['email']],
+                $customer
+            );
         }
     }
 }
