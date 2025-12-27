@@ -1,3 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@tailwind base;        /* Memuat reset CSS dan style dasar Tailwind */
+@tailwind components; /* Memuat komponen siap pakai (button, card, dll) */
+@tailwind utilities;  /* Memuat utility class (margin, padding, color, flex, dsb) */

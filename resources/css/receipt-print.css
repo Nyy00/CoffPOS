@@ -1,18 +1,24 @@
-/* Receipt Print Styles */
-
+/* =========================
+   RECEIPT PRINT STYLES
+   Digunakan saat halaman di-print
+========================= */
 @media print {
+
+  /* Reset tampilan khusus untuk printer */
   body {
     margin: 0;
     padding: 0;
     background: white;
-    font-family: 'Courier New', monospace;
+    font-family: 'Courier New', monospace; /* Font kasir/struk */
     font-size: 12px;
   }
 
+  /* Elemen yang tidak ikut tercetak */
   .no-print {
     display: none !important;
   }
 
+  /* Container utama struk (lebar kertas thermal 80mm) */
   .receipt-container {
     max-width: 80mm;
     margin: 0 auto;
@@ -20,6 +26,7 @@
     background: white;
   }
 
+  /* Header struk (nama toko, alamat, dll) */
   .receipt-header {
     text-align: center;
     margin-bottom: 10px;
@@ -27,23 +34,27 @@
     padding-bottom: 5px;
   }
 
+  /* Judul struk */
   .receipt-title {
     font-weight: bold;
     font-size: 14px;
   }
 
+  /* Informasi tambahan (tanggal, kasir, no transaksi) */
   .receipt-meta {
     font-size: 10px;
     color: #666;
     margin-top: 3px;
   }
 
+  /* Daftar item */
   .receipt-items {
     margin: 10px 0;
     border-bottom: 1px dashed #000;
     padding-bottom: 5px;
   }
 
+  /* Baris item */
   .receipt-item {
     display: flex;
     justify-content: space-between;
@@ -51,26 +62,31 @@
     font-size: 11px;
   }
 
+  /* Nama produk */
   .receipt-item-name {
     flex: 1;
   }
 
+  /* Jumlah produk */
   .receipt-item-qty {
     width: 40px;
     text-align: center;
   }
 
+  /* Harga produk */
   .receipt-item-price {
     width: 50px;
     text-align: right;
   }
 
+  /* Footer struk */
   .receipt-footer {
     margin-top: 10px;
     border-top: 1px dashed #000;
     padding-top: 5px;
   }
 
+  /* Total pembayaran */
   .receipt-total {
     font-weight: bold;
     display: flex;
@@ -79,27 +95,36 @@
     font-size: 12px;
   }
 
+  /* Pesan penutup */
   .receipt-thank-you {
     text-align: center;
     margin-top: 10px;
     font-size: 11px;
   }
 
+  /* Pengaturan tabel agar rapi saat cetak */
   table {
     width: 100%;
     border-collapse: collapse;
   }
 
+  /* Mencegah baris tabel terpotong halaman */
   tr {
     page-break-inside: avoid;
   }
 
+  /* Hilangkan underline link */
   a {
     text-decoration: none;
   }
 }
 
-/* Screen view styles */
+/* =========================
+   SCREEN VIEW STYLES
+   Tampilan struk di layar
+========================= */
+
+/* Container struk di layar */
 .receipt-container {
   max-width: 80mm;
   margin: 20px auto;
@@ -111,6 +136,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Header struk di layar */
 .receipt-header {
   text-align: center;
   margin-bottom: 15px;
@@ -118,24 +144,28 @@
   padding-bottom: 10px;
 }
 
+/* Judul struk di layar */
 .receipt-title {
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 5px;
 }
 
+/* Metadata struk */
 .receipt-meta {
   font-size: 11px;
   color: #666;
   margin: 3px 0;
 }
 
+/* Daftar item */
 .receipt-items {
   margin: 15px 0;
   border-bottom: 1px dashed #000;
   padding-bottom: 10px;
 }
 
+/* Baris item */
 .receipt-item {
   display: flex;
   justify-content: space-between;
@@ -143,26 +173,31 @@
   font-size: 12px;
 }
 
+/* Nama item */
 .receipt-item-name {
   flex: 1;
 }
 
+/* Qty item */
 .receipt-item-qty {
   width: 40px;
   text-align: center;
 }
 
+/* Harga item */
 .receipt-item-price {
   width: 60px;
   text-align: right;
 }
 
+/* Footer struk */
 .receipt-footer {
   margin-top: 15px;
   border-top: 1px dashed #000;
   padding-top: 10px;
 }
 
+/* Total harga */
 .receipt-total {
   font-weight: bold;
   display: flex;
@@ -171,6 +206,7 @@
   font-size: 13px;
 }
 
+/* Pesan terima kasih */
 .receipt-thank-you {
   text-align: center;
   margin-top: 15px;
@@ -178,11 +214,13 @@
   color: #666;
 }
 
+/* Wrapper tombol print */
 .print-button {
   margin-bottom: 20px;
   text-align: center;
 }
 
+/* Tombol print */
 .print-button button {
   padding: 8px 16px;
   background: #3b82f6;
@@ -193,6 +231,7 @@
   font-size: 14px;
 }
 
+/* Hover tombol print */
 .print-button button:hover {
   background: #2563eb;
 }
