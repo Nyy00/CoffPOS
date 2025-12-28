@@ -1,0 +1,1139 @@
+{
+	"info": {
+		"_postman_id": "coffpos-api-collection",
+		"name": "CoffPOS API Collection",
+		"description": "Complete API collection for CoffPOS - Modern Point of Sale System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "coffpos-team"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@coffpos.com\",\n    \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "Get Dashboard Stats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/dashboard/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"dashboard",
+								"stats"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Chart Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/dashboard/charts/sales?period=daily",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"dashboard",
+								"charts",
+								"sales"
+							],
+							"query": [
+								{
+									"key": "period",
+									"value": "daily"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "List Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/products?search=coffee&category_id=1&page=1&per_page=15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"products"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "coffee"
+								},
+								{
+									"key": "category_id",
+									"value": "1"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "15"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "category_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Cappuccino",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Coffee with steamed milk",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "18000",
+									"type": "text"
+								},
+								{
+									"key": "cost",
+									"value": "12600",
+									"type": "text"
+								},
+								{
+									"key": "stock",
+									"value": "30",
+									"type": "text"
+								},
+								{
+									"key": "min_stock",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "is_available",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"products"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Product Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/products/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"products",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Product Stock",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"stock\": 20,\n    \"action\": \"add\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/products/1/update-stock",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"products",
+								"1",
+								"update-stock"
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Products API",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/products/search/api?q=coffee&available_only=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"products",
+								"search",
+								"api"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "coffee"
+								},
+								{
+									"key": "available_only",
+									"value": "true"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "List Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"categories"
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Beverages",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Hot and cold beverages",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"categories"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "List Customers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"customers"
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"phone\": \"081234567890\",\n    \"email\": \"john@example.com\",\n    \"address\": \"Jakarta, Indonesia\",\n    \"points\": 0\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"customers"
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Customers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/customers/search/api?q=john",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"customers",
+								"search",
+								"api"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "john"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Customer Points",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"points\": 100,\n    \"action\": \"add\",\n    \"reason\": \"Birthday bonus\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/customers/1/update-points",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"customers",
+								"1",
+								"update-points"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "POS Operations",
+			"item": [
+				{
+					"name": "Get POS Interface",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cashier/pos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos"
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Products for POS",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/products/search?q=coffee&category_id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"products",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "coffee"
+								},
+								{
+									"key": "category_id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Cart Management",
+			"item": [
+				{
+					"name": "Add Item to Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": 1,\n    \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/cart/add",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"cart",
+								"add"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Cart Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": 1,\n    \"quantity\": 3\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/cart/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"cart",
+								"update"
+							]
+						}
+					}
+				},
+				{
+					"name": "Remove Item from Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/cart/remove",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"cart",
+								"remove"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Cart Items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/cart/items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"cart",
+								"items"
+							]
+						}
+					}
+				},
+				{
+					"name": "Clear Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/cart/clear",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"cart",
+								"clear"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Transaction Processing",
+			"item": [
+				{
+					"name": "Calculate Totals",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"discount_amount\": 5000,\n    \"discount_percent\": 0,\n    \"tax_percent\": 10,\n    \"loyalty_points_used\": 0,\n    \"customer_id\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/calculate-totals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"calculate-totals"
+							]
+						}
+					}
+				},
+				{
+					"name": "Process Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_id\": 1,\n    \"payment\": {\n        \"method\": \"cash\",\n        \"amount\": 50000,\n        \"reference\": null\n    },\n    \"discount_amount\": 0,\n    \"discount_percent\": 0,\n    \"tax_percent\": 10,\n    \"use_loyalty_points\": false,\n    \"loyalty_points_used\": 0,\n    \"notes\": \"Regular order\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/process-transaction",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"process-transaction"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Midtrans Integration",
+			"item": [
+				{
+					"name": "Create Midtrans Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/midtrans/create-token",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"midtrans",
+								"create-token"
+							]
+						}
+					}
+				},
+				{
+					"name": "Process Midtrans Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_id\": \"ORDER-20251226-001\",\n    \"transaction_status\": \"settlement\",\n    \"transaction_id\": \"midtrans-txn-123\",\n    \"payment_type\": \"qris\",\n    \"customer_id\": 1,\n    \"notes\": \"QRIS payment\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/midtrans/process-payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"midtrans",
+								"process-payment"
+							]
+						}
+					}
+				},
+				{
+					"name": "Test Midtrans Config",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/midtrans/test",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"midtrans",
+								"test"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Hold Transactions",
+			"item": [
+				{
+					"name": "Hold Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reason\": \"Customer stepped away\",\n    \"customer_name\": \"John Doe\",\n    \"discount_amount\": 0,\n    \"notes\": \"Will return in 10 minutes\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/hold-transaction",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"hold-transaction"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Held Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/held-transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"held-transactions"
+							]
+						}
+					}
+				},
+				{
+					"name": "Resume Held Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cashier/pos/resume-transaction/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cashier",
+								"pos",
+								"resume-transaction",
+								"1"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Expenses",
+			"item": [
+				{
+					"name": "List Expenses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/expenses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"expenses"
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Expense",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "category",
+									"value": "operational",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Office supplies",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "150000",
+									"type": "text"
+								},
+								{
+									"key": "expense_date",
+									"value": "2025-12-26",
+									"type": "text"
+								},
+								{
+									"key": "notes",
+									"value": "Monthly office supplies purchase",
+									"type": "text"
+								},
+								{
+									"key": "receipt_image",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/expenses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"expenses"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Reports",
+			"item": [
+				{
+					"name": "Get Report Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/reports/data/daily?date_from=2025-12-01&date_to=2025-12-31&format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"reports",
+								"data",
+								"daily"
+							],
+							"query": [
+								{
+									"key": "date_from",
+									"value": "2025-12-01"
+								},
+								{
+									"key": "date_to",
+									"value": "2025-12-31"
+								},
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-set CSRF token if available",
+					"if (pm.globals.has('csrf_token')) {",
+					"    pm.request.headers.add({",
+					"        key: 'X-CSRF-TOKEN',",
+					"        value: pm.globals.get('csrf_token')",
+					"    });",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "csrf_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

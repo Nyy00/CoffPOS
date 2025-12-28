@@ -37,28 +37,73 @@ class TransactionService
         // Generate transaction code
         $transactionCode = $this->generateTransactionCode();
 
-        // Create transaction
-        $transaction = Transaction::create([
-            'transaction_code' => $transactionCode,
-            'customer_id' => $data['customer_id'],
-            'user_id' => $data['user_id'],
-            // Old columns for backward compatibility
-            'subtotal' => $subtotal,
-            'discount' => $discountAmount,
-            'tax' => $taxAmount,
-            'total' => $totalAmount,
-            // New columns
-            'subtotal_amount' => $subtotal,
-            'discount_amount' => $discountAmount,
-            'tax_amount' => $taxAmount,
-            'total_amount' => $totalAmount,
-            'payment_method' => $data['payment_method'],
-            'payment_amount' => $data['payment_amount'],
-            'change_amount' => $data['payment_amount'] - $totalAmount,
-            'transaction_date' => Carbon::now(),
-            'notes' => $data['notes'] ?? null,
-            'status' => 'completed'
-        ]);
+        // Create transaction with constraint error handling
+        try {
+            $transaction = Transaction::create([
+                'transaction_code' => $transactionCode,
+                'customer_id' => $data['customer_id'],
+                'user_id' => $data['user_id'],
+                // Old columns for backward compatibility
+                'subtotal' => $subtotal,
+                'discount' => $discountAmount,
+                'tax' => $taxAmount,
+                'total' => $totalAmount,
+                // New columns
+                'subtotal_amount' => $subtotal,
+                'discount_amount' => $discountAmount,
+                'tax_amount' => $taxAmount,
+                'total_amount' => $totalAmount,
+                'payment_method' => $data['payment_method'],
+                'payment_amount' => $data['payment_amount'],
+                'change_amount' => $data['payment_amount'] - $totalAmount,
+                'transaction_date' => Carbon::now(),
+                'notes' => $data['notes'] ?? null,
+                'status' => 'completed'
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle payment method constraint violation
+            if (strpos($e->getMessage(), 'transactions_payment_method_check') !== false) {
+                // Log the error
+                Log::error('Payment method constraint violation', [
+                    'payment_method' => $data['payment_method'],
+                    'error' => $e->getMessage()
+                ]);
+                
+                // Fallback: map digital to a supported payment method
+                $fallbackMethod = $data['payment_method'] === 'digital' ? 'ewallet' : 'cash';
+                
+                Log::info('Using fallback payment method', [
+                    'original' => $data['payment_method'],
+                    'fallback' => $fallbackMethod
+                ]);
+                
+                // Retry with fallback method
+                $transaction = Transaction::create([
+                    'transaction_code' => $transactionCode,
+                    'customer_id' => $data['customer_id'],
+                    'user_id' => $data['user_id'],
+                    // Old columns for backward compatibility
+                    'subtotal' => $subtotal,
+                    'discount' => $discountAmount,
+                    'tax' => $taxAmount,
+                    'total' => $totalAmount,
+                    // New columns
+                    'subtotal_amount' => $subtotal,
+                    'discount_amount' => $discountAmount,
+                    'tax_amount' => $taxAmount,
+                    'total_amount' => $totalAmount,
+                    'payment_method' => $fallbackMethod,
+                    'payment_amount' => $data['payment_amount'],
+                    'change_amount' => $data['payment_amount'] - $totalAmount,
+                    'transaction_date' => Carbon::now(),
+                    'notes' => ($data['notes'] ?? '') . " [Original payment method: {$data['payment_method']}]",
+                    'status' => 'completed'
+                ]);
+            } else {
+                // Re-throw other database errors
+                throw $e;
+            }
+        }
 
         // Create transaction items and update stock
         foreach ($data['items'] as $item) {
@@ -350,27 +395,72 @@ class TransactionService
     {
         $transactionCode = $this->generateTransactionCode();
 
-        $transaction = Transaction::create([
-            'transaction_code' => $transactionCode,
-            'customer_id' => $data['customer_id'] ?? null,
-            'user_id' => auth()->id(),
-            // Old column names for backward compatibility
-            'subtotal' => $totals['subtotal'],
-            'discount' => $totals['discount_amount'],
-            'tax' => $totals['tax_amount'],
-            'total' => $totals['total_amount'],
-            // New column names
-            'subtotal_amount' => $totals['subtotal'],
-            'discount_amount' => $totals['discount_amount'],
-            'tax_amount' => $totals['tax_amount'],
-            'total_amount' => $totals['total_amount'],
-            'payment_method' => $data['payment']['method'],
-            'payment_amount' => $data['payment']['amount'],
-            'change_amount' => $data['payment']['amount'] - $totals['total_amount'],
-            'transaction_date' => now(),
-            'notes' => $data['notes'] ?? null,
-            'status' => 'completed'
-        ]);
+        try {
+            $transaction = Transaction::create([
+                'transaction_code' => $transactionCode,
+                'customer_id' => $data['customer_id'] ?? null,
+                'user_id' => auth()->id(),
+                // Old column names for backward compatibility
+                'subtotal' => $totals['subtotal'],
+                'discount' => $totals['discount_amount'],
+                'tax' => $totals['tax_amount'],
+                'total' => $totals['total_amount'],
+                // New column names
+                'subtotal_amount' => $totals['subtotal'],
+                'discount_amount' => $totals['discount_amount'],
+                'tax_amount' => $totals['tax_amount'],
+                'total_amount' => $totals['total_amount'],
+                'payment_method' => $data['payment']['method'],
+                'payment_amount' => $data['payment']['amount'],
+                'change_amount' => $data['payment']['amount'] - $totals['total_amount'],
+                'transaction_date' => now(),
+                'notes' => $data['notes'] ?? null,
+                'status' => 'completed'
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle payment method constraint violation
+            if (strpos($e->getMessage(), 'transactions_payment_method_check') !== false) {
+                // Log the error
+                Log::error('Payment method constraint violation in POS transaction', [
+                    'payment_method' => $data['payment']['method'],
+                    'error' => $e->getMessage()
+                ]);
+                
+                // Fallback: map digital to a supported payment method
+                $fallbackMethod = $data['payment']['method'] === 'digital' ? 'ewallet' : 'cash';
+                
+                Log::info('Using fallback payment method for POS transaction', [
+                    'original' => $data['payment']['method'],
+                    'fallback' => $fallbackMethod
+                ]);
+                
+                // Retry with fallback method
+                $transaction = Transaction::create([
+                    'transaction_code' => $transactionCode,
+                    'customer_id' => $data['customer_id'] ?? null,
+                    'user_id' => auth()->id(),
+                    // Old column names for backward compatibility
+                    'subtotal' => $totals['subtotal'],
+                    'discount' => $totals['discount_amount'],
+                    'tax' => $totals['tax_amount'],
+                    'total' => $totals['total_amount'],
+                    // New column names
+                    'subtotal_amount' => $totals['subtotal'],
+                    'discount_amount' => $totals['discount_amount'],
+                    'tax_amount' => $totals['tax_amount'],
+                    'total_amount' => $totals['total_amount'],
+                    'payment_method' => $fallbackMethod,
+                    'payment_amount' => $data['payment']['amount'],
+                    'change_amount' => $data['payment']['amount'] - $totals['total_amount'],
+                    'transaction_date' => now(),
+                    'notes' => ($data['notes'] ?? '') . " [Original payment method: {$data['payment']['method']}]",
+                    'status' => 'completed'
+                ]);
+            } else {
+                // Re-throw other database errors
+                throw $e;
+            }
+        }
 
         // Create transaction items
         foreach ($data['items'] as $item) {

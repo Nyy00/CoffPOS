@@ -54,6 +54,49 @@ Route::middleware('auth')->group(function () {
 // Debug routes
 require __DIR__.'/debug.php';
 
+// Google OAuth debug route (remove after testing)
+Route::get('/debug/google-oauth', function () {
+    return response()->json([
+        'google_client_id' => config('services.google.client_id') ? 'Set (' . substr(config('services.google.client_id'), 0, 10) . '...)' : 'Not Set',
+        'google_client_secret' => config('services.google.client_secret') ? 'Set' : 'Not Set',
+        'google_redirect_url' => config('services.google.redirect'),
+        'app_url' => config('app.url'),
+        'app_env' => config('app.env'),
+        'socialite_installed' => class_exists('Laravel\Socialite\Facades\Socialite'),
+        'session_driver' => config('session.driver'),
+        'session_lifetime' => config('session.lifetime'),
+        'auth_user' => auth()->check() ? auth()->user()->only(['id', 'name', 'email', 'role']) : null,
+        'database_connection' => config('database.default'),
+        'session_table_exists' => \Schema::hasTable('sessions'),
+    ]);
+});
+
+// Debug session route
+Route::get('/debug/session', function () {
+    return response()->json([
+        'session_id' => session()->getId(),
+        'session_data' => session()->all(),
+        'auth_check' => auth()->check(),
+        'auth_user' => auth()->user() ? auth()->user()->only(['id', 'name', 'email', 'role']) : null,
+        'csrf_token' => csrf_token(),
+    ]);
+});
+
+// Test manual login (remove after testing)
+Route::get('/debug/test-login', function () {
+    $user = \App\Models\User::first();
+    if ($user) {
+        \Auth::login($user);
+        return response()->json([
+            'message' => 'Manual login successful',
+            'user' => $user->only(['id', 'name', 'email', 'role']),
+            'auth_check' => auth()->check(),
+            'session_id' => session()->getId(),
+        ]);
+    }
+    return response()->json(['message' => 'No user found']);
+});
+
 require __DIR__.'/auth.php';
 
 // Simple storage route for specific files (fallback when symlink fails)

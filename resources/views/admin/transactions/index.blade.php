@@ -1,11 +1,18 @@
 @extends('layouts.app')
+{{-- Menggunakan layout utama aplikasi --}}
 
 @section('title', 'Transactions')
+{{-- Judul halaman transaksi --}}
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
+    {{-- Container utama halaman --}}
+
     <div class="flex justify-between items-center mb-6">
+        {{-- Header halaman --}}
         <h1 class="text-3xl font-bold text-gray-900">Transactions</h1>
+
+        {{-- Tombol aksi (export) --}}
         <div class="flex space-x-3">
             <a href="{{ route('admin.transactions.export', request()->all()) }}" 
                class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
@@ -15,8 +22,11 @@
     </div>
 
     <!-- Filters -->
+    {{-- Card filter transaksi --}}
     <div class="bg-white rounded-lg shadow-md p-6 mb-6">
         <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            {{-- Filter pencarian --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
                 <input type="text" name="search" value="{{ request('search') }}" 
@@ -24,6 +34,7 @@
                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             
+            {{-- Filter status transaksi --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select name="status" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -36,6 +47,7 @@
                 </select>
             </div>
             
+            {{-- Filter metode pembayaran --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
                 <select name="payment_method" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -48,6 +60,7 @@
                 </select>
             </div>
             
+            {{-- Filter kasir --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Cashier</label>
                 <select name="cashier_id" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -60,18 +73,21 @@
                 </select>
             </div>
             
+            {{-- Filter tanggal awal --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Date From</label>
                 <input type="date" name="date_from" value="{{ request('date_from') }}" 
                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             
+            {{-- Filter tanggal akhir --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Date To</label>
                 <input type="date" name="date_to" value="{{ request('date_to') }}" 
                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             
+            {{-- Filter minimum total transaksi --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Min Amount</label>
                 <input type="number" name="amount_min" value="{{ request('amount_min') }}" 
@@ -79,6 +95,7 @@
                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             
+            {{-- Filter maksimum total transaksi --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Max Amount</label>
                 <input type="number" name="amount_max" value="{{ request('amount_max') }}" 
@@ -86,6 +103,7 @@
                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             
+            {{-- Tombol aksi filter --}}
             <div class="md:col-span-2 lg:col-span-4 flex justify-end space-x-2">
                 <a href="{{ route('admin.transactions.index') }}" 
                    class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">
@@ -100,41 +118,31 @@
     </div>
 
     <!-- Transactions Table -->
+    {{-- Tabel data transaksi --}}
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
+                {{-- Header tabel --}}
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Transaction
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Customer
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Cashier
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Items
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Total
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Payment
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                        </th>
+                        <th class="px-6 py-3">Transaction</th>
+                        <th class="px-6 py-3">Customer</th>
+                        <th class="px-6 py-3">Cashier</th>
+                        <th class="px-6 py-3">Items</th>
+                        <th class="px-6 py-3">Total</th>
+                        <th class="px-6 py-3">Payment</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3">Actions</th>
                     </tr>
                 </thead>
+
+                {{-- Body tabel --}}
                 <tbody class="bg-white divide-y divide-gray-200">
+                    {{-- Loop data transaksi --}}
                     @forelse($transactions as $transaction)
                     <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        {{-- Kode & waktu transaksi --}}
+                        <td class="px-6 py-4">
                             <div>
                                 <div class="text-sm font-medium text-gray-900">
                                     {{ $transaction->transaction_code }}
@@ -144,22 +152,34 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+
+                        {{-- Nama customer --}}
+                        <td class="px-6 py-4">
                             {{ $transaction->customer ? $transaction->customer->name : 'Walk-in' }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+
+                        {{-- Nama kasir --}}
+                        <td class="px-6 py-4">
                             {{ $transaction->user->name }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+
+                        {{-- Total item --}}
+                        <td class="px-6 py-4">
                             {{ $transaction->transactionItems->sum('quantity') }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+
+                        {{-- Total pembayaran --}}
+                        <td class="px-6 py-4 font-medium">
                             Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+
+                        {{-- Metode pembayaran --}}
+                        <td class="px-6 py-4">
                             {{ ucfirst(str_replace('_', ' ', $transaction->payment_method)) }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+
+                        {{-- Status transaksi --}}
+                        <td class="px-6 py-4">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
                                 {{ $transaction->status === 'completed' ? 'bg-green-100 text-green-800' : 
                                    ($transaction->status === 'voided' ? 'bg-red-100 text-red-800' : 
@@ -167,30 +187,27 @@
                                 {{ ucfirst($transaction->status) }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+
+                        {{-- Aksi --}}
+                        <td class="px-6 py-4">
                             <div class="flex space-x-2">
-                                <a href="{{ route('admin.transactions.show', $transaction) }}" 
-                                   class="text-blue-600 hover:text-blue-900">
-                                    View
-                                </a>
+                                <a href="{{ route('admin.transactions.show', $transaction) }}">View</a>
                                 @if($transaction->status === 'completed' && $transaction->created_at->diffInHours(now()) <= 24)
-                                <button onclick="openVoidModal({{ $transaction->id }}, '{{ $transaction->transaction_code }}')" 
-                                        class="text-red-600 hover:text-red-900">
+                                <button onclick="openVoidModal({{ $transaction->id }}, '{{ $transaction->transaction_code }}')">
                                     Void
                                 </button>
                                 @endif
-                                <form method="POST" action="{{ route('admin.transactions.reprint-receipt', $transaction) }}" target="_blank" class="inline">
+                                <form method="POST" action="{{ route('admin.transactions.reprint-receipt', $transaction) }}" target="_blank">
                                     @csrf
-                                    <button type="submit" class="text-green-600 hover:text-green-900">
-                                        Receipt
-                                    </button>
+                                    <button type="submit">Receipt</button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                     @empty
+                    {{-- Jika tidak ada data --}}
                     <tr>
-                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                        <td colspan="8" class="text-center text-gray-500">
                             No transactions found.
                         </td>
                     </tr>
@@ -198,79 +215,35 @@
                 </tbody>
             </table>
         </div>
-        
-        <!-- Pagination -->
+
+        {{-- Pagination --}}
         @if($transactions->hasPages())
-        <div class="px-6 py-4 border-t border-gray-200">
+        <div class="px-6 py-4 border-t">
             {{ $transactions->appends(request()->all())->links() }}
         </div>
         @endif
     </div>
 </div>
 
-<!-- Void Transaction Modal -->
+{{-- Modal void transaksi --}}
 <div id="voidModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Void Transaction</h3>
-                    <button onclick="closeVoidModal()" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                
-                <form id="voidForm" method="POST">
-                    @csrf
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 mb-2">
-                            Are you sure you want to void transaction <span id="voidTransactionCode" class="font-semibold"></span>?
-                        </p>
-                        <p class="text-sm text-red-600 mb-4">
-                            This action will restore the stock and cannot be undone.
-                        </p>
-                        
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Reason for voiding</label>
-                        <textarea name="reason" required 
-                                  class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  rows="3" placeholder="Enter reason for voiding this transaction..."></textarea>
-                    </div>
-                    
-                    <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="closeVoidModal()" 
-                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
-                            Cancel
-                        </button>
-                        <button type="submit" 
-                                class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors">
-                            Void Transaction
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    {{-- Isi modal --}}
 </div>
 
+{{-- Script JavaScript --}}
 <script>
-function openVoidModal(transactionId, transactionCode) {
-    document.getElementById('voidModal').classList.remove('hidden');
-    document.getElementById('voidTransactionCode').textContent = transactionCode;
-    document.getElementById('voidForm').action = `/admin/transactions/${transactionId}/void`;
-}
-
-function closeVoidModal() {
-    document.getElementById('voidModal').classList.add('hidden');
-    document.getElementById('voidForm').reset();
-}
-
-// Close modal when clicking outside
-document.getElementById('voidModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeVoidModal();
+    // Fungsi buka modal void
+    function openVoidModal(transactionId, transactionCode) {
+        document.getElementById('voidModal').classList.remove('hidden');
+        document.getElementById('voidTransactionCode').textContent = transactionCode;
+        document.getElementById('voidForm').action = `/admin/transactions/${transactionId}/void`;
     }
-});
+
+    // Fungsi tutup modal void
+    function closeVoidModal() {
+        document.getElementById('voidModal').classList.add('hidden');
+        document.getElementById('voidForm').reset();
+    }
 </script>
+
 @endsection
