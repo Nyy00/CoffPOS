@@ -3,9 +3,7 @@
 @section('title', 'Home')
 
 @section('content')
-<!-- Hero Section -->
 <section class="relative bg-gradient-to-br from-coffee-dark via-coffee-brown to-black text-white py-32 overflow-hidden">
-    <!-- Background decoration -->
     <div class="absolute top-0 right-0 w-96 h-96 bg-gold/10 rounded-full -mr-48 -mt-48"></div>
     <div class="absolute bottom-0 left-0 w-96 h-96 bg-gold/5 rounded-full -ml-48 -mb-48"></div>
     
@@ -21,9 +19,12 @@
                 <h1 class="text-5xl md:text-7xl font-bold font-heading mb-6 leading-tight">
                     Start Your Day with <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-400">Perfect Coffee</span>
                 </h1>
-                <p class="text-xl text-cream/80 mb-8 leading-relaxed">
-                    Experience the finest coffee beans, expertly roasted and brewed to perfection. Every cup tells a story of quality and passion.
-                </p>
+                
+                <div class="mt-4 min-h-[60px]">
+                    <p id="quote-text" class="text-xl text-cream/80 mb-8 leading-relaxed italic transition-opacity duration-700 opacity-0">
+                        "Loading fresh coffee wisdom..."
+                    </p>
+                </div>
                 <div class="flex flex-col sm:flex-row gap-4">
                     <a href="{{ route('menu') }}" class="bg-gradient-to-r from-gold to-yellow-400 text-coffee-dark px-8 py-4 rounded-full font-semibold text-lg hover:shadow-xl transition transform hover:scale-105 flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +51,6 @@
 </section>
 
 
-<!-- Popular Products -->
 <section class="py-24 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
@@ -68,7 +68,6 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($popularProducts as $product)
             <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
-                <!-- Product Image -->
                 <div class="relative h-56 bg-gradient-to-br from-light-coffee to-coffee-brown overflow-hidden">
                     @if($product->image)
                         @php
@@ -98,7 +97,6 @@
                         </div>
                     @endif
                     
-                    <!-- Badge -->
                     <div class="absolute top-3 right-3 flex gap-2">
                         <span class="bg-gold text-coffee-dark px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
                             {{ $product->category->name }}
@@ -116,7 +114,6 @@
                     </div>
                 </div>
 
-                <!-- Product Info -->
                 <div class="p-6">
                     <h3 class="text-2xl font-bold text-coffee-dark mb-2 group-hover:text-gold transition">{{ $product->name }}</h3>
                     
@@ -124,7 +121,6 @@
                     <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $product->description }}</p>
                     @endif
                     
-                    <!-- Stock Info -->
                     <div class="flex items-center gap-2 mb-4">
                         <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 6H6.28l-.31-1.243A1 1 0 005 4H3z"/>
@@ -132,7 +128,6 @@
                         <span class="text-sm text-gray-600">Stock: <span class="font-semibold text-coffee-dark">{{ $product->stock }}</span></span>
                     </div>
 
-                    <!-- Price and Button -->
                     <div class="flex items-center justify-between pt-4 border-t border-gray-200">
                         <div>
                             <p class="text-xs text-gray-500 mb-1">Price</p>
@@ -171,7 +166,6 @@
 </section>
 
 
-<!-- Features Section -->
 <section class="bg-gradient-to-r from-coffee-dark via-coffee-brown to-black text-white py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
@@ -180,7 +174,6 @@
         </div>
 
         <div class="grid md:grid-cols-3 gap-12">
-            <!-- Feature 1 -->
             <div class="text-center transform hover:scale-105 transition duration-300">
                 <div class="bg-gradient-to-br from-gold to-yellow-400 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <svg class="w-8 h-8 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,7 +184,6 @@
                 <p class="text-cream/80 leading-relaxed">Only the finest coffee beans, carefully selected and roasted to perfection for exceptional flavor</p>
             </div>
 
-            <!-- Feature 2 -->
             <div class="text-center transform hover:scale-105 transition duration-300">
                 <div class="bg-gradient-to-br from-gold to-yellow-400 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <svg class="w-8 h-8 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,7 +194,6 @@
                 <p class="text-cream/80 leading-relaxed">Quick and efficient service without compromising on quality or the experience</p>
             </div>
 
-            <!-- Feature 3 -->
             <div class="text-center transform hover:scale-105 transition duration-300">
                 <div class="bg-gradient-to-br from-gold to-yellow-400 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <svg class="w-8 h-8 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,7 +208,6 @@
 </section>
 
 
-<!-- Testimonials Section -->
 <section class="py-24 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
@@ -232,7 +222,6 @@
         </div>
 
         <div class="grid md:grid-cols-3 gap-8">
-            <!-- Testimonial 1 -->
             <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:scale-105">
                 <div class="flex items-center mb-4">
                     <div class="w-14 h-14 bg-gradient-to-br from-gold to-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
@@ -251,7 +240,6 @@
                 <p class="text-gray-600 italic leading-relaxed">"Best coffee in town! The atmosphere is cozy and the staff is very friendly. I come here every morning before work."</p>
             </div>
 
-            <!-- Testimonial 2 -->
             <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:scale-105">
                 <div class="flex items-center mb-4">
                     <div class="w-14 h-14 bg-gradient-to-br from-gold to-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
@@ -270,7 +258,6 @@
                 <p class="text-gray-600 italic leading-relaxed">"Love their cappuccino! Perfect blend and always consistent quality. The baristas really know their craft."</p>
             </div>
 
-            <!-- Testimonial 3 -->
             <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:scale-105">
                 <div class="flex items-center mb-4">
                     <div class="w-14 h-14 bg-gradient-to-br from-gold to-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
@@ -293,7 +280,6 @@
 </section>
 
 
-<!-- CTA Section -->
 <section class="bg-gradient-to-r from-coffee-brown to-coffee-dark text-white py-24">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div class="mb-6 flex items-center justify-center gap-3">
@@ -334,5 +320,39 @@
         </p>
     </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Tentukan alamat API (otomatis ikut base URL)
+        const apiUrl = "{{ url('/api/coffee-quotes') }}";
+        const quoteElement = document.getElementById('quote-text');
+
+        // 2. Panggil API (Fetch)
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 3. Masukkan teks dari API ke HTML
+                if(data.quote) {
+                    quoteElement.innerText = `"${data.quote}"`;
+                    
+                    // 4. Munculkan teks perlahan (Fade In effect)
+                    quoteElement.classList.remove('opacity-0');
+                    quoteElement.classList.add('opacity-100');
+                }
+            })
+            .catch(error => {
+                console.error('Gagal mengambil quotes:', error);
+                // Fallback jika API error/gagal
+                quoteElement.innerText = "\"Life happens, coffee helps.\"";
+                quoteElement.classList.remove('opacity-0');
+                quoteElement.classList.add('opacity-100');
+            });
+    });
+</script>
 
 @endsection
