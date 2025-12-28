@@ -1,49 +1,61 @@
-/* PDF Report Styles */
+/* =========================
+   PDF REPORT STYLES
+   Digunakan saat export / print PDF
+========================= */
 @media print {
+
+    /* Pengaturan dasar dokumen PDF */
     body {
-        font-family: 'DejaVu Sans', Arial, sans-serif;
+        font-family: 'DejaVu Sans', Arial, sans-serif; /* Font aman untuk PDF */
         font-size: 12px;
         line-height: 1.4;
         color: #333;
         margin: 0;
         padding: 0;
     }
-    
+
+    /* Header laporan */
     .header {
         text-align: center;
         margin-bottom: 30px;
         padding-bottom: 20px;
         border-bottom: 2px solid #333;
     }
-    
+
+    /* Nama perusahaan */
     .company-name {
         font-size: 24px;
         font-weight: bold;
         color: #2563eb;
         margin-bottom: 5px;
     }
-    
+
+    /* Informasi perusahaan */
     .company-info {
         font-size: 10px;
         color: #666;
         margin-bottom: 15px;
     }
-    
+
+    /* Judul laporan */
     .report-title {
         font-size: 18px;
         font-weight: bold;
         margin-bottom: 5px;
     }
-    
+
+    /* Periode laporan */
     .report-period {
         font-size: 12px;
         color: #666;
     }
-    
+
+    /* Section ringkasan */
     .summary-section {
         margin-bottom: 25px;
     }
-    
+
+    /* Judul ringkasan */
     .summary-title {
         font-size: 14px;
         font-weight: bold;
@@ -52,13 +64,15 @@
         border-bottom: 1px solid #e5e7eb;
         padding-bottom: 5px;
     }
-    
+
+    /* Tabel data laporan */
     .data-table {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 20px;
     }
-    
+
+    /* Header tabel */
     .data-table th {
         background-color: #f3f4f6;
         font-weight: bold;
@@ -67,50 +81,41 @@
         text-align: left;
         font-size: 11px;
     }
-    
+
+    /* Isi tabel */
     .data-table td {
         padding: 6px 8px;
         border: 1px solid #e5e7eb;
         font-size: 10px;
     }
-    
+
+    /* Zebra striping tabel */
     .data-table tr:nth-child(even) {
         background-color: #f9fafb;
     }
-    
-    .text-right {
-        text-align: right;
-    }
-    
-    .text-center {
-        text-align: center;
-    }
-    
-    .text-bold {
-        font-weight: bold;
-    }
-    
-    .text-green {
-        color: #059669;
-    }
-    
-    .text-red {
-        color: #dc2626;
-    }
-    
-    .text-blue {
-        color: #2563eb;
-    }
-    
+
+    /* Utility alignment & style */
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .text-bold { font-weight: bold; }
+
+    /* Warna status */
+    .text-green { color: #059669; }
+    .text-red { color: #dc2626; }
+    .text-blue { color: #2563eb; }
+
+    /* Format mata uang */
     .currency {
         font-family: 'DejaVu Sans Mono', monospace;
     }
-    
+
+    /* Section agar tidak terpotong halaman */
     .section {
         margin-bottom: 25px;
         page-break-inside: avoid;
     }
-    
+
+    /* Judul section */
     .section-title {
         font-size: 14px;
         font-weight: bold;
@@ -119,7 +124,8 @@
         border-bottom: 1px solid #e5e7eb;
         padding-bottom: 5px;
     }
-    
+
+    /* Footer PDF */
     .footer {
         position: fixed;
         bottom: 0;
@@ -132,14 +138,20 @@
         border-top: 1px solid #e5e7eb;
         padding-top: 10px;
     }
-    
+
+    /* Elemen yang tidak dicetak */
     .no-print {
         display: none;
     }
 }
 
-/* Screen styles for report preview */
+/* =========================
+   SCREEN STYLES
+   Tampilan preview laporan
+========================= */
 @media screen {
+
+    /* Container preview laporan */
     .report-container {
         max-width: 800px;
         margin: 0 auto;
@@ -147,7 +159,8 @@
         background: white;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    
+
+    /* Tombol print */
     .print-button {
         position: fixed;
         top: 20px;
@@ -161,7 +174,8 @@
         font-size: 14px;
         z-index: 1000;
     }
-    
+
+    /* Hover tombol print */
     .print-button:hover {
         background: #1d4ed8;
     }

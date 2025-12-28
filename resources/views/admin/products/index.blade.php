@@ -1,24 +1,37 @@
-@extends('layouts.app')
+@extends('layouts.app') 
+{{-- Menggunakan layout utama aplikasi --}}
 
-@section('title', 'Products Management')
+@section('title', 'Products Management') 
+{{-- Mengatur judul halaman --}}
 
 @section('content')
 <div class="py-6">
+    {{-- Wrapper utama dengan padding vertikal --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{-- Container dengan lebar maksimal --}}
+
         <!-- Header -->
         <div class="md:flex md:items-center md:justify-between mb-6">
+            {{-- Header halaman --}}
             <div class="flex-1 min-w-0">
+                {{-- Judul halaman --}}
                 <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
                     Products Management
                 </h2>
+                {{-- Deskripsi halaman --}}
                 <p class="mt-1 text-sm text-gray-500">
                     Manage your coffee shop products, categories, and inventory
                 </p>
             </div>
+
+            {{-- Tombol tambah produk --}}
             <div class="mt-4 flex md:mt-0 md:ml-4">
                 <x-button href="{{ route('admin.products.create') }}" variant="primary">
+                    {{-- Icon tambah --}}
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                        </path>
                     </svg>
                     Add Product
                 </x-button>
@@ -76,6 +89,7 @@
 
         <!-- Products Table -->
         <x-card>
+            {{-- Mengecek apakah data produk ada --}}
             @if($products->count() > 0)
                 <!-- Mobile Cards View -->
                 <div class="block md:hidden space-y-4">
@@ -272,26 +286,13 @@
                     </x-table>
                 </div>
 
-                <!-- Pagination -->
+                {{-- Pagination --}}
                 <div class="mt-6">
                     <x-pagination :paginator="$products" />
                 </div>
             @else
-                <div class="text-center py-12">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                    </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">No products found</h3>
-                    <p class="mt-1 text-sm text-gray-500">Get started by creating a new product.</p>
-                    <div class="mt-6">
-                        <x-button href="{{ route('admin.products.create') }}" variant="primary">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                            Add Product
-                        </x-button>
-                    </div>
-                </div>
+                {{-- Tampilan jika data kosong --}}
+                <div class="text-center py-12">...</div>
             @endif
         </x-card>
     </div>
@@ -299,10 +300,12 @@
 
 <!-- Delete Confirmation Modal -->
 <x-modal-enhanced id="deleteModal" title="Delete Product" type="danger">
+    {{-- Pesan konfirmasi hapus --}}
     <p class="text-sm text-gray-500">
         Are you sure you want to delete <span id="productName" class="font-medium"></span>? This action cannot be undone.
     </p>
-    
+
+    {{-- Footer modal --}}
     <x-slot name="footer">
         <form id="deleteForm" method="POST" style="display: inline;">
             @csrf
@@ -316,6 +319,7 @@
 </x-modal-enhanced>
 
 <script>
+// Fungsi untuk menampilkan modal konfirmasi hapus
 function confirmDelete(productId, productName) {
     document.getElementById('productName').textContent = productName;
     document.getElementById('deleteForm').action = `/admin/products/${productId}`;

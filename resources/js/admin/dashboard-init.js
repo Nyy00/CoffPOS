@@ -1,11 +1,15 @@
 /**
  * Dashboard Charts Initialization
- * Simplified version untuk handle chart rendering dengan baik
+ * Class ini bertanggung jawab untuk menginisialisasi
+ * dan mengelola seluruh chart pada halaman dashboard.
  */
 
 export class DashboardChartsManager {
     constructor() {
+        // Menyimpan instance chart yang aktif
         this.charts = {};
+
+        // Mapping ID elemen canvas untuk setiap chart
         this.chartElements = {
             revenue: 'revenueChart',
             topProducts: 'topProductsChart',
@@ -14,7 +18,8 @@ export class DashboardChartsManager {
     }
 
     /**
-     * Initialize dashboard when DOM is ready
+     * Inisialisasi dashboard setelah DOM selesai dimuat
+     * Memanggil fungsi pembuatan chart utama
      */
     init() {
         document.addEventListener('DOMContentLoaded', () => {
@@ -24,12 +29,14 @@ export class DashboardChartsManager {
     }
 
     /**
-     * Initialize Revenue Chart
+     * Inisialisasi Revenue Chart (Line Chart)
+     * Digunakan untuk menampilkan data pendapatan
      */
     initRevenueChart() {
         const chartId = this.chartElements.revenue;
         const canvas = document.getElementById(chartId);
         
+        // Jika elemen canvas tidak ditemukan, hentikan proses
         if (!canvas) {
             console.log(`Chart element ${chartId} not found`);
             return;
@@ -37,24 +44,30 @@ export class DashboardChartsManager {
 
         try {
             const ctx = canvas.getContext('2d');
+
+            // Mengambil data revenue dari variabel global
             const revenueData = window.chartDataGlobal?.revenue || [];
 
+            // Validasi data
             if (!revenueData || revenueData.length === 0) {
                 console.warn('Revenue data is empty');
                 return;
             }
 
-            // Destroy existing chart if any
+            // Hapus chart lama jika sudah ada
             if (this.charts.revenue) {
                 this.charts.revenue.destroy();
             }
 
+            // Membuat chart revenue baru
             this.charts.revenue = new Chart(ctx, {
                 type: 'line',
                 data: {
+                    // Label sumbu X
                     labels: revenueData.map(item => item.label || item.date || 'N/A'),
                     datasets: [{
                         label: 'Revenue',
+                        // Data nilai revenue
                         data: revenueData.map(item => item.value || item.revenue || 0),
                         borderColor: '#3B82F6',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -84,6 +97,7 @@ export class DashboardChartsManager {
                             borderColor: '#3B82F6',
                             borderWidth: 1,
                             callbacks: {
+                                // Format tooltip value ke Rupiah
                                 label: function(context) {
                                     const value = context.parsed.y;
                                     return 'Revenue: Rp ' + new Intl.NumberFormat('id-ID').format(value);
@@ -98,6 +112,7 @@ export class DashboardChartsManager {
                         y: {
                             beginAtZero: true,
                             ticks: {
+                                // Format angka sumbu Y ke Rupiah
                                 callback: function(value) {
                                     if (value >= 1000000) {
                                         return 'Rp ' + (value / 1000000).toFixed(1) + 'M';
@@ -139,12 +154,14 @@ export class DashboardChartsManager {
     }
 
     /**
-     * Initialize Top Products Chart
+     * Inisialisasi Top Products Chart (Doughnut Chart)
+     * Menampilkan produk terlaris
      */
     initTopProductsChart() {
         const chartId = this.chartElements.topProducts;
         const canvas = document.getElementById(chartId);
         
+        // Validasi elemen canvas
         if (!canvas) {
             console.log(`Chart element ${chartId} not found`);
             return;
@@ -152,18 +169,22 @@ export class DashboardChartsManager {
 
         try {
             const ctx = canvas.getContext('2d');
+
+            // Mengambil data produk terlaris
             const productsData = window.chartDataGlobal?.topProducts || [];
 
+            // Validasi data
             if (!productsData || productsData.length === 0) {
                 console.warn('Top products data is empty');
                 return;
             }
 
-            // Destroy existing chart if any
+            // Hapus chart lama jika ada
             if (this.charts.topProducts) {
                 this.charts.topProducts.destroy();
             }
 
+            // Membuat chart doughnut
             this.charts.topProducts = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -201,6 +222,7 @@ export class DashboardChartsManager {
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
                             padding: 12,
                             callbacks: {
+                                // Tooltip jumlah penjualan
                                 label: function(context) {
                                     const label = context.label || '';
                                     const value = context.parsed || 0;
@@ -219,7 +241,9 @@ export class DashboardChartsManager {
     }
 
     /**
-     * Update chart with new data
+     * Update data chart tertentu tanpa membuat ulang chart
+     * @param {string} chartType - tipe chart (revenue, topProducts)
+     * @param {Array} newData - data baru
      */
     updateChart(chartType, newData) {
         const chart = this.charts[chartType];
@@ -233,7 +257,8 @@ export class DashboardChartsManager {
     }
 
     /**
-     * Destroy all charts
+     * Menghapus seluruh chart yang aktif
+     * Digunakan saat reload atau cleanup
      */
     destroyAll() {
         Object.values(this.charts).forEach(chart => {
