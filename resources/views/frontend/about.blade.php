@@ -7,8 +7,6 @@
 {{-- Konten utama halaman --}}
 @section('content')
 
-<!-- ================= HERO SECTION ================= -->
-<!-- Bagian banner / header halaman About -->
 <section class="bg-gradient-to-br from-coffee-dark to-coffee-brown text-white py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {{-- Judul halaman --}}
@@ -21,8 +19,6 @@
     </div>
 </section>
 
-<!-- ================= OUR STORY ================= -->
-<!-- Bagian cerita awal CoffPOS -->
 <section class="py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -37,10 +33,8 @@
             </p>
         </div>
 
-        <!-- Mission & Vision -->
         <div class="grid md:grid-cols-2 gap-8 mb-16">
 
-            <!-- Mission Card -->
             <div class="bg-white p-8 rounded-2xl shadow-lg">
                 {{-- Icon --}}
                 <div class="mb-4">
@@ -61,7 +55,6 @@
                 </p>
             </div>
 
-            <!-- Vision Card -->
             <div class="bg-white p-8 rounded-2xl shadow-lg">
                 {{-- Icon --}}
                 <div class="mb-4">
@@ -87,8 +80,6 @@
     </div>
 </section>
 
-<!-- ================= OUR VALUES ================= -->
-<!-- Bagian nilai-nilai CoffPOS -->
 <section class="bg-cream py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -102,47 +93,46 @@
             </p>
         </div>
 
-        <!-- Daftar values -->
         <div class="grid md:grid-cols-4 gap-8">
 
-            {{-- Value: Quality --}}
-            <div class="text-center">
-                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-10 h-10 text-coffee-dark" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0z"/>
+            {{-- Value: Quality (SUDAH DIPERBAIKI) --}}
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4 transition transform group-hover:scale-110 duration-300">
+                    <svg class="w-10 h-10 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z" />
                     </svg>
                 </div>
                 <h3 class="text-xl font-bold text-coffee-dark mb-2">Quality</h3>
                 <p class="text-gray-600">Only the best beans</p>
             </div>
 
-            {{-- Value: Community --}}
-            <div class="text-center">
-                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4">
+            {{-- Value: Community (SUDAH DIPERBAIKI) --}}
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4 transition transform group-hover:scale-110 duration-300">
                     <svg class="w-10 h-10 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-width="2" d="M12 4.354a4 4 0 110 5.292"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                 </div>
                 <h3 class="text-xl font-bold text-coffee-dark mb-2">Community</h3>
                 <p class="text-gray-600">Building connections</p>
             </div>
 
-            {{-- Value: Sustainability --}}
-            <div class="text-center">
-                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4">
+            {{-- Value: Sustainability (SUDAH DIPERBAIKI) --}}
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4 transition transform group-hover:scale-110 duration-300">
                     <svg class="w-10 h-10 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
                 <h3 class="text-xl font-bold text-coffee-dark mb-2">Sustainability</h3>
                 <p class="text-gray-600">Caring for planet</p>
             </div>
 
-            {{-- Value: Innovation --}}
-            <div class="text-center">
-                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4">
+            {{-- Value: Innovation (SUDAH DIPERBAIKI) --}}
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4 transition transform group-hover:scale-110 duration-300">
                     <svg class="w-10 h-10 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-width="2" d="M7 21a4 4 0 01-4-4"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                 </div>
                 <h3 class="text-xl font-bold text-coffee-dark mb-2">Innovation</h3>
@@ -152,8 +142,6 @@
     </div>
 </section>
 
-<!-- ================= OUR TEAM ================= -->
-<!-- Bagian tim CoffPOS -->
 <section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -167,7 +155,6 @@
             </p>
         </div>
 
-        <!-- Daftar anggota tim -->
         <div class="grid md:grid-cols-3 gap-8">
 
             {{-- Member 1 --}}
@@ -203,8 +190,6 @@
     </div>
 </section>
 
-<!-- ================= CTA ================= -->
-<!-- Call To Action -->
 <section class="bg-gradient-to-r from-coffee-brown to-coffee-dark text-white py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 
