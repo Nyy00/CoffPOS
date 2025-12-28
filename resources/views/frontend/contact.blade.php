@@ -68,9 +68,10 @@
                                       d="M3 5a2 2 0 012-2h3.28z"/>
                             </svg>
                         </div>
-                        <div class="ml-4">
-                            <h3 class="font-bold text-coffee-dark mb-1">Phone</h3>
-                            <p class="text-gray-600">+62 812-3456-7890</p>
+                        <div class="ml-5">
+                            <h3 class="font-bold text-coffee-dark text-lg mb-1">Phone</h3>
+                            <p class="text-gray-600 font-medium">+62 812-3456-7890</p>
+                            <p class="text-gray-500 text-sm">Mon-Fri 9am-6pm</p>
                         </div>
                     </div>
 
@@ -83,9 +84,10 @@
                                       d="M3 8l7.89 5.26a2 2 0 002.22 0z"/>
                             </svg>
                         </div>
-                        <div class="ml-4">
-                            <h3 class="font-bold text-coffee-dark mb-1">Email</h3>
-                            <p class="text-gray-600">info@coffpos.com</p>
+                        <div class="ml-5">
+                            <h3 class="font-bold text-coffee-dark text-lg mb-1">Email</h3>
+                            <p class="text-gray-600 font-medium">info@coffpos.com</p>
+                            <p class="text-gray-500 text-sm">We reply within 24 hours</p>
                         </div>
                     </div>
 
@@ -98,12 +100,12 @@
                                       d="M12 8v4l3 3"/>
                             </svg>
                         </div>
-                        <div class="ml-4">
-                            <h3 class="font-bold text-coffee-dark mb-1">Opening Hours</h3>
-                            <p class="text-gray-600">
-                                Monday - Friday: 7:00 AM - 10:00 PM<br>
-                                Saturday - Sunday: 8:00 AM - 11:00 PM
-                            </p>
+                        <div class="ml-5">
+                            <h3 class="font-bold text-coffee-dark text-lg mb-1">Opening Hours</h3>
+                            <div class="text-gray-600">
+                                <p class="flex justify-between w-64"><span class="font-medium">Mon - Fri:</span> <span>7:00 AM - 10:00 PM</span></p>
+                                <p class="flex justify-between w-64"><span class="font-medium">Sat - Sun:</span> <span>8:00 AM - 11:00 PM</span></p>
+                            </div>
                         </div>
                     </div>
                 </div>
