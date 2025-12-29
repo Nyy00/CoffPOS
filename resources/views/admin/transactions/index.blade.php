@@ -8,6 +8,19 @@
 <div class="container mx-auto px-4 py-6">
     {{-- Container utama halaman --}}
 
+    {{-- ================= ALERT MESSAGES ================= --}}
+    @if(session('success'))
+        <x-alert type="success" class="mb-6">
+            {{ session('success') }}
+        </x-alert>
+    @endif
+
+    @if(session('error'))
+        <x-alert type="error" class="mb-6">
+            {{ session('error') }}
+        </x-alert>
+    @endif
+
     <div class="flex justify-between items-center mb-6">
         {{-- Header halaman --}}
         <h1 class="text-3xl font-bold text-gray-900">Transactions</h1>
@@ -226,23 +239,73 @@
 </div>
 
 {{-- Modal void transaksi --}}
-<div id="voidModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
-    {{-- Isi modal --}}
-</div>
+<x-modal-enhanced id="voidModal" title="Void Transaction" type="danger">
+    <p class="text-sm text-gray-500">
+        Are you sure you want to void transaction <span id="voidTransactionCode" class="font-medium"></span>?
+    </p>
+    <p class="text-sm text-red-600 mt-2">
+        This action cannot be undone. The transaction will be marked as voided and cannot be processed further.
+    </p>
+    
+    <div class="mt-4">
+        <label for="voidReason" class="block text-sm font-medium text-gray-700 mb-2">
+            Reason for voiding <span class="text-red-500">*</span>
+        </label>
+        <textarea id="voidReason" name="reason" rows="3" required
+                  class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  placeholder="Please provide a reason for voiding this transaction..."></textarea>
+    </div>
+    
+    <div class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+        <p class="text-sm text-yellow-800">
+            <strong>Note:</strong> Voiding a transaction will:
+        </p>
+        <ul class="text-sm text-yellow-800 mt-1 ml-4 list-disc">
+            <li>Mark the transaction as voided</li>
+            <li>Restore product stock quantities</li>
+            <li>Remove any loyalty points earned</li>
+        </ul>
+    </div>
+
+    <x-slot name="footer">
+        <form id="voidForm" method="POST" class="inline">
+            @csrf
+            <input type="hidden" name="reason" id="voidReasonInput">
+            <x-button type="submit" variant="danger" onclick="submitVoidForm()">Void Transaction</x-button>
+        </form>
+        <x-button type="button" variant="light" onclick="closeVoidModal()" class="ml-3">
+            Cancel
+        </x-button>
+    </x-slot>
+</x-modal-enhanced>
 
 {{-- Script JavaScript --}}
 <script>
     // Fungsi buka modal void
     function openVoidModal(transactionId, transactionCode) {
-        document.getElementById('voidModal').classList.remove('hidden');
         document.getElementById('voidTransactionCode').textContent = transactionCode;
         document.getElementById('voidForm').action = `/admin/transactions/${transactionId}/void`;
+        document.getElementById('voidReason').value = '';
+        document.getElementById('voidReasonInput').value = '';
+        openModal('voidModal');
     }
 
     // Fungsi tutup modal void
     function closeVoidModal() {
-        document.getElementById('voidModal').classList.add('hidden');
+        closeModal('voidModal');
         document.getElementById('voidForm').reset();
+        document.getElementById('voidReason').value = '';
+    }
+    
+    // Fungsi submit form void
+    function submitVoidForm() {
+        const reason = document.getElementById('voidReason').value.trim();
+        if (!reason) {
+            alert('Please provide a reason for voiding this transaction.');
+            return false;
+        }
+        document.getElementById('voidReasonInput').value = reason;
+        return true;
     }
 </script>
 
