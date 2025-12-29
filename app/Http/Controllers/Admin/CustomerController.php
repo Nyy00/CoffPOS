@@ -270,7 +270,7 @@ class CustomerController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $customers
+                'customers' => $customers
             ]);
 
         } catch (\Exception $e) {

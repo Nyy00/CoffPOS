@@ -78,17 +78,41 @@ Route::get('/debug/db-test', function () {
     try {
         $transactionCount = \App\Models\Transaction::count();
         $expenseCount = \App\Models\Expense::count();
+        $customerCount = \App\Models\Customer::count();
         
         return response()->json([
             'database_connection' => 'OK',
             'transactions_count' => $transactionCount,
             'expenses_count' => $expenseCount,
+            'customers_count' => $customerCount,
             'sample_transaction' => \App\Models\Transaction::first(),
-            'sample_expense' => \App\Models\Expense::first()
+            'sample_expense' => \App\Models\Expense::first(),
+            'sample_customer' => \App\Models\Customer::first()
         ]);
     } catch (\Exception $e) {
         return response()->json([
             'database_connection' => 'FAILED',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
+
+// Test customer API directly
+Route::get('/debug/customers-api', function () {
+    try {
+        $customers = \App\Models\Customer::select('id', 'name', 'phone', 'email', 'points')
+            ->orderBy('name')
+            ->limit(10)
+            ->get();
+            
+        return response()->json([
+            'success' => true,
+            'customers' => $customers,
+            'count' => $customers->count()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
             'error' => $e->getMessage()
         ], 500);
     }

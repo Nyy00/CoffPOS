@@ -1144,12 +1144,25 @@ class POSSystem {
     async loadCustomers() {
         try {
             const response = await fetch('/cashier/customers/quick-search');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
             
-            this.customers = data.customers || [];
+            if (data.success) {
+                this.customers = data.customers || [];
+            } else {
+                console.error('API returned error:', data.message);
+                this.customers = [];
+            }
+            
             this.updateCustomerDropdown();
         } catch (error) {
             console.error('Error loading customers:', error);
+            this.customers = [];
+            this.updateCustomerDropdown();
         }
     }
     
@@ -1160,16 +1173,26 @@ class POSSystem {
         // Keep the first option (Walk-in Customer)
         const firstOption = customerSelect.querySelector('option[value=""]');
         customerSelect.innerHTML = '';
+        
         if (firstOption) {
             customerSelect.appendChild(firstOption);
+        } else {
+            // Create default option if it doesn't exist
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Pelanggan Umum';
+            customerSelect.appendChild(defaultOption);
         }
         
-        this.customers.forEach(customer => {
-            const option = document.createElement('option');
-            option.value = customer.id;
-            option.textContent = `${customer.name} - ${customer.phone || 'No phone'}`;
-            customerSelect.appendChild(option);
-        });
+        // Add customers if any
+        if (this.customers && this.customers.length > 0) {
+            this.customers.forEach(customer => {
+                const option = document.createElement('option');
+                option.value = customer.id;
+                option.textContent = `${customer.name}${customer.phone ? ' - ' + customer.phone : ''}`;
+                customerSelect.appendChild(option);
+            });
+        }
     }
     
     // Utility functions
