@@ -12,20 +12,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // For PostgreSQL, we need to alter the enum type
+        // For PostgreSQL, we need to handle the constraint properly
         if (DB::getDriverName() === 'pgsql') {
-            // Add the new enum value to the existing type
-            DB::statement("ALTER TYPE transactions_status_check ADD VALUE IF NOT EXISTS 'voided'");
+            // First, check if we're dealing with an enum column or check constraint
+            $constraintExists = DB::select("
+                SELECT constraint_name 
+                FROM information_schema.table_constraints 
+                WHERE table_name = 'transactions' 
+                AND constraint_type = 'CHECK' 
+                AND constraint_name LIKE '%status%'
+            ");
             
-            // If the above doesn't work, we'll drop and recreate the constraint
-            try {
-                DB::statement("ALTER TABLE transactions DROP CONSTRAINT IF EXISTS transactions_status_check");
-                DB::statement("ALTER TABLE transactions ADD CONSTRAINT transactions_status_check CHECK (status IN ('completed', 'cancelled', 'voided'))");
-            } catch (Exception $e) {
-                // Fallback: modify the column directly
-                DB::statement("ALTER TABLE transactions ALTER COLUMN status TYPE VARCHAR(20)");
-                DB::statement("ALTER TABLE transactions ADD CONSTRAINT transactions_status_check CHECK (status IN ('completed', 'cancelled', 'voided'))");
+            // Drop existing constraint if it exists
+            if (!empty($constraintExists)) {
+                foreach ($constraintExists as $constraint) {
+                    DB::statement("ALTER TABLE transactions DROP CONSTRAINT IF EXISTS {$constraint->constraint_name}");
+                }
             }
+            
+            // Convert column to varchar if it's not already
+            DB::statement("ALTER TABLE transactions ALTER COLUMN status TYPE VARCHAR(20)");
+            
+            // Add new constraint with voided status
+            DB::statement("ALTER TABLE transactions ADD CONSTRAINT transactions_status_check CHECK (status IN ('completed', 'cancelled', 'voided'))");
+            
         } else {
             // For MySQL and other databases
             Schema::table('transactions', function (Blueprint $table) {
@@ -35,9 +45,15 @@ return new class extends Migration
         
         // Add void-related columns
         Schema::table('transactions', function (Blueprint $table) {
-            $table->string('void_reason')->nullable()->after('status');
-            $table->foreignId('voided_by')->nullable()->constrained('users')->onDelete('set null')->after('void_reason');
-            $table->timestamp('voided_at')->nullable()->after('voided_by');
+            if (!Schema::hasColumn('transactions', 'void_reason')) {
+                $table->string('void_reason')->nullable()->after('status');
+            }
+            if (!Schema::hasColumn('transactions', 'voided_by')) {
+                $table->foreignId('voided_by')->nullable()->constrained('users')->onDelete('set null')->after('void_reason');
+            }
+            if (!Schema::hasColumn('transactions', 'voided_at')) {
+                $table->timestamp('voided_at')->nullable()->after('voided_by');
+            }
         });
     }
 
