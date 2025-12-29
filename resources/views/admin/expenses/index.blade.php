@@ -223,13 +223,13 @@
                         <td class="px-6 py-4">
                             @php
                                 $categoryColors = [
-                                    'inventory' => 'info',
-                                    'operational' => 'warning',
-                                    'salary' => 'success',
-                                    'utilities' => 'primary',
-                                    'marketing' => 'purple',
-                                    'maintenance' => 'secondary',
-                                    'other' => 'light'
+                                    'inventory' => 'purple',    
+                                    'operational' => 'orange',   
+                                    'salary' => 'emerald',        
+                                    'utilities' => 'cyan',       
+                                    'marketing' => 'pink',        
+                                    'maintenance' => 'amber',     
+                                    'other' => 'indigo'          
                                 ];
                                 $categoryLabels = [
                                     'inventory' => 'Inventory',

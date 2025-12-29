@@ -213,8 +213,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     datasets: [{
                         data: [],
                         backgroundColor: [
-                            '#ef4444', '#f97316', '#eab308', '#22c55e',
-                            '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'
+                            '#a855f7', '#f97316', '#10b981', '#06b6d4',
+                            '#ec4899', '#f59e0b', '#6366f1', '#ef4444'
                         ]
                     }]
                 },

@@ -95,13 +95,16 @@
                                 {{-- Mapping warna kategori --}}
                                 @php
                                     $categoryColors = [
-                                        'supplies' => 'info',
-                                        'equipment' => 'warning',
-                                        'utilities' => 'primary',
-                                        'rent' => 'danger',
-                                        'marketing' => 'success',
-                                        'maintenance' => 'secondary',
-                                        'other' => 'light'
+                                        'inventory' => 'purple',      // Purple untuk inventory - lebih menarik
+                                        'operational' => 'orange',    // Orange untuk operational - energik
+                                        'salary' => 'emerald',        // Emerald untuk salary - fresh
+                                        'utilities' => 'cyan',        // Cyan untuk utilities - modern
+                                        'marketing' => 'pink',        // Pink untuk marketing - creative
+                                        'maintenance' => 'amber',     // Amber untuk maintenance - warm
+                                        'supplies' => 'purple',       // Purple untuk supplies - sama dengan inventory
+                                        'equipment' => 'orange',      // Orange untuk equipment - sama dengan operational
+                                        'rent' => 'rose',            // Rose untuk rent - warm
+                                        'other' => 'indigo'          // Indigo untuk other - elegant
                                     ];
                                 @endphp
 

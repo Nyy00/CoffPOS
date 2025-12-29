@@ -445,8 +445,8 @@
                         datasets: [{
                             data: productsData.map(item => item.sold || item.total_sold || 0),
                             backgroundColor: [
-                                '#3B82F6', '#10B981', '#F59E0B', '#EF4444', 
-                                '#8B5CF6', '#06B6D4', '#84CC16', '#F97316'
+                                '#a855f7', '#10b981', '#f59e0b', '#ef4444', 
+                                '#ec4899', '#06b6d4', '#84cc16', '#f97316'
                             ],
                             borderWidth: 2,
                             borderColor: '#FFFFFF'
