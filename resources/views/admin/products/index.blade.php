@@ -183,10 +183,6 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($product->image)
-                                    @php
-                                        $fallbackImage = 'placeholder-product.png';
-                                        $productName = strtolower($product->name);
-                                        if (str_contains($productName, 'cheesecake')) $fallbackImage = 'cheesecake.jpg';
                                     <img src="@productImage($product->image, $product->name)" 
                                          alt="{{ $product->name }}" 
                                          class="h-12 w-12 rounded-lg object-cover">
