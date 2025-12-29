@@ -179,7 +179,7 @@
                         name="image" 
                         label="Product Image"
                         accept="image/*"
-                        :current-image="$product->image ? asset('images/products/' . str_replace('products/', '', $product->image)) : ''"
+                        :current-image="$product->image ? \App\Helpers\ImageHelper::getProductImageUrl($product->image, $product->name) : ''"
                     />
                     <p class="mt-2 text-sm text-gray-500">
                         Upload a new image to replace the current one, or leave empty to keep the existing image.

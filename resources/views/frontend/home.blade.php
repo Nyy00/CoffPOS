@@ -87,7 +87,7 @@
                         @endphp
                         <img src="@productImage($product->image, $product->name)" 
                              alt="{{ $product->name }}" 
-                             class="w-full h-full object-cover group-hover:scale-110 transition duration-300">>
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
                     @else
                         <div class="w-full h-full flex items-center justify-center">
                             <svg class="w-24 h-24 text-cream/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">

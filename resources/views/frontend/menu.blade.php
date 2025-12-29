@@ -77,7 +77,7 @@
                             @endphp
                             <img src="@productImage($product->image, $product->name)" 
                                  alt="{{ $product->name }}" 
-                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-300">>
+                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
                         @else
                             {{-- Icon default jika tidak ada gambar --}}
                             <svg class="w-20 h-20 text-cream" fill="currentColor" viewBox="0 0 20 20">
