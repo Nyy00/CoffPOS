@@ -144,11 +144,18 @@ class SimpleImageService
     {
         // Check if file is valid
         if (!$file->isValid()) {
-            throw new Exception('Invalid file upload');
+            $error = $file->getErrorMessage();
+            Log::error('Invalid file upload', ['error' => $error]);
+            throw new Exception('Invalid file upload: ' . $error);
         }
         
         // Check file size (5MB max)
-        if ($file->getSize() > 5242880) {
+        $maxSize = 5242880; // 5MB
+        if ($file->getSize() > $maxSize) {
+            Log::error('File size exceeds limit', [
+                'file_size' => $file->getSize(),
+                'max_size' => $maxSize
+            ]);
             throw new Exception("File size exceeds maximum allowed size of 5MB");
         }
         
@@ -158,6 +165,10 @@ class SimpleImageService
         
         if (!in_array($extension, $allowedTypes)) {
             $allowedTypesStr = implode(', ', $allowedTypes);
+            Log::error('Invalid file extension', [
+                'extension' => $extension,
+                'allowed' => $allowedTypes
+            ]);
             throw new Exception("Invalid file type. Allowed types: {$allowedTypesStr}");
         }
         
@@ -172,8 +183,18 @@ class SimpleImageService
         ];
         
         if (!in_array($mimeType, $allowedMimes)) {
+            Log::error('Invalid MIME type', [
+                'mime_type' => $mimeType,
+                'allowed' => $allowedMimes
+            ]);
             throw new Exception('Invalid MIME type. File must be a valid image.');
         }
+        
+        Log::info('File validation passed', [
+            'extension' => $extension,
+            'mime_type' => $mimeType,
+            'size' => $file->getSize()
+        ]);
         
         return true;
     }
