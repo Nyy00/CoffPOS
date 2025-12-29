@@ -27,6 +27,10 @@ class Transaction extends Model
         'payment_status',
         'notes',
         'transaction_date',
+        // Void fields
+        'void_reason',
+        'voided_by',
+        'voided_at',
         // Midtrans fields
         'midtrans_transaction_id',
         'midtrans_payment_type',
@@ -48,6 +52,7 @@ class Transaction extends Model
         'payment_amount' => 'decimal:2',
         'change_amount' => 'decimal:2',
         'transaction_date' => 'datetime',
+        'voided_at' => 'datetime',
         // Midtrans fields
         'midtrans_response' => 'array',
     ];
@@ -60,6 +65,11 @@ class Transaction extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function voidedBy()
+    {
+        return $this->belongsTo(User::class, 'voided_by');
     }
 
     public function transactionItems()
