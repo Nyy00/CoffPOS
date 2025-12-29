@@ -29,5 +29,22 @@ class AppServiceProvider extends ServiceProvider
         if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
             URL::forceScheme('https');
         }
+
+        // Register custom Blade directives for image handling
+        \Illuminate\Support\Facades\Blade::directive('productImage', function ($expression) {
+            return "<?php echo \App\Helpers\ImageHelper::getProductImageUrl($expression); ?>";
+        });
+
+        \Illuminate\Support\Facades\Blade::directive('categoryImage', function ($expression) {
+            return "<?php echo \App\Helpers\ImageHelper::getCategoryImageUrl($expression); ?>";
+        });
+
+        \Illuminate\Support\Facades\Blade::directive('avatarImage', function ($expression) {
+            return "<?php echo \App\Helpers\ImageHelper::getAvatarUrl($expression); ?>";
+        });
+
+        \Illuminate\Support\Facades\Blade::directive('receiptImage', function ($expression) {
+            return "<?php echo \App\Helpers\ImageHelper::getReceiptUrl($expression); ?>";
+        });
     }
 }

@@ -85,10 +85,9 @@
                             elseif (str_contains($productName, 'mocha')) $fallbackImage = 'mocha.jpg';
                             elseif (str_contains($productName, 'tea')) $fallbackImage = 'green-tea.jpg';
                         @endphp
-                        <img src="{{ asset('images/products/' . str_replace('products/', '', $product->image)) }}" 
+                        <img src="@productImage($product->image, $product->name)" 
                              alt="{{ $product->name }}" 
-                             class="w-full h-full object-cover group-hover:scale-110 transition duration-300"
-                             onerror="this.onerror=null; this.src='{{ asset('images/products/' . $fallbackImage) }}';">
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-300">>
                     @else
                         <div class="w-full h-full flex items-center justify-center">
                             <svg class="w-24 h-24 text-cream/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">

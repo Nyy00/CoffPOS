@@ -163,26 +163,55 @@ Route::get('/debug/test-login', function () {
 
 require __DIR__.'/auth.php';
 
-// Simple storage route for specific files (fallback when symlink fails)
-Route::get('/storage/logo.png', function () {
-    $file = storage_path('app/public/logo.png');
+// Storage routes for Railway (when symbolic link fails)
+Route::get('/storage/{folder}/{filename}', function ($folder, $filename) {
+    $allowedFolders = ['products', 'categories', 'avatars', 'receipts', 'images'];
+    
+    if (!in_array($folder, $allowedFolders)) {
+        abort(404);
+    }
+    
+    $file = storage_path("app/public/{$folder}/{$filename}");
+    
     if (!file_exists($file)) {
         abort(404);
     }
-    return response()->file($file, [
-        'Content-Type' => 'image/png',
-        'Cache-Control' => 'public, max-age=31536000',
-    ]);
-})->name('storage.logo');
-
-Route::get('/storage/products/{filename}', function ($filename) {
-    $file = storage_path('app/public/products/' . $filename);
-    if (!file_exists($file)) {
-        abort(404);
-    }
+    
     $mimeType = mime_content_type($file);
+    
     return response()->file($file, [
         'Content-Type' => $mimeType,
         'Cache-Control' => 'public, max-age=31536000',
     ]);
-})->where('filename', '[A-Za-z0-9\-_\.]+')->name('storage.products');
+})->where('filename', '[A-Za-z0-9\-_\.]+')->name('storage.file');
+
+// Fallback routes for images in public/images (backward compatibility)
+Route::get('/images/{folder}/{filename}', function ($folder, $filename) {
+    $allowedFolders = ['products', 'categories', 'avatars', 'receipts'];
+    
+    if (!in_array($folder, $allowedFolders)) {
+        abort(404);
+    }
+    
+    // First try storage
+    $storageFile = storage_path("app/public/{$folder}/{$filename}");
+    if (file_exists($storageFile)) {
+        $mimeType = mime_content_type($storageFile);
+        return response()->file($storageFile, [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'public, max-age=31536000',
+        ]);
+    }
+    
+    // Then try public/images
+    $publicFile = public_path("images/{$folder}/{$filename}");
+    if (file_exists($publicFile)) {
+        $mimeType = mime_content_type($publicFile);
+        return response()->file($publicFile, [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'public, max-age=31536000',
+        ]);
+    }
+    
+    abort(404);
+})->where('filename', '[A-Za-z0-9\-_\.]+')->name('images.file');

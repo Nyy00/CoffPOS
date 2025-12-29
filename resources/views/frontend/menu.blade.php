@@ -75,10 +75,9 @@
                                 elseif (str_contains($productName, 'mocha')) $fallbackImage = 'mocha.jpg';
                                 elseif (str_contains($productName, 'tea')) $fallbackImage = 'green-tea.jpg';
                             @endphp
-                            <img src="{{ asset('images/products/' . str_replace('products/', '', $product->image)) }}" 
+                            <img src="@productImage($product->image, $product->name)" 
                                  alt="{{ $product->name }}" 
-                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-300"
-                                 onerror="this.onerror=null; this.src='{{ asset('images/products/' . $fallbackImage) }}';">
+                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-300">>
                         @else
                             {{-- Icon default jika tidak ada gambar --}}
                             <svg class="w-20 h-20 text-cream" fill="currentColor" viewBox="0 0 20 20">
