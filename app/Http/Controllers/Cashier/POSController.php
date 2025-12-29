@@ -217,7 +217,7 @@ class POSController extends Controller
     }
 
     /**
-     * Process transaction with enhanced validation
+     * Process transaction with enhanced validation and Loyalty Points
      */
     public function processTransaction(Request $request)
     {
@@ -261,7 +261,37 @@ class POSController extends Controller
                 'notes' => $validated['notes']
             ];
 
+            // 1. Process Transaction (Save to DB)
             $transaction = $this->transactionService->processPOSTransaction($transactionData);
+
+            // ==========================================
+            // 2. LOGIKA LOYALTY POINTS (ADDED)
+            // ==========================================
+            if (!empty($validated['customer_id'])) {
+                $customer = Customer::find($validated['customer_id']);
+                
+                if ($customer) {
+                    // A. Kurangi poin jika customer menggunakan poin untuk diskon
+                    if (!empty($validated['use_loyalty_points']) && !empty($validated['loyalty_points_used'])) {
+                        $customer->decrement('loyalty_points', $validated['loyalty_points_used']);
+                    }
+
+                    // B. Tambah poin dari transaksi ini (Rp 1.000 = 1 Poin)
+                    // Menggunakan total_amount dari hasil kalkulasi transaksi
+                    $grandTotal = $transaction->total_amount;
+                    $pointsEarned = floor($grandTotal / 1000);
+                    
+                    if ($pointsEarned > 0) {
+                        $customer->increment('loyalty_points', $pointsEarned);
+                        
+                        // Opsional: Simpan log poin earned ke tabel transaksi jika kolomnya ada
+                        // $transaction->update(['points_earned' => $pointsEarned]);
+                    }
+                }
+            }
+            // ==========================================
+            // END LOGIKA LOYALTY POINTS
+            // ==========================================
 
             // Clear cart after successful transaction
             Session::forget('pos_cart');
@@ -545,7 +575,7 @@ class POSController extends Controller
                     'name' => $customer->name,
                     'phone' => $customer->phone,
                     'email' => $customer->email,
-                    'points' => $customer->points,
+                    'points' => $customer->loyalty_points, // Updated to correct column
                     'total_spent' => $totalSpent,
                     'total_transactions' => $totalTransactions,
                     'average_transaction' => $totalTransactions > 0 ? $totalSpent / $totalTransactions : 0,
@@ -577,7 +607,7 @@ class POSController extends Controller
                 'name' => $validated['name'],
                 'phone' => $validated['phone'],
                 'email' => $validated['email'],
-                'points' => 0
+                'loyalty_points' => 0 // Set default points
             ]);
 
             return response()->json([
@@ -610,7 +640,7 @@ class POSController extends Controller
             });
         }
 
-        $customers = $query->select('id', 'name', 'phone', 'email', 'points')
+        $customers = $query->select('id', 'name', 'phone', 'email', 'loyalty_points as points')
                           ->orderBy('name')
                           ->limit(10)
                           ->get();

@@ -5,7 +5,6 @@
 @section('content')
 <div class="py-6">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
         <div class="mb-6">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="flex items-center space-x-4">
@@ -41,13 +40,11 @@
             </div>
         </div>
 
-        <!-- Form -->
         <form action="{{ route('admin.customers.update', $customer) }}" method="POST">
             @csrf
             @method('PUT')
             
             <div class="space-y-6">
-                <!-- Personal Information -->
                 <x-card title="Personal Information">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <x-form.input 
@@ -93,22 +90,21 @@
                     </div>
                 </x-card>
 
-                <!-- Loyalty Program -->
                 <x-card title="Loyalty Program">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <x-form.input 
-                            name="loyalty_points" 
+                            name="points" 
                             label="Loyalty Points"
                             type="number"
                             min="0"
-                            :value="$customer->loyalty_points"
+                            :value="$customer->points"
                             placeholder="0"
                         />
                         
                         <div class="flex items-center justify-center">
                             <div class="text-center">
                                 <div class="text-sm text-gray-500">Current Points</div>
-                                <div class="text-2xl font-bold text-blue-600">{{ $customer->loyalty_points }}</div>
+                                <div class="text-2xl font-bold text-blue-600">{{ $customer->points }}</div>
                                 <div class="text-xs text-gray-400">Adjust points as needed</div>
                             </div>
                         </div>
@@ -129,7 +125,6 @@
                     </div>
                 </x-card>
 
-                <!-- Customer Statistics -->
                 @if($customer->transactions->count() > 0)
                 <x-card title="Customer Statistics">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -153,7 +148,6 @@
                 </x-card>
                 @endif
 
-                <!-- Form Actions -->
                 <div class="flex justify-end space-x-4">
                     <x-button href="{{ route('admin.customers.index') }}" variant="light">
                         Cancel

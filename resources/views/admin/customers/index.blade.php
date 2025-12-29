@@ -5,7 +5,6 @@
 @section('content')
 <div class="py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
         <div class="md:flex md:items-center md:justify-between mb-6">
             <div class="flex-1 min-w-0">
                 <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
@@ -25,7 +24,6 @@
             </div>
         </div>
 
-        <!-- Filters -->
         <x-card class="mb-6">
             <form method="GET" action="{{ route('admin.customers.index') }}" class="space-y-4 md:space-y-0 md:flex md:items-end md:space-x-4">
                 <div class="flex-1">
@@ -61,13 +59,12 @@
             </form>
         </x-card>
 
-        <!-- Customers Table -->
         <x-card>
             @if($customers->count() > 0)
                 <x-table :headers="[
                     ['label' => 'Customer', 'key' => 'name', 'sortable' => true],
                     ['label' => 'Contact', 'key' => 'contact'],
-                    ['label' => 'Loyalty Points', 'key' => 'loyalty_points', 'sortable' => true],
+                    ['label' => 'Loyalty Points', 'key' => 'points', 'sortable' => true],
                     ['label' => 'Total Spent', 'key' => 'total_spent', 'sortable' => true],
                     ['label' => 'Transactions', 'key' => 'transactions_count', 'sortable' => true],
                     ['label' => 'Joined', 'key' => 'created_at', 'sortable' => true],
@@ -103,7 +100,7 @@
                                 <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                 </svg>
-                                <span class="text-sm font-medium text-gray-900">{{ $customer->loyalty_points }}</span>
+                                <span class="text-sm font-bold text-gray-900">{{ number_format($customer->points ?? 0) }}</span>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -144,7 +141,6 @@
                     @endforeach
                 </x-table>
 
-                <!-- Pagination -->
                 <div class="mt-6">
                     <x-pagination :paginator="$customers" />
                 </div>
@@ -169,7 +165,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <x-modal-enhanced id="deleteModal" title="Delete Customer" type="danger">
     <p class="text-sm text-gray-500">
         Are you sure you want to delete <span id="customerName" class="font-medium"></span>?

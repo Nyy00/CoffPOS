@@ -141,6 +141,12 @@ class CustomerController extends Controller
     {
         $validated = $request->validated();
 
+        // FIX: Pastikan 'points' diambil dari request dan dimasukkan ke array validated
+        // Ini untuk berjaga-jaga jika 'points' tidak ada di rules CustomerRequest
+        if ($request->has('points')) {
+            $validated['points'] = $request->input('points');
+        }
+
         $customer->update($validated);
 
         return redirect()->route('admin.customers.index')
@@ -307,7 +313,7 @@ class CustomerController extends Controller
                 break;
         }
 
-        // Log points change (you might want to create a points_log table)
+        // Log points change
         \Log::info("Customer points updated", [
             'customer_id' => $customer->id,
             'old_points' => $oldPoints,
@@ -367,99 +373,5 @@ class CustomerController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
-    }
-
-    /**
-     * Quick search for POS system
-     */
-    public function quickSearch(Request $request)
-    {
-        $query = Customer::select('id', 'name', 'phone', 'email', 'points');
-
-        if ($request->filled('q')) {
-            $search = $request->q;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
-            });
-        }
-
-        $customers = $query->orderBy('name')->limit(20)->get();
-
-        return response()->json([
-            'success' => true,
-            'customers' => $customers
-        ]);
-    }
-
-    /**
-     * Quick add customer for POS
-     */
-    public function quickAdd(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20|unique:customers,phone',
-            'email' => 'nullable|email|max:255|unique:customers,email'
-        ]);
-
-        $customer = Customer::create([
-            'name' => $validated['name'],
-            'phone' => $validated['phone'],
-            'email' => $validated['email'],
-            'points' => 0
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'customer' => $customer,
-            'message' => 'Customer added successfully'
-        ]);
-    }
-
-    /**
-     * Get customer quick info for POS
-     */
-    public function getQuickInfo(Customer $customer)
-    {
-        $customer->load(['transactions' => function($query) {
-            $query->latest()->limit(5);
-        }]);
-
-        $totalSpent = $customer->transactions()->sum('total_amount');
-        $totalTransactions = $customer->transactions()->count();
-
-        return response()->json([
-            'success' => true,
-            'customer' => $customer,
-            'stats' => [
-                'total_spent' => $totalSpent,
-                'total_transactions' => $totalTransactions,
-                'average_transaction' => $totalTransactions > 0 ? $totalSpent / $totalTransactions : 0
-            ]
-        ]);
-    }
-
-    /**
-     * Apply loyalty points for POS
-     */
-    public function applyLoyaltyPoints(Request $request, Customer $customer)
-    {
-        $validated = $request->validate([
-            'points_to_use' => 'required|integer|min:1|max:' . $customer->points,
-            'transaction_total' => 'required|numeric|min:0'
-        ]);
-
-        $pointsValue = $validated['points_to_use']; // 1 point = 1 rupiah
-        $maxDiscount = $validated['transaction_total'] * 0.5; // Max 50% discount
-
-        $discountAmount = min($pointsValue, $maxDiscount);
-
-        return response()->json([
-            'success' => true,
-            'discount_amount' => $discountAmount,
-            'points_to_deduct' => $discountAmount, // 1:1 ratio
-            'remaining_points' => $customer->points - $discountAmount
-        ]);
     }
 }
