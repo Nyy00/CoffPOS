@@ -165,19 +165,22 @@ class POSSystem {
     }
     
     // Time management
+    // Utility functions
+    formatDateTime(date = null) {
+        const now = date ? new Date(date) : new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    }
+    
     updateTime() {
         const timeElement = document.getElementById('current-time');
         if (timeElement) {
-            const now = new Date();
-            // Use consistent format: DD/MM/YYYY HH:MM
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            
-            const timeString = `${day}/${month}/${year} ${hours}:${minutes}`;
-            timeElement.textContent = timeString;
+            timeElement.textContent = this.formatDateTime();
         }
     }
     
@@ -846,10 +849,17 @@ class POSSystem {
         
         // Update receipt modal content
         const receiptTransactionId = document.getElementById('receipt-transaction-id');
+        const receiptDatetime = document.getElementById('receipt-datetime');
         const receiptTotal = document.getElementById('receipt-total');
         const receiptPaymentMethod = document.getElementById('receipt-payment-method');
         
         if (receiptTransactionId) receiptTransactionId.textContent = `#${this.currentTransaction.transaction_code}`;
+        
+        // Update datetime with current time in consistent format
+        if (receiptDatetime) {
+            receiptDatetime.textContent = this.formatDateTime();
+        }
+        
         if (receiptTotal) receiptTotal.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(this.currentTransaction.total_amount)}`;
         if (receiptPaymentMethod) receiptPaymentMethod.textContent = this.currentTransaction.payment_method.charAt(0).toUpperCase() + this.currentTransaction.payment_method.slice(1);
         
@@ -1046,14 +1056,7 @@ class POSSystem {
         
         let html = '';
         heldTransactions.forEach(transaction => {
-            const heldDate = new Date(transaction.held_at);
-            // Use consistent format: DD/MM/YYYY HH:MM
-            const day = String(heldDate.getDate()).padStart(2, '0');
-            const month = String(heldDate.getMonth() + 1).padStart(2, '0');
-            const year = heldDate.getFullYear();
-            const hours = String(heldDate.getHours()).padStart(2, '0');
-            const minutes = String(heldDate.getMinutes()).padStart(2, '0');
-            const dateTimeString = `${day}/${month}/${year} ${hours}:${minutes}`;
+            const dateTimeString = this.formatDateTime(transaction.held_at);
             
             const itemCount = Object.keys(transaction.cart).length;
             let total = 0;
