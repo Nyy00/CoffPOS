@@ -275,19 +275,23 @@
                     @if($expense->receipt_image)
                         <div class="text-center">
                             <div class="mb-4">
-                                @if(Storage::exists($expense->receipt_image))
-                                    <img src="{{ Storage::url($expense->receipt_image) }}" 
+                                @php
+                                    $receiptUrl = \App\Helpers\ImageHelper::getReceiptUrl($expense->receipt_image);
+                                @endphp
+                                
+                                @if($receiptUrl)
+                                    <img src="{{ $receiptUrl }}" 
                                          alt="Receipt" 
                                          class="mx-auto max-w-full h-48 object-contain rounded-lg border">
                                 @else
                                     <div class="mx-auto w-48 h-48 bg-gray-100 rounded-lg border flex items-center justify-center">
-                                        <span class="text-gray-500">Receipt not found</span>
+                                        <span class="text-gray-500">Receipt not accessible</span>
                                     </div>
                                 @endif
                             </div>
                             <div class="space-y-2">
-                                @if(Storage::exists($expense->receipt_image))
-                                    <a href="{{ Storage::url($expense->receipt_image) }}" 
+                                @if($receiptUrl)
+                                    <a href="{{ $receiptUrl }}" 
                                        target="_blank" 
                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

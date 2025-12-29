@@ -220,7 +220,7 @@
                         name="receipt_image" 
                         label="Receipt Image"
                         accept="image/*,application/pdf"
-                        :current-image="$expense->receipt_image ? Storage::url($expense->receipt_image) : ''"
+                        :current-image="$expense->receipt_image ? \App\Helpers\ImageHelper::getReceiptUrl($expense->receipt_image) : ''"
                     />
 
                     {{-- Keterangan upload --}}
@@ -240,7 +240,7 @@
                                 <div>
                                     <h3 class="text-sm font-medium text-green-800">Current Receipt Available</h3>
                                     <div class="mt-1 text-sm text-green-700">
-                                        <a href="{{ Storage::url($expense->receipt_image) }}" target="_blank" class="underline hover:no-underline">
+                                        <a href="{{ \App\Helpers\ImageHelper::getReceiptUrl($expense->receipt_image) }}" target="_blank" class="underline hover:no-underline">
                                             View current receipt
                                         </a>
                                     </div>

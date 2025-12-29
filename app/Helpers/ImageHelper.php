@@ -121,7 +121,7 @@ class ImageHelper
      * Get receipt image URL
      * 
      * @param string|null $imagePath
-     * @return string
+     * @return string|null
      */
     public static function getReceiptUrl($imagePath)
     {
@@ -129,16 +129,42 @@ class ImageHelper
             return null;
         }
 
-        // Remove 'receipts/' prefix if it exists
+        // If path already starts with http/https, return as is
+        if (str_starts_with($imagePath, 'http')) {
+            return $imagePath;
+        }
+
+        // Remove 'receipts/' prefix if it exists (for backward compatibility)
         $cleanPath = str_replace('receipts/', '', $imagePath);
         
-        // Try storage first
+        // Try storage first (for new uploads)
         $storagePath = 'receipts/' . $cleanPath;
         if (Storage::disk('public')->exists($storagePath)) {
             return Storage::url($storagePath);
         }
 
-        // Fallback to asset
-        return asset('images/receipts/' . $cleanPath);
+        // Try without receipts folder (direct path)
+        if (Storage::disk('public')->exists($cleanPath)) {
+            return Storage::url($cleanPath);
+        }
+
+        // Try original path as is
+        if (Storage::disk('public')->exists($imagePath)) {
+            return Storage::url($imagePath);
+        }
+
+        // Fallback to asset (for existing files in public/images)
+        $assetPath = 'images/receipts/' . $cleanPath;
+        if (file_exists(public_path($assetPath))) {
+            return asset($assetPath);
+        }
+
+        // Try direct asset path
+        if (file_exists(public_path($imagePath))) {
+            return asset($imagePath);
+        }
+
+        // Return null if not found (don't show placeholder for receipts)
+        return null;
     }
 }
