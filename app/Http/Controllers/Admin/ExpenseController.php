@@ -88,6 +88,12 @@ class ExpenseController extends Controller
         $expensesCount = Expense::count();
         $averageExpense = $expensesCount > 0 ? $totalExpenses / $expensesCount : 0;
 
+        // Calculate monthly revenue for financial overview fallback
+        $monthlyRevenue = Transaction::whereMonth('created_at', Carbon::now()->month)
+                                   ->whereYear('created_at', Carbon::now()->year)
+                                   ->where('status', 'completed')
+                                   ->sum('total_amount');
+
         return view('admin.expenses.index', compact(
             'expenses', 
             'categories', 
@@ -97,7 +103,8 @@ class ExpenseController extends Controller
             'totalExpenses',
             'monthlyExpenses', 
             'expensesCount',
-            'averageExpense'
+            'averageExpense',
+            'monthlyRevenue'
         ));
     }
 
@@ -462,6 +469,8 @@ class ExpenseController extends Controller
         $period = $request->get('period', 'yearly');
         $year = $request->get('year', Carbon::now()->year);
         
+        \Log::info('Chart data request', ['period' => $period, 'year' => $year]);
+        
         if ($period === '30days') {
             // Return last 30 days data
             $startDate = Carbon::now()->subDays(30);
@@ -474,14 +483,18 @@ class ExpenseController extends Controller
             $totalExpenses = Expense::whereBetween('expense_date', [$startDate, $endDate])
                 ->sum('amount');
             
-            return response()->json([
+            $result = [
                 'success' => true,
                 'data' => [
                     'revenue' => (float) $totalRevenue,
                     'expenses' => (float) $totalExpenses,
                     'period' => '30days'
                 ]
-            ]);
+            ];
+            
+            \Log::info('Chart data response', $result);
+            
+            return response()->json($result);
         }
         
         // Default yearly chart data

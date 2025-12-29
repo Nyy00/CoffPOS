@@ -390,7 +390,10 @@
         `;
 
         // Fetch data from chart-data API with 30days period
-        fetch('{{ route("admin.expenses.chart-data.api") }}?period=30days')
+        const apiUrl = '{{ route("admin.expenses.chart-data.api") }}?period=30days';
+        console.log('Fetching from URL:', apiUrl);
+        
+        fetch(apiUrl)
             .then(response => {
                 console.log('Response status:', response.status);
                 console.log('Response headers:', response.headers);
@@ -409,17 +412,16 @@
 
                     container.innerHTML = `
                         <div class="text-center p-4 bg-blue-50 rounded-lg">
-                            <div class="text-lg font-semibold text-blue-900">Pendapatan</div>
+                            <div class="text-lg font-semibold text-blue-900">Monthly Revenue</div>
                             <div class="text-xl font-bold text-blue-600">Rp ${revenue.toLocaleString('id-ID')}</div>
                         </div>
                         <div class="text-center p-4 bg-red-50 rounded-lg">
-                            <div class="text-lg font-semibold text-red-900">Pengeluaran</div>
+                            <div class="text-lg font-semibold text-red-900">Monthly Expenses</div>
                             <div class="text-xl font-bold text-red-600">Rp ${expenses.toLocaleString('id-ID')}</div>
                         </div>
                         <div class="text-center p-4 ${profit >= 0 ? 'bg-green-50' : 'bg-red-50'} rounded-lg">
-                            <div class="text-lg font-semibold ${profit >= 0 ? 'text-green-900' : 'text-red-900'}">Keuntungan Bersih</div>
+                            <div class="text-lg font-semibold ${profit >= 0 ? 'text-green-900' : 'text-red-900'}">Net Profit (${profitMargin.toFixed(1)}%)</div>
                             <div class="text-xl font-bold ${profit >= 0 ? 'text-green-600' : 'text-red-600'}">Rp ${profit.toLocaleString('id-ID')}</div>
-                            <div class="text-sm ${profit >= 0 ? 'text-green-500' : 'text-red-500'}">${profitMargin.toFixed(1)}% margin</div>
                         </div>
                     `;
                 } else {
@@ -428,13 +430,33 @@
             })
             .catch(error => {
                 console.error('Error loading profit/loss data:', error);
+                
+                // Fallback: tampilkan data dari server-side jika API gagal
+                const fallbackRevenue = {{ $monthlyRevenue ?? 0 }};
+                const fallbackExpenses = {{ $monthlyExpenses ?? 0 }};
+                const fallbackProfit = fallbackRevenue - fallbackExpenses;
+                const fallbackMargin = fallbackRevenue > 0 ? ((fallbackProfit / fallbackRevenue) * 100) : 0;
+                
                 container.innerHTML = `
-                    <div class="col-span-3 text-center py-4">
-                        <p class="text-gray-500">Error loading financial overview: ${error.message}</p>
-                        <button onclick="loadProfitLossQuickView()" class="mt-2 text-indigo-600 hover:text-indigo-800 text-sm">Retry</button>
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <div class="text-lg font-semibold text-blue-900">Monthly Revenue</div>
+                        <div class="text-xl font-bold text-blue-600">Rp ${fallbackRevenue.toLocaleString('id-ID')}</div>
+                    </div>
+                    <div class="text-center p-4 bg-red-50 rounded-lg">
+                        <div class="text-lg font-semibold text-red-900">Monthly Expenses</div>
+                        <div class="text-xl font-bold text-red-600">Rp ${fallbackExpenses.toLocaleString('id-ID')}</div>
+                    </div>
+                    <div class="text-center p-4 ${fallbackProfit >= 0 ? 'bg-green-50' : 'bg-red-50'} rounded-lg">
+                        <div class="text-lg font-semibold ${fallbackProfit >= 0 ? 'text-green-900' : 'text-red-900'}">Net Profit (${fallbackMargin.toFixed(1)}%)</div>
+                        <div class="text-xl font-bold ${fallbackProfit >= 0 ? 'text-green-600' : 'text-red-600'}">Rp ${fallbackProfit.toLocaleString('id-ID')}</div>
+                    </div>
+                    <div class="col-span-3 text-center mt-2">
+                        <p class="text-xs text-gray-500">Using cached data - <button onclick="loadProfitLossQuickView()" class="text-indigo-600 hover:text-indigo-800">Retry API</button></p>
                     </div>
                 `;
             });
+    }
+
     // Function untuk filter berdasarkan kategori dari legend
     function filterByCategory(category) {
         const categorySelect = document.querySelector('select[name="category"]');
