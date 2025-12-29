@@ -43,6 +43,24 @@ class SetupDatabase extends Command
             $this->info('This is normal if data already exists.');
         }
         
+        // Create storage link
+        $this->info('Creating storage link...');
+        try {
+            Artisan::call('storage:link');
+            $this->info('Storage link created.');
+        } catch (\Exception $e) {
+            $this->warn('Storage link issue: ' . $e->getMessage());
+        }
+        
+        // Restore product images
+        $this->info('Restoring product images...');
+        try {
+            Artisan::call('products:backup-images', ['--restore' => true]);
+            $this->info('Product images restored.');
+        } catch (\Exception $e) {
+            $this->warn('Image restore issue: ' . $e->getMessage());
+        }
+        
         $this->info('Database setup completed successfully!');
         
         return 0;
