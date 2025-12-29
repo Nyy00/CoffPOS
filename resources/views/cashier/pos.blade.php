@@ -28,7 +28,7 @@
                     <span>•</span>
                     <span>Kasir: {{ auth()->user()->name }}</span>
                     <span>•</span>
-                    <span id="current-time">{{ now()->format('d M Y, H:i') }}</span>
+                    <span id="current-time">{{ now()->format('d/m/Y H:i') }}</span>
                 </div>
             </div>
             

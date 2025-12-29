@@ -169,13 +169,14 @@ class POSSystem {
         const timeElement = document.getElementById('current-time');
         if (timeElement) {
             const now = new Date();
-            const timeString = now.toLocaleDateString('id-ID', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            // Use consistent format: DD/MM/YYYY HH:MM
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            const timeString = `${day}/${month}/${year} ${hours}:${minutes}`;
             timeElement.textContent = timeString;
         }
     }
@@ -1046,6 +1047,14 @@ class POSSystem {
         let html = '';
         heldTransactions.forEach(transaction => {
             const heldDate = new Date(transaction.held_at);
+            // Use consistent format: DD/MM/YYYY HH:MM
+            const day = String(heldDate.getDate()).padStart(2, '0');
+            const month = String(heldDate.getMonth() + 1).padStart(2, '0');
+            const year = heldDate.getFullYear();
+            const hours = String(heldDate.getHours()).padStart(2, '0');
+            const minutes = String(heldDate.getMinutes()).padStart(2, '0');
+            const dateTimeString = `${day}/${month}/${year} ${hours}:${minutes}`;
+            
             const itemCount = Object.keys(transaction.cart).length;
             let total = 0;
             Object.values(transaction.cart).forEach(item => {
@@ -1067,7 +1076,7 @@ class POSSystem {
                     </div>
                     <div class="flex justify-between items-center text-sm text-gray-500 mb-3">
                         <span>Ditahan oleh: ${transaction.held_by}</span>
-                        <span>${heldDate.toLocaleDateString('id-ID')} ${heldDate.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'})}</span>
+                        <span>${dateTimeString}</span>
                     </div>
                     <div class="flex space-x-2">
                         <button onclick="pos.resumeHeldTransaction('${transaction.id}')" class="flex-1 py-2 px-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm">

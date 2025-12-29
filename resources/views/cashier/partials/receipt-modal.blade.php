@@ -32,7 +32,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Date & Time:</span>
-                            <span id="receipt-datetime">{{ now()->format('d M Y, H:i') }}</span>
+                            <span id="receipt-datetime">{{ now()->format('d/m/Y H:i') }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Cashier:</span>
