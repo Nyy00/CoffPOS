@@ -379,7 +379,7 @@ class ExpenseController extends Controller
                     'description' => $expense->description,
                     'category' => ucfirst($expense->category),
                     'amount' => (float) $expense->amount,
-                    'date' => $expense->expense_date->format('d M Y'),
+                    'date' => $expense->expense_date ? $expense->expense_date->format('d M Y') : null,
                     'user' => $expense->user->name
                 ];
             });
@@ -441,7 +441,7 @@ class ExpenseController extends Controller
                     ucfirst($expense->category),
                     $expense->description,
                     $expense->amount,
-                    $expense->expense_date->format('Y-m-d'),
+                    $expense->expense_date ? $expense->expense_date->format('Y-m-d') : null,
                     $expense->user->name,
                     $expense->receipt_image ? 'Yes' : 'No',
                     $expense->created_at->format('Y-m-d H:i:s')
@@ -649,21 +649,11 @@ class ExpenseController extends Controller
             ->whereBetween('expense_date', [$startDate, $endDate])
             ->groupBy('category')
             ->get()
-            ->map(function ($item) {
-                return [
-                    'category' => ucfirst($item->category),
-                    'amount' => (float) $item->total,
-                    'percentage' => 0 // Will be calculated below
-                ];
-            });
-
-        // Calculate percentages
-        if ($totalExpenses > 0) {
-            $expensesByCategory = $expensesByCategory->map(function ($item) use ($totalExpenses) {
-                $item['percentage'] = ($item['amount'] / $totalExpenses) * 100;
-                return $item;
-            });
-        }
+            ->pluck('total', 'category')
+            ->map(function ($amount, $category) {
+                return (float) $amount;
+            })
+            ->toArray();
 
         return [
             'period' => $period,

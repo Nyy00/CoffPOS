@@ -54,6 +54,46 @@ Route::middleware('auth')->group(function () {
 // Debug routes
 require __DIR__.'/debug.php';
 
+// Test P&L API without auth (remove after debugging)
+Route::get('/debug/pl-api', function () {
+    try {
+        $controller = app(\App\Http\Controllers\Admin\ExpenseController::class);
+        $request = new \Illuminate\Http\Request();
+        $request->merge(['period' => '12months', 'year' => 2025]);
+        
+        $response = $controller->getProfitLossData($request);
+        return $response;
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ], 500);
+    }
+});
+
+// Test database connection
+Route::get('/debug/db-test', function () {
+    try {
+        $transactionCount = \App\Models\Transaction::count();
+        $expenseCount = \App\Models\Expense::count();
+        
+        return response()->json([
+            'database_connection' => 'OK',
+            'transactions_count' => $transactionCount,
+            'expenses_count' => $expenseCount,
+            'sample_transaction' => \App\Models\Transaction::first(),
+            'sample_expense' => \App\Models\Expense::first()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'database_connection' => 'FAILED',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
+
 // Google OAuth debug route (remove after testing)
 Route::get('/debug/google-oauth', function () {
     return response()->json([
