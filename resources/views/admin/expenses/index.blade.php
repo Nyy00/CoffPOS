@@ -390,7 +390,7 @@
         `;
 
         // Fetch data from chart-data API with 30days period
-        fetch('/admin/expenses/chart-data/api?period=30days')
+        fetch('{{ route("admin.expenses.chart-data.api") }}?period=30days')
             .then(response => {
                 console.log('Response status:', response.status);
                 console.log('Response headers:', response.headers);
