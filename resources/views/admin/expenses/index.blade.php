@@ -354,22 +354,29 @@
             </div>
         `;
 
-        // Fetch data from API
+        // Fetch data from chart-data API with 30days period
         fetch('/admin/expenses/chart-data/api?period=30days')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
-                if (data.success) {
-                    const profit = data.data.revenue - data.data.expenses;
-                    const profitMargin = data.data.revenue > 0 ? ((profit / data.data.revenue) * 100) : 0;
+                if (data.success && data.data) {
+                    const revenue = data.data.revenue || 0;
+                    const expenses = data.data.expenses || 0;
+                    const profit = revenue - expenses;
+                    const profitMargin = revenue > 0 ? ((profit / revenue) * 100) : 0;
 
                     container.innerHTML = `
                         <div class="text-center p-4 bg-blue-50 rounded-lg">
                             <div class="text-lg font-semibold text-blue-900">Revenue</div>
-                            <div class="text-xl font-bold text-blue-600">Rp ${data.data.revenue.toLocaleString('id-ID')}</div>
+                            <div class="text-xl font-bold text-blue-600">Rp ${revenue.toLocaleString('id-ID')}</div>
                         </div>
                         <div class="text-center p-4 bg-red-50 rounded-lg">
                             <div class="text-lg font-semibold text-red-900">Expenses</div>
-                            <div class="text-xl font-bold text-red-600">Rp ${data.data.expenses.toLocaleString('id-ID')}</div>
+                            <div class="text-xl font-bold text-red-600">Rp ${expenses.toLocaleString('id-ID')}</div>
                         </div>
                         <div class="text-center p-4 ${profit >= 0 ? 'bg-green-50' : 'bg-red-50'} rounded-lg">
                             <div class="text-lg font-semibold ${profit >= 0 ? 'text-green-900' : 'text-red-900'}">Net Profit</div>
@@ -378,11 +385,7 @@
                         </div>
                     `;
                 } else {
-                    container.innerHTML = `
-                        <div class="col-span-3 text-center py-4">
-                            <p class="text-gray-500">Unable to load financial overview</p>
-                        </div>
-                    `;
+                    throw new Error('Invalid response format');
                 }
             })
             .catch(error => {

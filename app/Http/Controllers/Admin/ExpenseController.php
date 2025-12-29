@@ -459,8 +459,32 @@ class ExpenseController extends Controller
      */
     public function getChartData(Request $request)
     {
+        $period = $request->get('period', 'yearly');
         $year = $request->get('year', Carbon::now()->year);
         
+        if ($period === '30days') {
+            // Return last 30 days data
+            $startDate = Carbon::now()->subDays(30);
+            $endDate = Carbon::now();
+            
+            $totalRevenue = Transaction::whereBetween('created_at', [$startDate, $endDate])
+                ->where('status', 'completed')
+                ->sum('total_amount');
+                
+            $totalExpenses = Expense::whereBetween('expense_date', [$startDate, $endDate])
+                ->sum('amount');
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'revenue' => (float) $totalRevenue,
+                    'expenses' => (float) $totalExpenses,
+                    'period' => '30days'
+                ]
+            ]);
+        }
+        
+        // Default yearly chart data
         $monthlyData = Expense::selectRaw('MONTH(expense_date) as month, SUM(amount) as total')
             ->whereYear('expense_date', $year)
             ->groupBy('month')
@@ -473,11 +497,14 @@ class ExpenseController extends Controller
         for ($i = 1; $i <= 12; $i++) {
             $chartData[] = [
                 'month' => Carbon::create()->month($i)->format('M'),
-                'amount' => $monthlyData->get($i, 0)
+                'amount' => (float) $monthlyData->get($i, 0)
             ];
         }
 
-        return response()->json($chartData);
+        return response()->json([
+            'success' => true,
+            'data' => $chartData
+        ]);
     }
 
     /**
