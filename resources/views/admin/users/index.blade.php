@@ -8,6 +8,19 @@
 <div class="py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
+        {{-- ================= ALERT MESSAGES ================= --}}
+        @if(session('success'))
+            <x-alert type="success" class="mb-6">
+                {{ session('success') }}
+            </x-alert>
+        @endif
+
+        @if(session('error'))
+            <x-alert type="error" class="mb-6">
+                {{ session('error') }}
+            </x-alert>
+        @endif
+        
         {{-- ================= HEADER HALAMAN ================= --}}
         <div class="md:flex md:items-center md:justify-between mb-6">
             <div class="flex-1 min-w-0">
@@ -167,10 +180,15 @@
 
                                 {{-- Delete (kecuali akun sendiri) --}}
                                 @if($user->id !== auth()->id())
+                                    @php
+                                        $canDelete = !$user->transactions()->exists() && !$user->expenses()->exists();
+                                        $transactionCount = $user->transactions()->count();
+                                        $expenseCount = $user->expenses()->count();
+                                    @endphp
                                     <x-button 
                                         variant="ghost"
                                         size="sm"
-                                        onclick="confirmDelete('{{ $user->id }}','{{ $user->name }}','{{ $user->role }}')"
+                                        onclick="confirmDelete('{{ $user->id }}','{{ $user->name }}','{{ $user->role }}', {{ $canDelete ? 'true' : 'false' }}, {{ $transactionCount }}, {{ $expenseCount }})"
                                         class="text-red-600">
                                         Delete
                                     </x-button>
@@ -208,12 +226,17 @@
     <p class="text-sm text-red-600 mt-2">
         This action cannot be undone. All data associated with this user will be permanently deleted.
     </p>
+    <div id="deleteWarning" class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md hidden">
+        <p class="text-sm text-yellow-800">
+            <strong>Note:</strong> Users with transaction or expense history cannot be deleted for data integrity.
+        </p>
+    </div>
 
     <x-slot name="footer">
         <form id="deleteForm" method="POST" class="inline">
             @csrf
             @method('DELETE')
-            <x-button type="submit" variant="danger">Delete</x-button>
+            <x-button type="submit" variant="danger" id="deleteButton">Delete</x-button>
         </form>
         <x-button type="button" variant="light" onclick="closeModal('deleteModal')" class="ml-3">
             Cancel
@@ -222,10 +245,37 @@
 </x-modal-enhanced>
 
 <script>
-function confirmDelete(userId, userName, userRole) {
+function confirmDelete(userId, userName, userRole, canDelete, transactionCount, expenseCount) {
     document.getElementById('userName').textContent = userName;
     document.getElementById('userRole').textContent = userRole;
     document.getElementById('deleteForm').action = `/admin/users/${userId}`;
+    
+    const deleteButton = document.getElementById('deleteButton');
+    const deleteWarning = document.getElementById('deleteWarning');
+    
+    if (!canDelete) {
+        // Show warning and disable delete button
+        deleteWarning.classList.remove('hidden');
+        deleteButton.disabled = true;
+        deleteButton.classList.add('opacity-50', 'cursor-not-allowed');
+        
+        let warningText = 'This user cannot be deleted because they have ';
+        if (transactionCount > 0 && expenseCount > 0) {
+            warningText += `${transactionCount} transaction(s) and ${expenseCount} expense(s).`;
+        } else if (transactionCount > 0) {
+            warningText += `${transactionCount} transaction(s).`;
+        } else if (expenseCount > 0) {
+            warningText += `${expenseCount} expense(s).`;
+        }
+        
+        deleteWarning.querySelector('p').innerHTML = `<strong>Cannot Delete:</strong> ${warningText}`;
+    } else {
+        // Hide warning and enable delete button
+        deleteWarning.classList.add('hidden');
+        deleteButton.disabled = false;
+        deleteButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+    
     openModal('deleteModal');
 }
 </script>
