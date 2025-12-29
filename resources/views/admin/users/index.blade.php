@@ -79,7 +79,7 @@
 
         {{-- ================= TABEL USER ================= --}}
         <x-card>
-            @if($users->count() > 0)
+            @if($users->isNotEmpty())
 
                 {{-- Komponen tabel --}}
                 <x-table :headers="[
@@ -198,6 +198,29 @@
 </div>
 
 {{-- ================= SCRIPT DELETE MODAL ================= --}}
+
+{{-- Modal konfirmasi hapus user --}}
+<x-modal-enhanced id="deleteModal" title="Delete User" type="danger">
+    <p class="text-sm text-gray-500">
+        Are you sure you want to delete user <span id="userName" class="font-medium"></span> 
+        with role <span id="userRole" class="font-medium"></span>?
+    </p>
+    <p class="text-sm text-red-600 mt-2">
+        This action cannot be undone. All data associated with this user will be permanently deleted.
+    </p>
+
+    <x-slot name="footer">
+        <form id="deleteForm" method="POST" class="inline">
+            @csrf
+            @method('DELETE')
+            <x-button type="submit" variant="danger">Delete</x-button>
+        </form>
+        <x-button type="button" variant="light" onclick="closeModal('deleteModal')" class="ml-3">
+            Cancel
+        </x-button>
+    </x-slot>
+</x-modal-enhanced>
+
 <script>
 function confirmDelete(userId, userName, userRole) {
     document.getElementById('userName').textContent = userName;
