@@ -392,12 +392,15 @@
         // Fetch data from chart-data API with 30days period
         fetch('/admin/expenses/chart-data/api?period=30days')
             .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
+                console.log('Received data:', data);
                 if (data.success && data.data) {
                     const revenue = data.data.revenue || 0;
                     const expenses = data.data.expenses || 0;
@@ -406,15 +409,15 @@
 
                     container.innerHTML = `
                         <div class="text-center p-4 bg-blue-50 rounded-lg">
-                            <div class="text-lg font-semibold text-blue-900">Revenue</div>
+                            <div class="text-lg font-semibold text-blue-900">Pendapatan</div>
                             <div class="text-xl font-bold text-blue-600">Rp ${revenue.toLocaleString('id-ID')}</div>
                         </div>
                         <div class="text-center p-4 bg-red-50 rounded-lg">
-                            <div class="text-lg font-semibold text-red-900">Expenses</div>
+                            <div class="text-lg font-semibold text-red-900">Pengeluaran</div>
                             <div class="text-xl font-bold text-red-600">Rp ${expenses.toLocaleString('id-ID')}</div>
                         </div>
                         <div class="text-center p-4 ${profit >= 0 ? 'bg-green-50' : 'bg-red-50'} rounded-lg">
-                            <div class="text-lg font-semibold ${profit >= 0 ? 'text-green-900' : 'text-red-900'}">Net Profit</div>
+                            <div class="text-lg font-semibold ${profit >= 0 ? 'text-green-900' : 'text-red-900'}">Keuntungan Bersih</div>
                             <div class="text-xl font-bold ${profit >= 0 ? 'text-green-600' : 'text-red-600'}">Rp ${profit.toLocaleString('id-ID')}</div>
                             <div class="text-sm ${profit >= 0 ? 'text-green-500' : 'text-red-500'}">${profitMargin.toFixed(1)}% margin</div>
                         </div>
@@ -427,7 +430,7 @@
                 console.error('Error loading profit/loss data:', error);
                 container.innerHTML = `
                     <div class="col-span-3 text-center py-4">
-                        <p class="text-gray-500">Error loading financial overview</p>
+                        <p class="text-gray-500">Error loading financial overview: ${error.message}</p>
                         <button onclick="loadProfitLossQuickView()" class="mt-2 text-indigo-600 hover:text-indigo-800 text-sm">Retry</button>
                     </div>
                 `;

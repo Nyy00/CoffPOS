@@ -64,136 +64,6 @@
 
         {{-- ================= FORM EDIT EXPENSE ================= --}}
         
-        {{-- Informasi kategori lengkap --}}
-        <x-card title="Category Information Guide" class="mb-6">
-            <p class="text-sm text-gray-600 mb-4">
-                Choose the appropriate category for your expense. Each category has a specific color code and purpose to help organize your business expenses effectively.
-            </p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                @php
-                    $categoryGuide = [
-                        'inventory' => [
-                            'color' => 'purple',
-                            'bg' => 'bg-purple-50',
-                            'border' => 'border-purple-200',
-                            'text' => 'text-purple-800',
-                            'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
-                            'title' => 'Inventory & Supplies',
-                            'description' => 'Coffee beans, cups, napkins, food ingredients, packaging materials',
-                            'examples' => ['Coffee beans', 'Disposable cups', 'Food ingredients', 'Packaging']
-                        ],
-                        'operational' => [
-                            'color' => 'orange',
-                            'bg' => 'bg-orange-50',
-                            'border' => 'border-orange-200',
-                            'text' => 'text-orange-800',
-                            'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
-                            'title' => 'Operational Costs',
-                            'description' => 'Rent, insurance, licenses, permits, professional services',
-                            'examples' => ['Monthly rent', 'Business insurance', 'Licenses', 'Legal fees']
-                        ],
-                        'salary' => [
-                            'color' => 'emerald',
-                            'bg' => 'bg-emerald-50',
-                            'border' => 'border-emerald-200',
-                            'text' => 'text-emerald-800',
-                            'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
-                            'title' => 'Salary & Benefits',
-                            'description' => 'Staff wages, benefits, bonuses, training costs',
-                            'examples' => ['Monthly salaries', 'Employee benefits', 'Bonuses', 'Training']
-                        ],
-                        'utilities' => [
-                            'color' => 'cyan',
-                            'bg' => 'bg-cyan-50',
-                            'border' => 'border-cyan-200',
-                            'text' => 'text-cyan-800',
-                            'icon' => 'M13 10V3L4 14h7v7l9-11h-7z',
-                            'title' => 'Utilities',
-                            'description' => 'Electricity, water, gas, internet, phone bills',
-                            'examples' => ['Electricity bills', 'Water bills', 'Internet', 'Phone service']
-                        ],
-                        'marketing' => [
-                            'color' => 'pink',
-                            'bg' => 'bg-pink-50',
-                            'border' => 'border-pink-200',
-                            'text' => 'text-pink-800',
-                            'icon' => 'M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z',
-                            'title' => 'Marketing & Advertising',
-                            'description' => 'Advertising, promotions, social media, website costs',
-                            'examples' => ['Social media ads', 'Promotional materials', 'Website', 'Events']
-                        ],
-                        'maintenance' => [
-                            'color' => 'amber',
-                            'bg' => 'bg-amber-50',
-                            'border' => 'border-amber-200',
-                            'text' => 'text-amber-800',
-                            'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z',
-                            'title' => 'Maintenance & Repairs',
-                            'description' => 'Equipment repairs, cleaning supplies, facility maintenance',
-                            'examples' => ['Equipment repairs', 'Cleaning supplies', 'Maintenance', 'Parts']
-                        ],
-                        'other' => [
-                            'color' => 'indigo',
-                            'bg' => 'bg-indigo-50',
-                            'border' => 'border-indigo-200',
-                            'text' => 'text-indigo-800',
-                            'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-                            'title' => 'Other Expenses',
-                            'description' => 'Miscellaneous expenses that don\'t fit other categories',
-                            'examples' => ['Office supplies', 'Miscellaneous', 'One-time costs', 'Others']
-                        ]
-                    ];
-                @endphp
-                
-                @foreach($categoryGuide as $key => $guide)
-                    <div class="category-guide-item p-4 rounded-lg {{ $guide['bg'] }} {{ $guide['border'] }} border cursor-pointer hover:shadow-md transition-all duration-200 {{ $expense->category === $key ? 'ring-2 ring-offset-2 ring-' . $guide['color'] . '-500' : '' }}" 
-                         onclick="selectCategory('{{ $key }}')" 
-                         data-category="{{ $key }}">
-                        <div class="flex items-start space-x-3">
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 {{ $guide['bg'] }} rounded-full flex items-center justify-center border {{ $guide['border'] }}">
-                                    <svg class="w-5 h-5 {{ $guide['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $guide['icon'] }}"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center space-x-2 mb-1">
-                                    <h4 class="text-sm font-semibold {{ $guide['text'] }}">{{ $guide['title'] }}</h4>
-                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-{{ $guide['color'] }}-100 text-{{ $guide['color'] }}-700">
-                                        {{ ucfirst($guide['color']) }}
-                                    </span>
-                                    @if($expense->category === $key)
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">
-                                            Current
-                                        </span>
-                                    @endif
-                                </div>
-                                <p class="text-xs {{ $guide['text'] }} opacity-80 mb-2">
-                                    {{ $guide['description'] }}
-                                </p>
-                                <div class="text-xs {{ $guide['text'] }} opacity-70">
-                                    <strong>Examples:</strong> {{ implode(', ', $guide['examples']) }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-            
-            <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div class="flex items-start space-x-2">
-                    <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <div class="text-sm text-blue-800">
-                        <strong>Tip:</strong> Click on any category above to change the current selection. The current category is highlighted with a "Current" badge.
-                    </div>
-                </div>
-            </div>
-        </x-card>
-
         <form action="{{ route('admin.expenses.update', $expense) }}" method="POST" enctype="multipart/form-data">
             {{-- CSRF protection --}}
             @csrf
@@ -445,6 +315,136 @@
                 </div>
             </div>
         </form>
+
+        {{-- ================= PANDUAN KATEGORI ================= --}}
+        <x-card title="Panduan Kategori Pengeluaran" class="mt-6">
+            <p class="text-sm text-gray-600 mb-4">
+                Pilih kategori yang sesuai untuk pengeluaran Anda. Setiap kategori memiliki kode warna khusus dan tujuan untuk membantu mengorganisir pengeluaran bisnis secara efektif.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                @php
+                    $categoryGuide = [
+                        'inventory' => [
+                            'color' => 'purple',
+                            'bg' => 'bg-purple-50',
+                            'border' => 'border-purple-200',
+                            'text' => 'text-purple-800',
+                            'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+                            'title' => 'Inventori & Persediaan',
+                            'description' => 'Biji kopi, gelas, serbet, bahan makanan, kemasan',
+                            'examples' => ['Biji kopi', 'Gelas sekali pakai', 'Bahan makanan', 'Kemasan']
+                        ],
+                        'operational' => [
+                            'color' => 'orange',
+                            'bg' => 'bg-orange-50',
+                            'border' => 'border-orange-200',
+                            'text' => 'text-orange-800',
+                            'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+                            'title' => 'Biaya Operasional',
+                            'description' => 'Sewa, asuransi, izin, perizinan, jasa profesional',
+                            'examples' => ['Sewa bulanan', 'Asuransi bisnis', 'Izin usaha', 'Biaya hukum']
+                        ],
+                        'salary' => [
+                            'color' => 'emerald',
+                            'bg' => 'bg-emerald-50',
+                            'border' => 'border-emerald-200',
+                            'text' => 'text-emerald-800',
+                            'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
+                            'title' => 'Gaji & Tunjangan',
+                            'description' => 'Gaji karyawan, tunjangan, bonus, biaya pelatihan',
+                            'examples' => ['Gaji bulanan', 'Tunjangan karyawan', 'Bonus', 'Pelatihan']
+                        ],
+                        'utilities' => [
+                            'color' => 'cyan',
+                            'bg' => 'bg-cyan-50',
+                            'border' => 'border-cyan-200',
+                            'text' => 'text-cyan-800',
+                            'icon' => 'M13 10V3L4 14h7v7l9-11h-7z',
+                            'title' => 'Utilitas',
+                            'description' => 'Listrik, air, gas, internet, telepon',
+                            'examples' => ['Tagihan listrik', 'Tagihan air', 'Internet', 'Layanan telepon']
+                        ],
+                        'marketing' => [
+                            'color' => 'pink',
+                            'bg' => 'bg-pink-50',
+                            'border' => 'border-pink-200',
+                            'text' => 'text-pink-800',
+                            'icon' => 'M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z',
+                            'title' => 'Pemasaran & Iklan',
+                            'description' => 'Iklan, promosi, media sosial, biaya website',
+                            'examples' => ['Iklan media sosial', 'Materi promosi', 'Website', 'Event']
+                        ],
+                        'maintenance' => [
+                            'color' => 'amber',
+                            'bg' => 'bg-amber-50',
+                            'border' => 'border-amber-200',
+                            'text' => 'text-amber-800',
+                            'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z',
+                            'title' => 'Pemeliharaan & Perbaikan',
+                            'description' => 'Perbaikan peralatan, perlengkapan kebersihan, pemeliharaan fasilitas',
+                            'examples' => ['Perbaikan peralatan', 'Perlengkapan kebersihan', 'Pemeliharaan', 'Suku cadang']
+                        ],
+                        'other' => [
+                            'color' => 'indigo',
+                            'bg' => 'bg-indigo-50',
+                            'border' => 'border-indigo-200',
+                            'text' => 'text-indigo-800',
+                            'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+                            'title' => 'Pengeluaran Lainnya',
+                            'description' => 'Pengeluaran lain-lain yang tidak masuk kategori tertentu',
+                            'examples' => ['Perlengkapan kantor', 'Lain-lain', 'Biaya satu kali', 'Lainnya']
+                        ]
+                    ];
+                @endphp
+                
+                @foreach($categoryGuide as $key => $guide)
+                    <div class="category-guide-item p-4 rounded-lg {{ $guide['bg'] }} {{ $guide['border'] }} border cursor-pointer hover:shadow-md transition-all duration-200 {{ $expense->category === $key ? 'ring-2 ring-offset-2 ring-' . $guide['color'] . '-500' : '' }}" 
+                         onclick="selectCategory('{{ $key }}')" 
+                         data-category="{{ $key }}">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 {{ $guide['bg'] }} rounded-full flex items-center justify-center border {{ $guide['border'] }}">
+                                    <svg class="w-5 h-5 {{ $guide['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $guide['icon'] }}"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h4 class="text-sm font-semibold {{ $guide['text'] }}">{{ $guide['title'] }}</h4>
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-{{ $guide['color'] }}-100 text-{{ $guide['color'] }}-700">
+                                        {{ ucfirst($guide['color']) }}
+                                    </span>
+                                    @if($expense->category === $key)
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">
+                                            Saat Ini
+                                        </span>
+                                    @endif
+                                </div>
+                                <p class="text-xs {{ $guide['text'] }} opacity-80 mb-2">
+                                    {{ $guide['description'] }}
+                                </p>
+                                <div class="text-xs {{ $guide['text'] }} opacity-70">
+                                    <strong>Contoh:</strong> {{ implode(', ', $guide['examples']) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            
+            <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="flex items-start space-x-2">
+                    <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div class="text-sm text-blue-800">
+                        <strong>Tips:</strong> Klik pada kategori di atas untuk mengubah pilihan saat ini. Kategori yang sedang dipilih ditandai dengan badge "Saat Ini".
+                    </div>
+                </div>
+            </div>
+        </x-card>
     </div>
 </div>
 
@@ -551,13 +551,13 @@ function selectCategory(category) {
 // Function untuk menampilkan feedback ketika kategori dipilih
 function showCategorySelectedFeedback(category) {
     const categoryLabels = {
-        'inventory': 'Inventory & Supplies',
-        'operational': 'Operational Costs',
-        'salary': 'Salary & Benefits',
-        'utilities': 'Utilities',
-        'marketing': 'Marketing & Advertising',
-        'maintenance': 'Maintenance & Repairs',
-        'other': 'Other Expenses'
+        'inventory': 'Inventori & Persediaan',
+        'operational': 'Biaya Operasional',
+        'salary': 'Gaji & Tunjangan',
+        'utilities': 'Utilitas',
+        'marketing': 'Pemasaran & Iklan',
+        'maintenance': 'Pemeliharaan & Perbaikan',
+        'other': 'Pengeluaran Lainnya'
     };
     
     // Create temporary notification
@@ -568,7 +568,7 @@ function showCategorySelectedFeedback(category) {
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
-            <span class="font-medium">Category updated: ${categoryLabels[category] || category}</span>
+            <span class="font-medium">Kategori diperbarui: ${categoryLabels[category] || category}</span>
         </div>
     `;
     
