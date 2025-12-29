@@ -1,155 +1,211 @@
+{{-- Menggunakan layout utama frontend --}}
 @extends('layouts.frontend')
 
+{{-- Judul halaman --}}
 @section('title', 'About Us')
 
+{{-- Konten utama halaman --}}
 @section('content')
-<!-- Hero Section -->
+
 <section class="bg-gradient-to-br from-coffee-dark to-coffee-brown text-white py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {{-- Judul halaman --}}
         <h1 class="text-5xl font-bold font-heading mb-4">About CoffPOS</h1>
-        <p class="text-xl text-cream/90">Our story, our passion, our coffee</p>
+
+        {{-- Subjudul --}}
+        <p class="text-xl text-cream/90">
+            Our story, our passion, our coffee
+        </p>
     </div>
 </section>
 
-<!-- Our Story -->
 <section class="py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {{-- Judul dan deskripsi cerita --}}
         <div class="text-center mb-12">
-            <h2 class="text-4xl font-bold font-heading text-coffee-dark mb-6">Our Story</h2>
+            <h2 class="text-4xl font-bold font-heading text-coffee-dark mb-6">
+                Our Story
+            </h2>
             <p class="text-lg text-gray-700 leading-relaxed">
-                CoffPOS started in 2020 with a simple mission: to bring the finest coffee experience to our community. 
-                What began as a small coffee cart has grown into a beloved local coffee shop, serving hundreds of happy customers every day.
+                CoffPOS started in 2020 with a simple mission: to bring the finest coffee experience to our community.
+                What began as a small coffee cart has grown into a beloved local coffee shop.
             </p>
         </div>
 
         <div class="grid md:grid-cols-2 gap-8 mb-16">
+
             <div class="bg-white p-8 rounded-2xl shadow-lg">
+                {{-- Icon --}}
                 <div class="mb-4">
                     <svg class="w-12 h-12 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                 </div>
-                <h3 class="text-2xl font-bold text-coffee-dark mb-3">Our Mission</h3>
+
+                {{-- Judul misi --}}
+                <h3 class="text-2xl font-bold text-coffee-dark mb-3">
+                    Our Mission
+                </h3>
+
+                {{-- Deskripsi misi --}}
                 <p class="text-gray-600">
-                    To provide exceptional coffee experiences that brighten our customers' days, 
-                    one cup at a time. We believe great coffee brings people together.
+                    To provide exceptional coffee experiences that brighten our customers' days.
                 </p>
             </div>
 
             <div class="bg-white p-8 rounded-2xl shadow-lg">
+                {{-- Icon --}}
                 <div class="mb-4">
                     <svg class="w-12 h-12 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7z"/>
                     </svg>
                 </div>
-                <h3 class="text-2xl font-bold text-coffee-dark mb-3">Our Vision</h3>
+
+                {{-- Judul visi --}}
+                <h3 class="text-2xl font-bold text-coffee-dark mb-3">
+                    Our Vision
+                </h3>
+
+                {{-- Deskripsi visi --}}
                 <p class="text-gray-600">
-                    To become the most loved coffee shop in the region, known for quality, 
-                    consistency, and warm hospitality that makes everyone feel at home.
+                    To become the most loved coffee shop in the region.
                 </p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Our Values -->
 <section class="bg-cream py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {{-- Judul values --}}
         <div class="text-center mb-12">
-            <h2 class="text-4xl font-bold font-heading text-coffee-dark mb-4">Our Values</h2>
-            <p class="text-lg text-gray-600">What we stand for</p>
+            <h2 class="text-4xl font-bold font-heading text-coffee-dark mb-4">
+                Our Values
+            </h2>
+            <p class="text-lg text-gray-600">
+                What we stand for
+            </p>
         </div>
 
         <div class="grid md:grid-cols-4 gap-8">
-            <div class="text-center">
-                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-10 h-10 text-coffee-dark" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+
+            {{-- Value: Quality (SUDAH DIPERBAIKI) --}}
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4 transition transform group-hover:scale-110 duration-300">
+                    <svg class="w-10 h-10 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z" />
                     </svg>
                 </div>
                 <h3 class="text-xl font-bold text-coffee-dark mb-2">Quality</h3>
-                <p class="text-gray-600">Only the best beans and ingredients</p>
+                <p class="text-gray-600">Only the best beans</p>
             </div>
 
-            <div class="text-center">
-                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4">
+            {{-- Value: Community (SUDAH DIPERBAIKI) --}}
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4 transition transform group-hover:scale-110 duration-300">
                     <svg class="w-10 h-10 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 12H9m4 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                 </div>
                 <h3 class="text-xl font-bold text-coffee-dark mb-2">Community</h3>
-                <p class="text-gray-600">Building connections through coffee</p>
+                <p class="text-gray-600">Building connections</p>
             </div>
 
-            <div class="text-center">
-                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4">
+            {{-- Value: Sustainability (SUDAH DIPERBAIKI) --}}
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4 transition transform group-hover:scale-110 duration-300">
                     <svg class="w-10 h-10 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
                 <h3 class="text-xl font-bold text-coffee-dark mb-2">Sustainability</h3>
-                <p class="text-gray-600">Caring for our planet and farmers</p>
+                <p class="text-gray-600">Caring for planet</p>
             </div>
 
-            <div class="text-center">
-                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4">
+            {{-- Value: Innovation (SUDAH DIPERBAIKI) --}}
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4 transition transform group-hover:scale-110 duration-300">
                     <svg class="w-10 h-10 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                 </div>
                 <h3 class="text-xl font-bold text-coffee-dark mb-2">Innovation</h3>
-                <p class="text-gray-600">Always improving and evolving</p>
+                <p class="text-gray-600">Always improving</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Our Team -->
 <section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {{-- Judul tim --}}
         <div class="text-center mb-12">
-            <h2 class="text-4xl font-bold font-heading text-coffee-dark mb-4">Meet Our Team</h2>
-            <p class="text-lg text-gray-600">The passionate people behind your perfect cup</p>
+            <h2 class="text-4xl font-bold font-heading text-coffee-dark mb-4">
+                Meet Our Team
+            </h2>
+            <p class="text-lg text-gray-600">
+                The people behind your coffee
+            </p>
         </div>
 
         <div class="grid md:grid-cols-3 gap-8">
+
+            {{-- Member 1 --}}
             <div class="text-center">
                 <div class="w-32 h-32 bg-gradient-to-br from-light-coffee to-coffee-brown rounded-full mx-auto mb-4 flex items-center justify-center text-white text-4xl font-bold">
                     JD
                 </div>
                 <h3 class="text-xl font-bold text-coffee-dark mb-1">John Doe</h3>
                 <p class="text-gold font-semibold mb-2">Head Barista</p>
-                <p class="text-gray-600 text-sm">10 years of coffee expertise</p>
+                <p class="text-gray-600 text-sm">10 years experience</p>
             </div>
 
+            {{-- Member 2 --}}
             <div class="text-center">
                 <div class="w-32 h-32 bg-gradient-to-br from-light-coffee to-coffee-brown rounded-full mx-auto mb-4 flex items-center justify-center text-white text-4xl font-bold">
                     JS
                 </div>
                 <h3 class="text-xl font-bold text-coffee-dark mb-1">Jane Smith</h3>
                 <p class="text-gold font-semibold mb-2">Coffee Roaster</p>
-                <p class="text-gray-600 text-sm">Master of roasting perfection</p>
+                <p class="text-gray-600 text-sm">Roasting expert</p>
             </div>
 
+            {{-- Member 3 --}}
             <div class="text-center">
                 <div class="w-32 h-32 bg-gradient-to-br from-light-coffee to-coffee-brown rounded-full mx-auto mb-4 flex items-center justify-center text-white text-4xl font-bold">
                     MB
                 </div>
                 <h3 class="text-xl font-bold text-coffee-dark mb-1">Mike Brown</h3>
                 <p class="text-gold font-semibold mb-2">Store Manager</p>
-                <p class="text-gray-600 text-sm">Ensuring great experiences</p>
+                <p class="text-gray-600 text-sm">Customer experience</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CTA -->
 <section class="bg-gradient-to-r from-coffee-brown to-coffee-dark text-white py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-4xl font-bold font-heading mb-4">Join Our Coffee Community</h2>
-        <p class="text-xl text-cream/90 mb-8">Visit us today and experience the CoffPOS difference</p>
-        <a href="{{ route('contact') }}" class="inline-block bg-gold text-coffee-dark px-8 py-4 rounded-full font-semibold text-lg hover:bg-light-coffee transition">
+
+        {{-- Judul CTA --}}
+        <h2 class="text-4xl font-bold font-heading mb-4">
+            Join Our Coffee Community
+        </h2>
+
+        {{-- Deskripsi CTA --}}
+        <p class="text-xl text-cream/90 mb-8">
+            Visit us today and experience the CoffPOS difference
+        </p>
+
+        {{-- Tombol menuju halaman contact --}}
+        <a href="{{ route('contact') }}"
+           class="inline-block bg-gold text-coffee-dark px-8 py-4 rounded-full font-semibold text-lg hover:bg-light-coffee transition">
             Get in Touch
         </a>
     </div>

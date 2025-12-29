@@ -3,7 +3,6 @@
 @section('title', 'Contact Us')
 
 @section('content')
-<!-- Hero Section -->
 <section class="bg-gradient-to-br from-coffee-dark to-coffee-brown text-white py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 class="text-5xl font-bold font-heading mb-4">Contact Us</h1>
@@ -11,11 +10,9 @@
     </div>
 </section>
 
-<!-- Contact Section -->
 <section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid md:grid-cols-1 gap-12">
-            <!-- Contact Info -->
             <div>
                 <h2 class="text-3xl font-bold font-heading text-coffee-dark mb-6">Get in Touch</h2>
                 <p class="text-gray-600 mb-8">
@@ -24,20 +21,19 @@
                 </p>
 
                 <div class="space-y-6">
-                    <!-- Address -->
                     <div class="flex items-start">
                         <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center flex-shrink-0">
                             <svg class="w-6 h-6 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
                         </div>
                         <div class="ml-4">
                             <h3 class="font-bold text-coffee-dark mb-1">Address</h3>
-                            <p class="text-gray-600">Jl. Merdeka No. 123<br>Bandung, West Java 40111</p>
+                            <p class="text-gray-600">Universitas Pasundan<br>Kota Bandung, Jawa Barat 40153</p>
                         </div>
                     </div>
 
-                    <!-- Phone -->
                     <div class="flex items-start">
                         <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center flex-shrink-0">
                             <svg class="w-6 h-6 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +46,6 @@
                         </div>
                     </div>
 
-                    <!-- Email -->
                     <div class="flex items-start">
                         <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center flex-shrink-0">
                             <svg class="w-6 h-6 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,7 +58,6 @@
                         </div>
                     </div>
 
-                    <!-- Hours -->
                     <div class="flex items-start">
                         <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center flex-shrink-0">
                             <svg class="w-6 h-6 text-coffee-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +74,6 @@
                     </div>
                 </div>
 
-                <!-- Social Media -->
                 <div class="mt-8">
                     <h3 class="font-bold text-coffee-dark mb-4">Follow Us</h3>
                     <div class="flex gap-4">
@@ -102,13 +95,10 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Contact form removed -->
         </div>
     </div>
 </section>
 
-<!-- Google Maps -->
 <section class="py-16 bg-cream">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-8">
@@ -116,10 +106,9 @@
             <p class="text-gray-600">Visit our coffee shop and enjoy the perfect cup</p>
         </div>
 
-        <!-- Google Maps Embed -->
-        <div class="rounded-2xl overflow-hidden shadow-xl">
+        <div class="rounded-2xl overflow-hidden shadow-xl border-4 border-white">
             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.798464181358!2d107.61870931477394!3d-6.914744995006447!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e6398252477f%3A0x146a1f93d3e815b2!2sBandung%2C%20West%20Java!5e0!3m2!1sen!2sid!4v1234567890123!5m2!1sen!2sid" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3039.251260428367!2d107.59326910032357!3d-6.866733389554033!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e6be3e8a0c49%3A0x730028bf4627def4!2sUniversitas%20Pasundan!5e1!3m2!1sid!2sid!4v1766971502336!5m2!1sid!2sid"
                 width="100%" 
                 height="450" 
                 style="border:0;" 
@@ -130,8 +119,8 @@
         </div>
 
         <div class="mt-8 text-center">
-            <a href="https://maps.app.goo.gl/TvqEeZ3BMfmFKume6" target="_blank" 
-                class="inline-block bg-gold text-coffee-dark px-8 py-3 rounded-full font-semibold hover:bg-light-coffee transition">
+            <a href="https://maps.app.goo.gl/S11WsiikXFtbEWTo6" target="_blank" 
+               class="inline-block bg-gold text-coffee-dark px-8 py-3 rounded-full font-semibold hover:bg-coffee-brown hover:text-white transition duration-300 shadow-lg transform hover:-translate-y-1">
                 Get Directions →
             </a>
         </div>

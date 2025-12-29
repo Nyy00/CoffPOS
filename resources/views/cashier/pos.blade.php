@@ -342,6 +342,23 @@
 <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 @endif
 
+<!-- Suppress Midtrans console errors (non-critical) -->
+<script>
+// Suppress non-critical Midtrans network errors
+const originalConsoleError = console.error;
+console.error = function(...args) {
+    const message = args.join(' ');
+    // Skip Midtrans network tracking errors (non-critical)
+    if (message.includes('Network: Network Error: Failed to fetch') || 
+        message.includes('snap-assets') ||
+        message.includes('Midtrans') && message.includes('Failed to fetch')) {
+        return; // Suppress these specific errors
+    }
+    // Log other errors normally
+    originalConsoleError.apply(console, args);
+};
+</script>
+
 <script src="{{ asset('js/pos.js') }}?v={{ time() }}&r={{ rand() }}"></script>
 
 <!-- Mobile POS JavaScript -->
