@@ -607,7 +607,7 @@ class POSController extends Controller
                 'name' => $validated['name'],
                 'phone' => $validated['phone'],
                 'email' => $validated['email'],
-                'loyalty_points' => 0 // Set default points
+                'points' => 0 // Set default points
             ]);
 
             return response()->json([
@@ -617,6 +617,8 @@ class POSController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            \Log::error('Quick add customer error: ' . $e->getMessage());
+            
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to add customer: ' . $e->getMessage()
@@ -629,26 +631,37 @@ class POSController extends Controller
      */
     public function searchCustomers(Request $request)
     {
-        $query = Customer::query();
+        try {
+            $query = Customer::query();
 
-        if ($request->filled('q')) {
-            $search = $request->q;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
-            });
+            if ($request->filled('q')) {
+                $search = $request->q;
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+
+            $customers = $query->select('id', 'name', 'phone', 'email', 'points')
+                              ->orderBy('name')
+                              ->limit(10)
+                              ->get();
+
+            return response()->json([
+                'success' => true,
+                'customers' => $customers
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Search customers error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error searching customers',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $customers = $query->select('id', 'name', 'phone', 'email', 'loyalty_points as points')
-                          ->orderBy('name')
-                          ->limit(10)
-                          ->get();
-
-        return response()->json([
-            'success' => true,
-            'customers' => $customers
-        ]);
     }
 
     /**

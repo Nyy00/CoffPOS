@@ -171,6 +171,120 @@ class CustomerController extends Controller
     }
 
     /**
+     * Quick add customer for POS system (AJAX)
+     */
+    public function quickAdd(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'phone' => 'nullable|string|max:20|unique:customers,phone',
+                'email' => 'nullable|email|max:255|unique:customers,email',
+            ]);
+
+            $customer = Customer::create([
+                'name' => $validated['name'],
+                'phone' => $validated['phone'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'points' => 0,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Customer added successfully',
+                'data' => $customer->only(['id', 'name', 'phone', 'email', 'points'])
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (\Exception $e) {
+            \Log::error('Quick add customer error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error adding customer',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get quick customer info for POS
+     */
+    public function getQuickInfo(Customer $customer)
+    {
+        try {
+            $customerData = [
+                'id' => $customer->id,
+                'name' => $customer->name,
+                'phone' => $customer->phone,
+                'email' => $customer->email,
+                'points' => $customer->points,
+                'total_transactions' => $customer->transactions()->count(),
+                'total_spent' => $customer->transactions()->sum('total_amount'),
+                'last_transaction' => $customer->transactions()->latest()->first()?->created_at?->format('d M Y'),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $customerData
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Get quick info error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error getting customer info',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Quick search for POS system (AJAX)
+     */
+    public function quickSearch(Request $request)
+    {
+        try {
+            $query = Customer::query();
+
+            if ($request->filled('q')) {
+                $search = $request->q;
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+
+            $customers = $query->select('id', 'name', 'phone', 'email', 'points')
+                ->orderBy('name')
+                ->limit(10)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $customers
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Quick search error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error searching customers',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * API endpoint for customer search (AJAX)
      */
     public function search(Request $request)
