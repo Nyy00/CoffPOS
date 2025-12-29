@@ -22,6 +22,19 @@ class SimpleImageService
     public function upload(UploadedFile $file, string $folder = 'images', array $options = []): array
     {
         try {
+            // Debug logging for Railway
+            Log::info('Upload attempt started', [
+                'file_name' => $file->getClientOriginalName(),
+                'file_size' => $file->getSize(),
+                'file_type' => $file->getMimeType(),
+                'folder' => $folder,
+                'storage_disk' => config('filesystems.default'),
+                'storage_path' => storage_path('app/public'),
+                'disk_free_space' => disk_free_space(storage_path('app/public')),
+                'public_storage_exists' => file_exists(public_path('storage')),
+                'public_storage_is_link' => is_link(public_path('storage'))
+            ]);
+            
             // Validate the image
             $this->validateImage($file);
             
@@ -33,6 +46,7 @@ class SimpleImageService
             
             // Ensure directory exists
             if (!Storage::exists($folderPath)) {
+                Log::info('Creating directory', ['path' => $folderPath]);
                 Storage::makeDirectory($folderPath);
             }
             
@@ -43,12 +57,21 @@ class SimpleImageService
             $stored = $file->storeAs($folder, $filename, 'public');
             
             if (!$stored) {
-                throw new Exception('Failed to store image');
+                throw new Exception('Failed to store image - storeAs returned false');
+            }
+            
+            // Verify file was actually stored
+            $fullStoragePath = storage_path("app/public/{$filePath}");
+            if (!file_exists($fullStoragePath)) {
+                throw new Exception('File was not found after storage - path: ' . $fullStoragePath);
             }
             
             Log::info('Image uploaded successfully', [
                 'original_name' => $file->getClientOriginalName(),
                 'stored_path' => $filePath,
+                'full_storage_path' => $fullStoragePath,
+                'file_exists' => file_exists($fullStoragePath),
+                'file_size_on_disk' => file_exists($fullStoragePath) ? filesize($fullStoragePath) : 'N/A'
             ]);
             
             return [
@@ -66,7 +89,8 @@ class SimpleImageService
         } catch (Exception $e) {
             Log::error('Image upload failed', [
                 'error' => $e->getMessage(),
-                'file' => $file->getClientOriginalName() ?? 'unknown'
+                'file' => $file->getClientOriginalName() ?? 'unknown',
+                'trace' => $e->getTraceAsString()
             ]);
             
             throw new Exception('Image upload failed: ' . $e->getMessage());
