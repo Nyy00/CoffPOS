@@ -96,15 +96,100 @@
                             required
                         />
 
-                        {{-- Select kategori expense --}}
-                        <x-form.select 
-                            name="category" 
-                            label="Category"
-                            :options="$categories"
-                            :value="$expense->category"
-                            placeholder="Select a category"
-                            required
-                        />
+                        {{-- Select kategori expense dengan informasi warna --}}
+                        <div>
+                            <x-form.select 
+                                name="category" 
+                                label="Category"
+                                :options="$categories"
+                                :value="$expense->category"
+                                placeholder="Select a category"
+                                required
+                                id="category-select"
+                            />
+                            
+                            {{-- Informasi kategori dengan warna --}}
+                            <div class="mt-3 space-y-2" id="category-info">
+                                @php
+                                    $categoryInfo = [
+                                        'inventory' => [
+                                            'color' => 'purple',
+                                            'bg' => 'bg-purple-50',
+                                            'border' => 'border-purple-200',
+                                            'text' => 'text-purple-800',
+                                            'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'
+                                        ],
+                                        'operational' => [
+                                            'color' => 'orange',
+                                            'bg' => 'bg-orange-50',
+                                            'border' => 'border-orange-200',
+                                            'text' => 'text-orange-800',
+                                            'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'
+                                        ],
+                                        'salary' => [
+                                            'color' => 'emerald',
+                                            'bg' => 'bg-emerald-50',
+                                            'border' => 'border-emerald-200',
+                                            'text' => 'text-emerald-800',
+                                            'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z'
+                                        ],
+                                        'utilities' => [
+                                            'color' => 'cyan',
+                                            'bg' => 'bg-cyan-50',
+                                            'border' => 'border-cyan-200',
+                                            'text' => 'text-cyan-800',
+                                            'icon' => 'M13 10V3L4 14h7v7l9-11h-7z'
+                                        ],
+                                        'marketing' => [
+                                            'color' => 'pink',
+                                            'bg' => 'bg-pink-50',
+                                            'border' => 'border-pink-200',
+                                            'text' => 'text-pink-800',
+                                            'icon' => 'M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z'
+                                        ],
+                                        'maintenance' => [
+                                            'color' => 'amber',
+                                            'bg' => 'bg-amber-50',
+                                            'border' => 'border-amber-200',
+                                            'text' => 'text-amber-800',
+                                            'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                                        ],
+                                        'other' => [
+                                            'color' => 'indigo',
+                                            'bg' => 'bg-indigo-50',
+                                            'border' => 'border-indigo-200',
+                                            'text' => 'text-indigo-800',
+                                            'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+                                        ]
+                                    ];
+                                @endphp
+                                
+                                @foreach($categoryInfo as $key => $info)
+                                    <div class="category-info-item hidden p-3 rounded-lg {{ $info['bg'] }} {{ $info['border'] }} border" data-category="{{ $key }}">
+                                        <div class="flex items-start space-x-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="w-8 h-8 {{ $info['bg'] }} rounded-full flex items-center justify-center">
+                                                    <svg class="w-4 h-4 {{ $info['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"></path>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="flex items-center space-x-2">
+                                                    <h4 class="text-sm font-medium {{ $info['text'] }}">{{ $categories[$key] }}</h4>
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-{{ $info['color'] }}-100 text-{{ $info['color'] }}-800">
+                                                        {{ ucfirst($info['color']) }}
+                                                    </span>
+                                                </div>
+                                                <p class="text-xs {{ $info['text'] }} mt-1 opacity-75">
+                                                    {{ $categoryDescriptions[$key] ?? '' }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
 
                         {{-- Input tanggal expense --}}
                         <x-form.input 
@@ -231,4 +316,50 @@
         </form>
     </div>
 </div>
+
+{{-- JavaScript untuk menampilkan informasi kategori --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.getElementById('category-select');
+    const categoryInfoItems = document.querySelectorAll('.category-info-item');
+    
+    // Function untuk menampilkan informasi kategori
+    function showCategoryInfo(selectedCategory) {
+        // Sembunyikan semua info kategori
+        categoryInfoItems.forEach(item => {
+            item.classList.add('hidden');
+        });
+        
+        // Tampilkan info kategori yang dipilih
+        if (selectedCategory) {
+            const selectedInfo = document.querySelector(`[data-category="${selectedCategory}"]`);
+            if (selectedInfo) {
+                selectedInfo.classList.remove('hidden');
+                
+                // Tambahkan animasi fade in
+                selectedInfo.style.opacity = '0';
+                selectedInfo.style.transform = 'translateY(-10px)';
+                
+                setTimeout(() => {
+                    selectedInfo.style.transition = 'all 0.3s ease-in-out';
+                    selectedInfo.style.opacity = '1';
+                    selectedInfo.style.transform = 'translateY(0)';
+                }, 10);
+            }
+        }
+    }
+    
+    // Event listener untuk perubahan kategori
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            showCategoryInfo(this.value);
+        });
+        
+        // Tampilkan info jika sudah ada nilai terpilih (untuk edit form)
+        if (categorySelect.value) {
+            showCategoryInfo(categorySelect.value);
+        }
+    }
+});
+</script>
 @endsection
