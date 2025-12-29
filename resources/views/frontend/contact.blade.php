@@ -30,7 +30,7 @@
                         </div>
                         <div class="ml-4">
                             <h3 class="font-bold text-coffee-dark mb-1">Address</h3>
-                            <p class="text-gray-600">Jl. Merdeka No. 123<br>Bandung, West Java 40111</p>
+                            <p class="text-gray-600">Universitas Pasundan<br>Kota Bandung, Jawa Barat 40153</p>
                         </div>
                     </div>
 
@@ -108,7 +108,7 @@
 
         <div class="rounded-2xl overflow-hidden shadow-xl border-4 border-white">
             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.833989936838!2d107.60969431477292!3d-6.910454994998891!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e63a1e1b1b1b%3A0x2644287d3d22b827!2sJl.%20Merdeka%20No.123%2C%20Babakan%20Ciamis%2C%20Kec.%20Sumur%20Bandung%2C%20Kota%20Bandung%2C%20Jawa%20Barat!5e0!3m2!1sen!2sid!4v1648000000000!5m2!1sen!2sid" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3039.251260428367!2d107.59326910032357!3d-6.866733389554033!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e6be3e8a0c49%3A0x730028bf4627def4!2sUniversitas%20Pasundan!5e1!3m2!1sid!2sid!4v1766971502336!5m2!1sid!2sid"
                 width="100%" 
                 height="450" 
                 style="border:0;" 
@@ -119,7 +119,7 @@
         </div>
 
         <div class="mt-8 text-center">
-            <a href="https://goo.gl/maps/1q2w3e" target="_blank" 
+            <a href="https://maps.app.goo.gl/S11WsiikXFtbEWTo6" target="_blank" 
                class="inline-block bg-gold text-coffee-dark px-8 py-3 rounded-full font-semibold hover:bg-coffee-brown hover:text-white transition duration-300 shadow-lg transform hover:-translate-y-1">
                 Get Directions →
             </a>
