@@ -97,6 +97,54 @@ Route::get('/debug/db-test', function () {
     }
 });
 
+// Test products search functionality
+Route::get('/debug/products-search', function () {
+    try {
+        $searchTerm = request('search', 'pudding');
+        
+        // Get all products first
+        $allProducts = \App\Models\Product::with('category')->get();
+        
+        // Test search query
+        $searchResults = \App\Models\Product::with('category')
+            ->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                  ->orWhere('description', 'like', "%{$searchTerm}%");
+            })
+            ->get();
+        
+        return response()->json([
+            'success' => true,
+            'search_term' => $searchTerm,
+            'all_products_count' => $allProducts->count(),
+            'search_results_count' => $searchResults->count(),
+            'all_products' => $allProducts->map(function($p) {
+                return [
+                    'id' => $p->id,
+                    'name' => $p->name,
+                    'description' => $p->description,
+                    'category' => $p->category->name ?? 'No Category'
+                ];
+            }),
+            'search_results' => $searchResults->map(function($p) {
+                return [
+                    'id' => $p->id,
+                    'name' => $p->name,
+                    'description' => $p->description,
+                    'category' => $p->category->name ?? 'No Category'
+                ];
+            }),
+            'database_connection' => 'OK'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+});
+
 // Test customer API directly
 Route::get('/debug/customers-api', function () {
     try {

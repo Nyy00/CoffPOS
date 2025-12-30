@@ -26,9 +26,20 @@ class ProductController extends Controller
     {
         $query = Product::with('category');
 
+        // Debug logging
+        \Log::info('Products search request', [
+            'search' => $request->search,
+            'category_id' => $request->category_id,
+            'is_available' => $request->is_available,
+            'all_params' => $request->all(),
+            'url' => $request->fullUrl(),
+            'method' => $request->method()
+        ]);
+
         // Search functionality
         if ($request->filled('search')) {
             $search = $request->search;
+            \Log::info('Applying search filter', ['search_term' => $search]);
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%");
@@ -75,8 +86,20 @@ class ProductController extends Controller
             $query->orderBy($sortBy, $sortOrder);
         }
 
+        // Debug: Log the final query
+        \Log::info('Final query SQL', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+
         $products = $query->paginate(15)->withQueryString();
         $categories = Category::all()->pluck('name', 'id');
+
+        // Debug: Log results count and sample data
+        \Log::info('Products search results', [
+            'count' => $products->count(), 
+            'total' => $products->total(),
+            'first_product' => $products->count() > 0 ? $products->first()->name : 'none',
+            'search_applied' => $request->filled('search'),
+            'search_term' => $request->search
+        ]);
 
         return view('admin.products.index', compact('products', 'categories'));
     }

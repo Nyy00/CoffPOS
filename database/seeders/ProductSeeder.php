@@ -32,6 +32,8 @@ class ProductSeeder extends Seeder
             // Dessert
             ['category_id' => 4, 'code' => 'PROD011', 'name' => 'Tiramisu', 'description' => 'Tiramisu klasik', 'price' => 35000, 'cost' => 15000, 'stock' => 30, 'image' => 'products/tiramisu.jpg', 'is_available' => true],
             ['category_id' => 4, 'code' => 'PROD012', 'name' => 'Cheesecake', 'description' => 'Cheesecake original', 'price' => 32000, 'cost' => 13000, 'stock' => 30, 'image' => 'products/cheesecake.jpg', 'is_available' => true],
+            ['category_id' => 4, 'code' => 'PROD013', 'name' => 'Chocolate Pudding', 'description' => 'Pudding cokelat lembut', 'price' => 20000, 'cost' => 8000, 'stock' => 25, 'image' => 'products/pudding.jpg', 'is_available' => true],
+            ['category_id' => 4, 'code' => 'PROD014', 'name' => 'Vanilla Pudding', 'description' => 'Pudding vanilla klasik', 'price' => 18000, 'cost' => 7000, 'stock' => 25, 'image' => 'products/vanilla-pudding.jpg', 'is_available' => true],
         ];
 
         foreach ($products as $product) {

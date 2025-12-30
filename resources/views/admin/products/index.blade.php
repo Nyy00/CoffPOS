@@ -38,7 +38,6 @@
             </div>
         </div>
 
-        <!-- Filters -->
         <x-card class="mb-6">
             <form method="GET" action="{{ route('admin.products.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
@@ -91,6 +90,15 @@
             <div class="mt-4 text-sm text-gray-600">
                 @if($products->total() > 0)
                     Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} products
+                    @if(request('search'))
+                        <span class="font-medium">for "{{ request('search') }}"</span>
+                    @endif
+                @else
+                    @if(request('search'))
+                        <span class="text-red-600">No products found for "{{ request('search') }}"</span>
+                    @else
+                        No products found
+                    @endif
                 @endif
             </div>
         </x-card>
@@ -308,16 +316,6 @@
     </x-slot>
 </x-modal-enhanced>
 
-<script>
-// Fungsi untuk menampilkan modal konfirmasi hapus
-function confirmDelete(productId, productName) {
-    document.getElementById('productName').textContent = productName;
-    document.getElementById('deleteForm').action = `/admin/products/${productId}`;
-    openModal('deleteModal');
-}
-</script>
-
-{{-- Include Products Search JavaScript --}}
 <script>
 // Fungsi untuk menampilkan modal konfirmasi hapus
 function confirmDelete(productId, productName) {

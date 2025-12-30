@@ -12,7 +12,7 @@ export default defineConfig({
                 'resources/js/components/toast.js',
                 'resources/js/components/image-preview.js',
                 // Admin
-                'resources/js/admin/products-search.js',
+                // 'resources/js/admin/products-search.js', // Disabled - using simple form submission
                 'resources/js/admin/customers-search.js',
                 'resources/js/admin/dashboard-charts.js',
                 // POS
