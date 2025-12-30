@@ -42,7 +42,13 @@ class ProductController extends Controller
 
         // Filter by availability
         if ($request->filled('is_available')) {
-            $query->where('is_available', $request->is_available);
+            $isAvailable = $request->is_available;
+            // Handle both string '1'/'0' and boolean true/false
+            if ($isAvailable === '1' || $isAvailable === 1 || $isAvailable === true) {
+                $query->where('is_available', true);
+            } elseif ($isAvailable === '0' || $isAvailable === 0 || $isAvailable === false) {
+                $query->where('is_available', false);
+            }
         }
 
         // Filter by stock level
@@ -267,7 +273,13 @@ class ProductController extends Controller
 
         // Availability filter
         if ($request->filled('is_available')) {
-            $query->where('is_available', $request->boolean('is_available'));
+            $isAvailable = $request->is_available;
+            // Handle both string '1'/'0' and boolean true/false
+            if ($isAvailable === '1' || $isAvailable === 1 || $isAvailable === true) {
+                $query->where('is_available', true);
+            } elseif ($isAvailable === '0' || $isAvailable === 0 || $isAvailable === false) {
+                $query->where('is_available', false);
+            }
         }
 
         // Stock level filter

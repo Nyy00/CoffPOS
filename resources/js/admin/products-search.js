@@ -29,25 +29,32 @@ class ProductsSearch {
      * Inisialisasi event listener utama
      */
     init() {
-        if (!this.searchInput) return;
+        if (!this.filterForm) return;
 
-        // Event input search (live search)
-        this.searchInput.addEventListener('input', (e) => {
-            this.handleSearch(e.target.value);
+        // Handle form submission
+        this.filterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleFilter();
         });
 
-        // Event perubahan filter (checkbox, radio, select)
-        if (this.filterForm) {
-            const filterInputs = this.filterForm.querySelectorAll(
-                'select, input[type="checkbox"], input[type="radio"]'
-            );
-
-            filterInputs.forEach(input => {
-                input.addEventListener('change', () => {
-                    this.handleFilter();
-                });
-            });
+        // Event input search dengan debounce (live search opsional)
+        if (this.searchInput) {
+            // Comment out live search - use form submit instead
+            // this.searchInput.addEventListener('input', (e) => {
+            //     this.handleSearch(e.target.value);
+            // });
         }
+
+        // Event perubahan filter (checkbox, radio, select)
+        const filterInputs = this.filterForm.querySelectorAll(
+            'select, input[type="checkbox"], input[type="radio"]'
+        );
+
+        filterInputs.forEach(input => {
+            input.addEventListener('change', () => {
+                this.handleFilter();
+            });
+        });
 
         // Binding fitur tambahan
         this.bindSortControls();
@@ -102,7 +109,7 @@ class ProductsSearch {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document
                         .querySelector('meta[name="csrf-token"]')
-                        .getAttribute('content')
+                        ?.getAttribute('content') || ''
                 }
             });
 
@@ -142,16 +149,16 @@ class ProductsSearch {
             const formData = new FormData(this.filterForm);
             const params = new URLSearchParams();
 
-            // Tambahkan search jika ada
-            if (this.searchInput.value) {
-                params.append('search', this.searchInput.value);
-            }
-
-            // Ambil semua input filter
+            // Ambil semua input dari form
             for (let [key, value] of formData.entries()) {
-                if (value) {
+                if (value !== '' && value !== null && value !== undefined) {
                     params.append(key, value);
                 }
+            }
+
+            // Tambahkan search input jika ada (karena search input mungkin tidak ter-capture oleh FormData jika bukan submit)
+            if (this.searchInput && this.searchInput.value.trim()) {
+                params.set('search', this.searchInput.value.trim());
             }
 
             const response = await fetch(`/admin/products/filter?${params}`, {
@@ -161,7 +168,7 @@ class ProductsSearch {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document
                         .querySelector('meta[name="csrf-token"]')
-                        .getAttribute('content')
+                        ?.getAttribute('content') || ''
                 }
             });
 
@@ -174,7 +181,12 @@ class ProductsSearch {
             if (data.success) {
                 this.displayResults(data.data, data.pagination);
                 this.updateResultsCount(data.pagination.total);
-                this.updateActiveFilters(data.filters_applied);
+                if (data.filters_applied) {
+                    this.updateActiveFilters(data.filters_applied);
+                }
+                // Update URL tanpa reload
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                window.history.pushState({}, '', newUrl);
             } else {
                 this.showError('Filter failed. Please try again.');
             }
@@ -477,8 +489,14 @@ class ProductsSearch {
     }
     
     clearSearch() {
-        this.searchInput.value = '';
-        this.performSearch('');
+        if (this.searchInput) {
+            this.searchInput.value = '';
+        }
+        // Reset form and reload
+        if (this.filterForm) {
+            this.filterForm.reset();
+            window.location.href = window.location.pathname;
+        }
     }
     
     showLoading() {
@@ -543,7 +561,7 @@ class ProductsSearch {
  * Inisialisasi class saat DOM siap
  */
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('products-search')) {
+    if (document.getElementById('products-filter-form')) {
         window.productsSearchInstance = new ProductsSearch();
     }
 });
