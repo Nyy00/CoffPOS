@@ -5,6 +5,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"> {{-- Responsive viewport --}}
         <meta name="csrf-token" content="{{ csrf_token() }}"> {{-- Token keamanan CSRF --}}
 
+        {{-- Session messages for JavaScript --}}
+        @if(session('success'))
+            <meta name="session-success" content="{{ session('success') }}">
+        @endif
+        @if(session('error'))
+            <meta name="session-error" content="{{ session('error') }}">
+        @endif
+        @if(session('warning'))
+            <meta name="session-warning" content="{{ session('warning') }}">
+        @endif
+        @if(session('info'))
+            <meta name="session-info" content="{{ session('info') }}">
+        @endif
+
         <title>{{ config('app.name', 'Laravel') }}</title> {{-- Judul aplikasi --}}
 
         <!-- Fonts -->
@@ -34,5 +48,8 @@
             </main>
 
         </div>
+
+        {{-- Global Alert System --}}
+        <x-global-alert-system />
     </body>
 </html>

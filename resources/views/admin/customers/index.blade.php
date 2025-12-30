@@ -25,16 +25,17 @@
         </div>
 
         <x-card class="mb-6">
-            <form method="GET" action="{{ route('admin.customers.index') }}" class="space-y-4 md:space-y-0 md:flex md:items-end md:space-x-4">
-                <div class="flex-1">
+            <form method="GET" action="{{ route('admin.customers.index') }}" id="customers-filter-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
                     <x-form.input 
+                        id="customers-search"
                         name="search" 
                         placeholder="Search customers by name, email, or phone..."
                         value="{{ request('search') }}"
                         label="Search Customers"
                     />
                 </div>
-                <div class="w-full md:w-48">
+                <div>
                     <x-form.select 
                         name="points_filter" 
                         :options="['high' => 'High Points (>100)', 'medium' => 'Medium Points (50-100)', 'low' => 'Low Points (<50)']" 
@@ -43,24 +44,36 @@
                         label="Points Range"
                     />
                 </div>
-                <div class="flex space-x-2">
-                    <x-button type="submit" variant="primary">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                        Search
-                    </x-button>
-                    @if(request()->hasAny(['search', 'points_filter']))
-                        <x-button href="{{ route('admin.customers.index') }}" variant="light">
-                            Clear
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">&nbsp;</label>
+                    <div class="flex space-x-2">
+                        <x-button type="submit" variant="primary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            Search
                         </x-button>
-                    @endif
+                        @if(request()->hasAny(['search', 'points_filter']))
+                            <x-button href="{{ route('admin.customers.index') }}" variant="light">
+                                Clear filters
+                            </x-button>
+                        @endif
+                    </div>
                 </div>
             </form>
+
+            <!-- Results Count -->
+            <div class="mt-4 text-sm text-gray-600">
+                @if($customers->total() > 0)
+                    Showing {{ $customers->firstItem() }} to {{ $customers->lastItem() }} of {{ $customers->total() }} customers
+                @endif
+            </div>
         </x-card>
 
         <x-card>
-            @if($customers->count() > 0)
+            <!-- Results Container for potential AJAX -->
+            <div id="customers-results">
+                @if($customers->count() > 0)
                 <x-table :headers="[
                     ['label' => 'Customer', 'key' => 'name', 'sortable' => true],
                     ['label' => 'Contact', 'key' => 'contact'],
@@ -160,7 +173,8 @@
                         </x-button>
                     </div>
                 </div>
-            @endif
+                @endif
+            </div>
         </x-card>
     </div>
 </div>

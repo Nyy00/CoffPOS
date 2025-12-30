@@ -37,10 +37,10 @@
 
         <!-- Form pencarian kategori -->
         <x-card class="mb-6">
-            <form method="GET" action="{{ route('admin.categories.index') }}" class="flex items-end space-x-4">
+            <form method="GET" action="{{ route('admin.categories.index') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 {{-- Input pencarian --}}
-                <div class="flex-1">
+                <div>
                     <x-form.input 
                         name="search" 
                         placeholder="Search categories by name or description..."
@@ -50,21 +50,24 @@
                 </div>
 
                 {{-- Tombol aksi pencarian --}}
-                <div class="flex space-x-2">
-                    <x-button type="submit" variant="primary">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                        Search
-                    </x-button>
-
-                    {{-- Tombol reset pencarian --}}
-                    @if(request('search'))
-                        <x-button href="{{ route('admin.categories.index') }}" variant="light">
-                            Clear
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">&nbsp;</label>
+                    <div class="flex space-x-2">
+                        <x-button type="submit" variant="primary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            Search
                         </x-button>
-                    @endif
+
+                        {{-- Tombol reset pencarian --}}
+                        @if(request('search'))
+                            <x-button href="{{ route('admin.categories.index') }}" variant="light">
+                                Clear
+                            </x-button>
+                        @endif
+                    </div>
                 </div>
             </form>
         </x-card>

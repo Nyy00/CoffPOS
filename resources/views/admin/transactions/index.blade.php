@@ -8,19 +8,6 @@
 <div class="container mx-auto px-4 py-6">
     {{-- Container utama halaman --}}
 
-    {{-- ================= ALERT MESSAGES ================= --}}
-    @if(session('success'))
-        <x-alert type="success" class="mb-6">
-            {{ session('success') }}
-        </x-alert>
-    @endif
-
-    @if(session('error'))
-        <x-alert type="error" class="mb-6">
-            {{ session('error') }}
-        </x-alert>
-    @endif
-
     <div class="flex justify-between items-center mb-6">
         {{-- Header halaman --}}
         <h1 class="text-3xl font-bold text-gray-900">Transactions</h1>
@@ -117,18 +104,21 @@
             </div>
             
             {{-- Tombol aksi filter --}}
-            <div class="md:col-span-2 lg:col-span-4 flex items-end justify-end space-x-2">
-                <x-button type="submit" variant="primary">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    Search
-                </x-button>
-                @if(request()->hasAny(['search', 'status', 'payment_method', 'cashier_id', 'date_from', 'date_to', 'amount_min', 'amount_max']))
-                    <x-button href="{{ route('admin.transactions.index') }}" variant="light">
-                        Clear
+            <div class="md:col-span-2 lg:col-span-4 space-y-2">
+                <label class="block text-sm font-medium text-gray-700">&nbsp;</label>
+                <div class="flex justify-end space-x-2">
+                    <x-button type="submit" variant="primary">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Search
                     </x-button>
-                @endif
+                    @if(request()->hasAny(['search', 'status', 'payment_method', 'cashier_id', 'date_from', 'date_to', 'amount_min', 'amount_max']))
+                        <x-button href="{{ route('admin.transactions.index') }}" variant="light">
+                            Clear
+                        </x-button>
+                    @endif
+                </div>
             </div>
         </form>
     </div>
@@ -208,7 +198,7 @@
                         <td class="px-6 py-4">
                             <div class="flex space-x-2">
                                 <a href="{{ route('admin.transactions.show', $transaction) }}">View</a>
-                                @if($transaction->status === 'completed' && $transaction->created_at->diffInHours(now()) <= 24)
+                                @if($transaction->status === 'completed' && $transaction->created_at->diffInHours(now()) <= 24 && auth()->user()->role !== 'manager')
                                 <button onclick="openVoidModal({{ $transaction->id }}, '{{ $transaction->transaction_code }}')">
                                     Void
                                 </button>
@@ -304,7 +294,11 @@
     function submitVoidForm() {
         const reason = document.getElementById('voidReason').value.trim();
         if (!reason) {
-            alert('Please provide a reason for voiding this transaction.');
+            if (window.globalAlert) {
+                window.globalAlert.warning('Silakan berikan alasan untuk membatalkan transaksi ini.');
+            } else {
+                alert('Please provide a reason for voiding this transaction.');
+            }
             return false;
         }
         document.getElementById('voidReasonInput').value = reason;

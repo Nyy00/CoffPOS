@@ -71,18 +71,21 @@
                     </div>
                     
                     {{-- Tombol aksi filter --}}
-                    <div class="flex items-end gap-2">
-                        <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 w-full">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            Search
-                        </button>
-                        @if(request()->hasAny(['search', 'category_id', 'is_available']))
-                            <a href="{{ route('admin.products.index') }}" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-50 active:bg-gray-200 focus:outline-none focus:border-gray-300 focus:ring ring-gray-200 disabled:opacity-25 transition ease-in-out duration-150 w-full">
-                                Clear
-                            </a>
-                        @endif
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">&nbsp;</label>
+                        <div class="flex gap-2">
+                            <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 flex-1">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                Search
+                            </button>
+                            @if(request()->hasAny(['search', 'category_id', 'is_available']))
+                                <a href="{{ route('admin.products.index') }}" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-50 active:bg-gray-200 focus:outline-none focus:border-gray-300 focus:ring ring-gray-200 disabled:opacity-25 transition ease-in-out duration-150 flex-1">
+                                    Clear filters
+                                </a>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </form>
@@ -102,7 +105,11 @@
             <div id="active-filters" class="mt-4 flex flex-wrap gap-2"></div>
 
             <!-- Results Count -->
-            <div id="results-count" class="mt-2 text-sm text-gray-600"></div>
+            <div id="results-count" class="mt-2 text-sm text-gray-600">
+                @if($products->total() > 0)
+                    Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} products
+                @endif
+            </div>
         </x-card>
 
         <!-- Products Table -->

@@ -4,6 +4,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    {{-- Session messages for JavaScript --}}
+    @if(session('success'))
+        <meta name="session-success" content="{{ session('success') }}">
+    @endif
+    @if(session('error'))
+        <meta name="session-error" content="{{ session('error') }}">
+    @endif
+    @if(session('warning'))
+        <meta name="session-warning" content="{{ session('warning') }}">
+    @endif
+    @if(session('info'))
+        <meta name="session-info" content="{{ session('info') }}">
+    @endif
+    
     <title>POS - Kasir | {{ config('app.name') }}</title>
     
     <!-- Fonts -->
@@ -43,13 +58,17 @@
             
             <!-- Desktop Actions -->
             <div class="hidden md:flex items-center space-x-2 lg:space-x-3">
-                <button id="hold-transaction" class="px-2 lg:px-4 py-2 bg-gold text-coffee-dark rounded-lg hover:opacity-90 transition-colors font-semibold text-sm lg:text-base">
-                    <span class="hidden lg:inline">📋 Tahan</span>
-                    <span class="lg:hidden">📋</span>
+                <button id="hold-transaction" class="px-2 lg:px-4 py-2 bg-gold text-coffee-dark rounded-lg hover:opacity-90 transition-colors font-semibold text-sm lg:text-base flex items-center gap-1 lg:gap-2">
+                    <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <span class="hidden lg:inline">Tahan</span>
                 </button>
-                <button id="view-held-transactions" class="px-2 lg:px-4 py-2 bg-coffee-brown text-cream rounded-lg hover:opacity-90 transition-colors font-semibold text-sm lg:text-base">
-                    <span class="hidden lg:inline">📋 Ditahan</span>
-                    <span class="lg:hidden">📋</span>
+                <button id="view-held-transactions" class="px-2 lg:px-4 py-2 bg-coffee-brown text-cream rounded-lg hover:opacity-90 transition-colors font-semibold text-sm lg:text-base flex items-center gap-1 lg:gap-2">
+                    <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                    <span class="hidden lg:inline">Ditahan</span>
                 </button>
                 <button id="clear-cart" class="px-2 lg:px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-1 lg:gap-2 text-sm lg:text-base">
                     <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,9 +77,9 @@
                     <span class="hidden lg:inline">Kosongkan</span>
                 </button>
                 <!-- Logout Form -->
-                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                <form method="POST" action="{{ route('logout') }}" style="display: inline;" id="logout-form">
                     @csrf
-                    <button type="submit" class="px-2 lg:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-1 lg:gap-2 text-sm lg:text-base" onclick="return confirm('Apakah Anda yakin ingin keluar?')">
+                    <button type="button" class="px-2 lg:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-1 lg:gap-2 text-sm lg:text-base" onclick="handleLogout()">
                         <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                         </svg>
@@ -73,19 +92,31 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden mt-3 pt-3 border-t border-gray-200">
             <div class="flex flex-wrap gap-2">
-                <button id="hold-transaction-mobile" class="flex-1 px-3 py-2 bg-gold text-coffee-dark rounded-lg hover:opacity-90 transition-colors font-semibold text-sm">
-                    📋 Tahan
+                <button id="hold-transaction-mobile" class="flex-1 px-3 py-2 bg-gold text-coffee-dark rounded-lg hover:opacity-90 transition-colors font-semibold text-sm flex items-center justify-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Tahan
                 </button>
-                <button id="view-held-transactions-mobile" class="flex-1 px-3 py-2 bg-coffee-brown text-cream rounded-lg hover:opacity-90 transition-colors font-semibold text-sm">
-                    📋 Ditahan
+                <button id="view-held-transactions-mobile" class="flex-1 px-3 py-2 bg-coffee-brown text-cream rounded-lg hover:opacity-90 transition-colors font-semibold text-sm flex items-center justify-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                    Ditahan
                 </button>
-                <button id="clear-cart-mobile" class="flex-1 px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm">
-                    🗑️ Kosongkan
+                <button id="clear-cart-mobile" class="flex-1 px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm flex items-center justify-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Kosongkan
                 </button>
-                <form method="POST" action="{{ route('logout') }}" class="flex-1">
+                <form method="POST" action="{{ route('logout') }}" class="flex-1" id="logout-form-mobile">
                     @csrf
-                    <button type="submit" class="w-full px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm" onclick="return confirm('Apakah Anda yakin ingin keluar?')">
-                        🚪 Keluar
+                    <button type="button" class="w-full px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm flex items-center justify-center gap-1" onclick="handleLogout()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        Keluar
                     </button>
                 </form>
             </div>
@@ -225,7 +256,12 @@
             <!-- Cart Header -->
             <div class="p-4 sm:p-6 border-b bg-cream flex-shrink-0">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-base sm:text-lg font-semibold text-coffee-dark">🛒 Keranjang</h2>
+                    <h2 class="text-base sm:text-lg font-semibold text-coffee-dark flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        Keranjang
+                    </h2>
                     <div class="flex items-center gap-2">
                         <span id="cart-count" class="px-2 sm:px-3 py-1 bg-light-coffee text-coffee-dark rounded-full text-xs sm:text-sm font-medium">0 item</span>
                         <button id="close-cart" class="lg:hidden p-1 text-gray-500 hover:text-gray-700">
@@ -242,7 +278,11 @@
                 <div id="cart-items" class="p-4 space-y-3">
                     <!-- Cart items will be populated by JavaScript -->
                     <div id="empty-cart" class="text-center py-8">
-                        <div class="text-gray-400 text-4xl mb-3">🛒</div>
+                        <div class="text-gray-400 mb-3">
+                            <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
                         <h3 class="text-base font-medium text-gray-900 mb-2">Keranjang kosong</h3>
                         <p class="text-sm text-gray-500">Tambahkan produk untuk memulai transaksi</p>
                     </div>
@@ -285,24 +325,15 @@
                 <!-- Payment Method -->
                 <div>
                     <label class="block text-sm font-medium text-coffee-dark mb-2">Metode Pembayaran</label>
-                    <div class="payment-methods grid grid-cols-2 gap-2">
-                        <button class="payment-method active py-2 px-2 border-2 border-gold bg-light-coffee text-coffee-dark rounded-lg text-xs font-medium" data-method="cash">
-                            💵 Tunai
-                        </button>
-                        <button class="payment-method py-2 px-2 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-xs font-medium hover:border-gold flex items-center justify-center gap-1" data-method="debit">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    <div class="payment-methods grid grid-cols-2 gap-3">
+                        <button class="payment-method active py-3 px-4 border-2 border-gold bg-light-coffee text-coffee-dark rounded-lg text-sm font-medium flex items-center justify-center gap-2" data-method="cash">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
-                            Debit
+                            Cash
                         </button>
-                        <button class="payment-method py-2 px-2 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-xs font-medium hover:border-gold flex items-center justify-center gap-1" data-method="credit">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
-                            Kredit
-                        </button>
-                        <button class="payment-method py-2 px-2 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-xs font-medium hover:border-gold flex items-center justify-center gap-1" data-method="digital">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button class="payment-method py-3 px-4 border-2 border-light-coffee bg-white text-coffee-dark rounded-lg text-sm font-medium hover:border-gold flex items-center justify-center gap-2" data-method="digital">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                             </svg>
                             Digital
@@ -321,8 +352,11 @@
                 </div>
 
                 <!-- Checkout Button -->
-                <button id="checkout-btn" class="checkout-btn w-full py-3 bg-coffee-brown text-cream rounded-lg font-bold text-sm disabled:bg-light-coffee disabled:cursor-not-allowed" disabled>
-                    💰 Proses Pembayaran
+                <button id="checkout-btn" class="checkout-btn w-full py-3 bg-coffee-brown text-cream rounded-lg font-bold text-sm disabled:bg-light-coffee disabled:cursor-not-allowed flex items-center justify-center gap-2" disabled>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Proses Pembayaran
                 </button>
             </div>
         </div>
@@ -333,6 +367,9 @@
 @include('cashier.partials.payment-modal')
 @include('cashier.partials.receipt-modal')
 @include('cashier.partials.hold-transaction-modal')
+
+{{-- Global Alert System --}}
+<x-global-alert-system />
 
 <!-- Midtrans Snap Script -->
 @if(config('midtrans.is_production'))
@@ -362,6 +399,26 @@ console.error = function(...args) {
 
 <!-- Mobile POS JavaScript -->
 <script>
+// Handle logout with confirmation
+async function handleLogout() {
+    let confirmed = false;
+    
+    if (window.globalAlert && typeof window.globalAlert.confirmLogout === 'function') {
+        confirmed = await window.globalAlert.confirmLogout();
+    } else {
+        // Fallback if alert system not loaded
+        confirmed = confirm('Apakah Anda yakin ingin keluar dari sistem POS?');
+    }
+    
+    if (confirmed) {
+        // Submit the form
+        const form = document.getElementById('logout-form') || document.getElementById('logout-form-mobile');
+        if (form) {
+            form.submit();
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');

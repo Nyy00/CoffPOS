@@ -34,6 +34,7 @@ class ProductsSearch {
         // Handle form submission
         this.filterForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            console.log('Form submitted'); // Debug log
             this.handleFilter();
         });
 
@@ -142,6 +143,8 @@ class ProductsSearch {
     async handleFilter() {
         if (this.isLoading) return;
 
+        console.log('handleFilter called'); // Debug log
+
         this.showLoading();
         this.isLoading = true;
 
@@ -161,22 +164,28 @@ class ProductsSearch {
                 params.set('search', this.searchInput.value.trim());
             }
 
+            console.log('Search params:', params.toString()); // Debug log
+
             const response = await fetch(`/admin/products/filter?${params}`, {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json',
+                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document
                         .querySelector('meta[name="csrf-token"]')
                         ?.getAttribute('content') || ''
                 }
             });
 
+            console.log('Response status:', response.status); // Debug log
+
             if (!response.ok) {
                 throw new Error('Filter request failed');
             }
 
             const data = await response.json();
+            console.log('Response data:', data); // Debug log
 
             if (data.success) {
                 this.displayResults(data.data, data.pagination);
@@ -193,7 +202,12 @@ class ProductsSearch {
 
         } catch (error) {
             console.error('Filter error:', error);
-            this.showError('Filter failed. Please check your connection.');
+            
+            // Fallback: submit form normally if AJAX fails
+            console.log('AJAX failed, falling back to normal form submission');
+            this.filterForm.submit();
+            
+            return; // Don't show error message since we're doing fallback
         } finally {
             this.hideLoading();
             this.isLoading = false;
@@ -206,15 +220,33 @@ class ProductsSearch {
     displayResults(products, pagination) {
         if (!this.resultsContainer) return;
 
+        console.log('displayResults called with', products.length, 'products'); // Debug log
+
         let html = '';
 
         // Jika data kosong
         if (products.length === 0) {
             html = this.getEmptyStateHTML();
         } else {
-            html = products
-                .map(product => this.getProductCardHTML(product))
+            // Generate mobile cards view
+            const mobileCardsHtml = products
+                .map(product => this.getMobileCardHTML(product))
                 .join('');
+            
+            // Generate desktop table view
+            const desktopTableHtml = this.getDesktopTableHTML(products);
+            
+            html = `
+                <!-- Mobile Cards View -->
+                <div class="block md:hidden space-y-4">
+                    ${mobileCardsHtml}
+                </div>
+
+                <!-- Desktop Table View -->
+                <div class="hidden md:block overflow-x-auto">
+                    ${desktopTableHtml}
+                </div>
+            `;
         }
 
         this.resultsContainer.innerHTML = html;
@@ -240,6 +272,153 @@ class ProductsSearch {
         if (name.includes('mocha')) return '/images/products/mocha.jpg';
         if (name.includes('tea')) return '/images/products/green-tea.jpg';
         return '/images/placeholder-product.png';
+    }
+    
+    getMobileCardHTML(product) {
+        const imageUrl = product.image 
+            ? `/images/products/${product.image.replace('products/', '')}` 
+            : '/images/placeholder-product.png';
+        const fallbackUrl = this.getFallbackImage(product.name);
+            
+        const stockClass = product.stock <= (product.min_stock || 10) ? 'text-red-600 font-medium' : 'text-gray-500';
+        const availabilityBadge = product.is_available 
+            ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Available</span>'
+            : '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Unavailable</span>';
+        
+        return `
+            <div class="bg-white border rounded-lg p-4 shadow-sm">
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        <img src="${imageUrl}" 
+                             alt="${product.name}" 
+                             class="h-16 w-16 rounded-lg object-cover"
+                             onerror="this.onerror=null; this.src='${fallbackUrl}';">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <h3 class="text-sm font-medium text-gray-900">${product.name}</h3>
+                                <p class="text-xs text-gray-500 mt-1">${product.code || ''}</p>
+                                ${product.description ? `<p class="text-xs text-gray-600 mt-1">${product.description.substring(0, 50)}${product.description.length > 50 ? '...' : ''}</p>` : ''}
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">${product.category?.name || 'No Category'}</span>
+                                    ${availabilityBadge}
+                                    ${product.stock <= (product.min_stock || 10) ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Low Stock</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between mt-3">
+                            <div class="text-left">
+                                <p class="text-sm font-medium text-gray-900">Rp ${this.formatPrice(product.price)}</p>
+                                <p class="text-xs ${stockClass}">Stock: ${product.stock}</p>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <a href="/admin/products/${product.id}" class="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+                                <a href="/admin/products/${product.id}/edit" class="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                                <button type="button" 
+                                        class="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-red-600 bg-white hover:bg-red-50"
+                                        onclick="confirmDelete('${product.id}', '${product.name}')">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    getDesktopTableHTML(products) {
+        const tableRows = products.map(product => {
+            const imageUrl = product.image 
+                ? `/images/products/${product.image.replace('products/', '')}` 
+                : '/images/placeholder-product.png';
+            const fallbackUrl = this.getFallbackImage(product.name);
+            const stockClass = product.stock <= (product.min_stock || 10) ? 'text-red-600 font-medium' : '';
+            
+            return `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <img src="${imageUrl}" 
+                             alt="${product.name}" 
+                             class="h-12 w-12 rounded-lg object-cover"
+                             onerror="this.onerror=null; this.src='${fallbackUrl}';">
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-medium text-gray-900">${product.name}</div>
+                        ${product.description ? `<div class="text-sm text-gray-500">${product.description.substring(0, 50)}${product.description.length > 50 ? '...' : ''}</div>` : ''}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${product.code || ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">${product.category?.name || 'No Category'}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Rp ${this.formatPrice(product.price)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <span class="${stockClass}">${product.stock}</span>
+                        ${product.stock <= (product.min_stock || 10) ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-1">Low Stock</span>' : ''}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${product.is_available 
+                            ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Available</span>'
+                            : '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Unavailable</span>'
+                        }
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex items-center space-x-2">
+                            <a href="/admin/products/${product.id}" class="text-blue-600 hover:text-blue-900">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </a>
+                            <a href="/admin/products/${product.id}/edit" class="text-blue-600 hover:text-blue-900">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </a>
+                            <button type="button" 
+                                    class="text-red-600 hover:text-red-900"
+                                    onclick="confirmDelete('${product.id}', '${product.name}')">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        
+        return `
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    ${tableRows}
+                </tbody>
+            </table>
+        `;
     }
     
     getProductCardHTML(product) {
@@ -512,9 +691,20 @@ class ProductsSearch {
     }
     
     showError(message) {
-        // You can implement a toast notification here
+        // Create a simple toast notification
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        // Remove after 5 seconds
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 5000);
+        
         console.error(message);
-        alert(message); // Temporary - replace with proper notification
     }
     
     updateResultsCount(total) {

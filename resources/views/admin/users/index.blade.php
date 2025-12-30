@@ -8,19 +8,6 @@
 <div class="py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {{-- ================= ALERT MESSAGES ================= --}}
-        @if(session('success'))
-            <x-alert type="success" class="mb-6">
-                {{ session('success') }}
-            </x-alert>
-        @endif
-
-        @if(session('error'))
-            <x-alert type="error" class="mb-6">
-                {{ session('error') }}
-            </x-alert>
-        @endif
-        
         {{-- ================= HEADER HALAMAN ================= --}}
         <div class="md:flex md:items-center md:justify-between mb-6">
             <div class="flex-1 min-w-0">
@@ -74,20 +61,23 @@
                     </div>
 
                     {{-- Tombol search & reset --}}
-                    <div class="flex items-end space-x-2">
-                        <x-button type="submit" variant="primary" class="flex-1">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            Search
-                        </x-button>
-
-                        {{-- Tombol clear filter --}}
-                        @if(request()->hasAny(['search', 'role']))
-                            <x-button href="{{ route('admin.users.index') }}" variant="light">
-                                Clear
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">&nbsp;</label>
+                        <div class="flex space-x-2">
+                            <x-button type="submit" variant="primary" class="flex-1">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                Search
                             </x-button>
-                        @endif
+
+                            {{-- Tombol clear filter --}}
+                            @if(request()->hasAny(['search', 'role']))
+                                <x-button href="{{ route('admin.users.index') }}" variant="light">
+                                    Clear
+                                </x-button>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </form>

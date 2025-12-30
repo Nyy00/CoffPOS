@@ -64,7 +64,7 @@ class TransactionController extends Controller
         $transactions = $query->paginate(20);
 
         // Get filter options
-        $cashiers = User::whereIn('role', ['admin', 'manager', 'cashier'])->get();
+        $cashiers = User::where('role', 'cashier')->get();
         $paymentMethods = Transaction::distinct()->pluck('payment_method')->filter();
         $statuses = Transaction::distinct()->pluck('status')->filter();
 

@@ -30,6 +30,21 @@ class CustomerController extends Controller
         }
 
         // Filter by points range
+        if ($request->filled('points_filter')) {
+            switch ($request->points_filter) {
+                case 'high':
+                    $query->where('points', '>', 100);
+                    break;
+                case 'medium':
+                    $query->whereBetween('points', [50, 100]);
+                    break;
+                case 'low':
+                    $query->where('points', '<', 50);
+                    break;
+            }
+        }
+
+        // Alternative: Filter by specific points range (for API)
         if ($request->filled('points_min')) {
             $query->where('points', '>=', $request->points_min);
         }
@@ -327,6 +342,21 @@ class CustomerController extends Controller
             ->withSum('transactions', 'total_amount');
 
         // Points range filter
+        if ($request->filled('points_filter')) {
+            switch ($request->points_filter) {
+                case 'high':
+                    $query->where('points', '>', 100);
+                    break;
+                case 'medium':
+                    $query->whereBetween('points', [50, 100]);
+                    break;
+                case 'low':
+                    $query->where('points', '<', 50);
+                    break;
+            }
+        }
+
+        // Alternative: Filter by specific points range (for API)
         if ($request->filled('points_min')) {
             $query->where('points', '>=', $request->points_min);
         }

@@ -134,9 +134,9 @@ class POSPayment {
             }
             
             // Number keys for payment method selection
-            if (e.altKey && e.key >= '1' && e.key <= '5') {
+            if (e.altKey && e.key >= '1' && e.key <= '2') {
                 e.preventDefault();
-                const methods = ['cash', 'debit', 'credit', 'e-wallet', 'qris'];
+                const methods = ['cash', 'digital'];
                 const methodIndex = parseInt(e.key) - 1;
                 if (methods[methodIndex]) {
                     this.selectPaymentMethod(methods[methodIndex]);
@@ -180,10 +180,7 @@ class POSPayment {
         if (amountLabel) {
             const labels = {
                 'cash': 'Cash Received',
-                'debit': 'Debit Amount',
-                'credit': 'Credit Amount',
-                'e-wallet': 'E-Wallet Amount',
-                'qris': 'QRIS Amount'
+                'digital': 'Digital Payment Amount'
             };
             amountLabel.textContent = labels[method] || 'Payment Amount';
         }

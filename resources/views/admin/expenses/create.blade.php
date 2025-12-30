@@ -509,28 +509,10 @@ function showCategorySelectedFeedback(category) {
         'other': 'Pengeluaran Lainnya'
     };
     
-    // Create temporary notification
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-lg z-50 transition-all duration-300';
-    notification.innerHTML = `
-        <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <span class="font-medium">Kategori dipilih: ${categoryLabels[category] || category}</span>
-        </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Remove notification after 3 seconds
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
+    // Show notification using global alert system
+    if (window.globalAlert) {
+        window.globalAlert.success(`Kategori dipilih: ${categoryLabels[category] || category}`);
+    }
 }
 </script>
 @endsection

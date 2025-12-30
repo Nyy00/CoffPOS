@@ -11,7 +11,7 @@ $variants = [
     'info' => 'bg-blue-100 text-blue-800',
     'light' => 'bg-gray-50 text-gray-600',
     'dark' => 'bg-gray-800 text-white',
-    // Fun colors untuk expense categories
+    // colors untuk expense categories
     'purple' => 'bg-purple-100 text-purple-800',
     'orange' => 'bg-orange-100 text-orange-800',
     'emerald' => 'bg-emerald-100 text-emerald-800',

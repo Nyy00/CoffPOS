@@ -1,22 +1,23 @@
 <x-guest-layout>
     <div class="mb-6 text-center">
-        <h2 class="text-3xl font-bold text-coffee-dark">Welcome Back!</h2>
-        <p class="text-gray-600 mt-2">Login to access your account</p>
+        <h2 class="text-3xl font-bold text-coffee-dark">Selamat Datang Kembali!</h2>
+        <p class="text-gray-600 mt-2">Masuk untuk mengakses akun Anda</p>
     </div>
 
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" id="loginForm">
         @csrf
 
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" value="Email" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <div id="email-error" class="mt-2 text-sm text-red-600 hidden"></div>
         </div>
 
         <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" value="Kata Sandi" />
 
             <div class="relative mt-1">
                 <x-text-input id="password" class="block w-full pr-10"
@@ -37,24 +38,29 @@
             </div>
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <div id="password-error" class="mt-2 text-sm text-red-600 hidden"></div>
         </div>
 
         <div class="block mt-4">
             <label for="remember_me" class="inline-flex items-center">
                 <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-coffee-brown shadow-sm focus:ring-gold" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+                <span class="ms-2 text-sm text-gray-600">Ingat saya</span>
             </label>
         </div>
 
         <div class="mt-6">
-            <button type="submit" class="w-full bg-coffee-dark text-white py-3 rounded-lg font-semibold hover:bg-coffee-brown transition">
-                Log in
+            <button type="submit" id="loginButton" class="w-full bg-coffee-dark text-white py-3 rounded-lg font-semibold hover:bg-coffee-brown transition disabled:opacity-50 disabled:cursor-not-allowed">
+                <span id="loginButtonText">Masuk</span>
+                <svg id="loginSpinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
             </button>
         </div>
 
         <div class="flex items-center my-4">
             <div class="flex-grow border-t border-gray-300"></div>
-            <span class="flex-shrink-0 mx-4 text-gray-600 text-sm">Or continue with</span>
+            <span class="flex-shrink-0 mx-4 text-gray-600 text-sm">Atau lanjutkan dengan</span>
             <div class="flex-grow border-t border-gray-300"></div>
         </div>
 
@@ -67,13 +73,13 @@
                     <path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.799 L -6.734 42.379 C -8.804 40.439 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z" />
                 </g>
             </svg>
-            Sign in with Google
+            Masuk dengan Google
         </a>
         
         <div class="mt-4 text-center text-sm">
-            <span class="text-gray-600">Don't have an account?</span>
+            <span class="text-gray-600">Belum punya akun?</span>
             <a href="{{ route('register') }}" class="text-gold font-semibold hover:text-coffee-brown">
-                Register here
+                Daftar di sini
             </a>
         </div>
 
@@ -82,7 +88,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
-                Back to Home
+                Kembali ke Beranda
             </a>
         </div>
     </form>
@@ -103,5 +109,122 @@
                 eyeSlashIcon.classList.add('hidden');
             }
         }
+
+        // Simple form validation and submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const loginButton = document.getElementById('loginButton');
+            const loginButtonText = document.getElementById('loginButtonText');
+            const loginSpinner = document.getElementById('loginSpinner');
+            const emailError = document.getElementById('email-error');
+            const passwordError = document.getElementById('password-error');
+
+            let isSubmitting = false;
+
+            // Real-time email validation
+            emailInput.addEventListener('blur', validateEmail);
+            emailInput.addEventListener('input', function() {
+                if (emailError.textContent) validateEmail();
+            });
+
+            // Real-time password validation
+            passwordInput.addEventListener('blur', validatePassword);
+            passwordInput.addEventListener('input', function() {
+                if (passwordError.textContent) validatePassword();
+            });
+
+            // Form submission - use normal form submission for reliability
+            form.addEventListener('submit', function(e) {
+                if (isSubmitting) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                // Clear previous errors
+                clearErrors();
+                
+                // Validate all fields
+                const isEmailValid = validateEmail();
+                const isPasswordValid = validatePassword();
+                
+                if (!isEmailValid || !isPasswordValid) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                // Show loading state
+                isSubmitting = true;
+                setLoadingState(true);
+                
+                // Let the form submit normally - no AJAX to avoid timeout issues
+                // The form will submit and redirect naturally
+            });
+
+            function validateEmail() {
+                const email = emailInput.value.trim();
+                
+                if (!email) {
+                    showError(emailError, 'Email wajib diisi');
+                    return false;
+                }
+                
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showError(emailError, 'Masukkan alamat email yang valid');
+                    return false;
+                }
+                
+                hideError(emailError);
+                return true;
+            }
+
+            function validatePassword() {
+                const password = passwordInput.value;
+                
+                if (!password) {
+                    showError(passwordError, 'Kata sandi wajib diisi');
+                    return false;
+                }
+                
+                if (password.length < 6) {
+                    showError(passwordError, 'Kata sandi minimal 6 karakter');
+                    return false;
+                }
+                
+                hideError(passwordError);
+                return true;
+            }
+
+            function showError(errorElement, message) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+                errorElement.parentElement.querySelector('input').classList.add('border-red-500');
+            }
+
+            function hideError(errorElement) {
+                errorElement.textContent = '';
+                errorElement.classList.add('hidden');
+                errorElement.parentElement.querySelector('input').classList.remove('border-red-500');
+            }
+
+            function clearErrors() {
+                hideError(emailError);
+                hideError(passwordError);
+            }
+
+            function setLoadingState(loading) {
+                if (loading) {
+                    loginButton.disabled = true;
+                    loginButtonText.textContent = 'Masuk...';
+                    loginSpinner.classList.remove('hidden');
+                } else {
+                    loginButton.disabled = false;
+                    loginButtonText.textContent = 'Masuk';
+                    loginSpinner.classList.add('hidden');
+                }
+            }
+        });
     </script>
 </x-guest-layout>

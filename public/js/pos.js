@@ -358,7 +358,22 @@ class POSSystem {
             return;
         }
         
-        if (confirm('Apakah Anda yakin ingin mengosongkan keranjang?')) {
+        // Wait for globalAlert to be available
+        let confirmed = false;
+        if (window.globalAlert && typeof window.globalAlert.confirm === 'function') {
+            confirmed = await window.globalAlert.confirm({
+                title: 'Kosongkan Keranjang',
+                message: 'Apakah Anda yakin ingin mengosongkan semua item di keranjang?',
+                type: 'warning',
+                confirmText: 'Ya, Kosongkan',
+                cancelText: 'Batal'
+            });
+        } else {
+            // Fallback to browser confirm
+            confirmed = confirm('Apakah Anda yakin ingin mengosongkan semua item di keranjang?');
+        }
+        
+        if (confirmed) {
             try {
                 const response = await fetch('/cashier/pos/cart/clear', {
                     method: 'POST',
@@ -662,7 +677,7 @@ class POSSystem {
                 }
             }
             
-            // Process regular payment (cash, debit, credit)
+            // Process regular payment (cash or digital)
             await this.processRegularPayment();
             
         } catch (error) {
@@ -1122,7 +1137,23 @@ class POSSystem {
     }
     
     async deleteHeldTransaction(holdId) {
-        if (!confirm('Apakah Anda yakin ingin menghapus transaksi yang ditahan ini?')) {
+        let confirmed = false;
+        
+        // Wait for globalAlert to be available
+        if (window.globalAlert && typeof window.globalAlert.confirm === 'function') {
+            confirmed = await window.globalAlert.confirm({
+                title: 'Hapus Transaksi',
+                message: 'Apakah Anda yakin ingin menghapus transaksi yang ditahan ini?',
+                type: 'danger',
+                confirmText: 'Ya, Hapus',
+                cancelText: 'Batal'
+            });
+        } else {
+            // Fallback to browser confirm
+            confirmed = confirm('Apakah Anda yakin ingin menghapus transaksi yang ditahan ini?');
+        }
+        
+        if (!confirmed) {
             return;
         }
         
@@ -1221,51 +1252,64 @@ class POSSystem {
     }
     
     showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 shadow-lg transform transition-all duration-300 ${
-            type === 'success' ? 'bg-green-500' : 
-            type === 'error' ? 'bg-red-500' : 
-            type === 'warning' ? 'bg-yellow-500' :
-            'bg-blue-500'
-        }`;
-        
-        notification.innerHTML = `
-            <div class="flex items-center space-x-2">
-                <span>${
-                    type === 'success' ? '✅' :
-                    type === 'error' ? '❌' :
-                    type === 'warning' ? '⚠️' :
-                    'ℹ️'
-                }</span>
-                <span>${message}</span>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Animate in
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 10);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 3000);
-    }
+        // Use the global alert system with fallback
+        if (window.globalAlert && typeof window.globalAlert[type] === 'function') {
+            switch (type) {
+                case 'success':
+                    window.globalAlert.success(message);
+                    break;
+                case 'error':
+                    window.globalAlert.error(message);
+                    break;
+                case 'warning':
+                    window.globalAlert.warning(message);
+                    break;
+                default:
+                    window.globalAlert.info(message);
+            }
+        } else {
+            // Fallback to console log and browser alert for critical messages
+            console.log(`${type.toUpperCase()}: ${message}`);
+            if (type === 'error') {
+                alert(`Error: ${message}`);
+            }
+        }
+    } 
 }
 
 // Initialize POS system when DOM is loaded
 let pos;
+
+// Function to wait for globalAlert to be available
+function waitForGlobalAlert(callback, maxAttempts = 10, attempt = 1) {
+    console.log(`POS: Waiting for globalAlert... Attempt ${attempt}/${maxAttempts}`);
+    
+    if (window.globalAlert && typeof window.globalAlert.success === 'function') {
+        console.log('POS: globalAlert is ready!');
+        callback();
+    } else if (attempt < maxAttempts) {
+        setTimeout(() => {
+            waitForGlobalAlert(callback, maxAttempts, attempt + 1);
+        }, 200);
+    } else {
+        console.warn('POS: globalAlert not available after maximum attempts, proceeding anyway...');
+        callback();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    pos = new POSSystem();
-    // Make functions available globally for onclick handlers
-    window.pos = pos;
+    console.log('POS: DOM loaded, waiting for globalAlert...');
+    
+    waitForGlobalAlert(function() {
+        console.log('POS: Initializing POS System...');
+        console.log('POS: globalAlert status:', typeof window.globalAlert);
+        
+        pos = new POSSystem();
+        // Make functions available globally for onclick handlers
+        window.pos = pos;
+        
+        console.log('POS: System initialized successfully');
+    });
 });
 
 // Fallback untuk memastikan pos tersedia

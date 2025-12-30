@@ -189,7 +189,7 @@
                     @if($product->image)
                         <img src="@productImage($product->image, $product->name)" 
                              alt="{{ $product->name }}" 
-                             class="w-full h-auto rounded-lg">>
+                             class="w-full h-auto rounded-lg">
                     @else
                         <p class="text-center text-gray-500">No image available</p>
                     @endif

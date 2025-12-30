@@ -40,10 +40,10 @@
         <x-card class="mb-6">
             {{-- Form filter dengan metode GET --}}
             <form method="GET" action="{{ route('admin.expenses.index') }}"
-                  class="space-y-4 md:space-y-0 md:flex md:items-end md:space-x-4">
+                  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
 
                 {{-- Input pencarian --}}
-                <div class="flex-1">
+                <div class="lg:col-span-2">
                     <x-form.input 
                         name="search" 
                         placeholder="Search expenses by description or category..."
@@ -53,7 +53,7 @@
                 </div>
 
                 {{-- Filter kategori --}}
-                <div class="w-full md:w-48">
+                <div>
                     <x-form.select 
                         name="category" 
                         :options="[
@@ -72,7 +72,7 @@
                 </div>
 
                 {{-- Filter tanggal mulai --}}
-                <div class="w-full md:w-40">
+                <div>
                     <x-form.input 
                         name="date_from" 
                         label="From Date"
@@ -82,7 +82,7 @@
                 </div>
 
                 {{-- Filter tanggal akhir --}}
-                <div class="w-full md:w-40">
+                <div>
                     <x-form.input 
                         name="date_to" 
                         label="To Date"
@@ -92,22 +92,25 @@
                 </div>
 
                 {{-- Tombol aksi filter --}}
-                <div class="flex space-x-2">
-                    <x-button type="submit" variant="primary">
-                        {{-- Icon search --}}
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                        Search
-                    </x-button>
-
-                    {{-- Tombol reset filter --}}
-                    @if(request()->hasAny(['search', 'category', 'date_from', 'date_to']))
-                        <x-button href="{{ route('admin.expenses.index') }}" variant="light">
-                            Clear
+                <div class="lg:col-span-5 space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">&nbsp;</label>
+                    <div class="flex space-x-2">
+                        <x-button type="submit" variant="primary">
+                            {{-- Icon search --}}
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            Search
                         </x-button>
-                    @endif
+
+                        {{-- Tombol reset filter --}}
+                        @if(request()->hasAny(['search', 'category', 'date_from', 'date_to']))
+                            <x-button href="{{ route('admin.expenses.index') }}" variant="light">
+                                Clear
+                            </x-button>
+                        @endif
+                    </div>
                 </div>
             </form>
         </x-card>
