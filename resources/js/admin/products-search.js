@@ -145,6 +145,13 @@ class ProductsSearch {
 
         console.log('handleFilter called'); // Debug log
 
+        // For production reliability, use normal form submission instead of AJAX
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            console.log('Production environment detected, using normal form submission');
+            this.filterForm.submit();
+            return;
+        }
+
         this.showLoading();
         this.isLoading = true;
 
@@ -580,30 +587,30 @@ class ProductsSearch {
         
         if (pagination.last_page > 1) {
             html = `
-                <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-                    <div class="flex flex-1 justify-between sm:hidden">
+                <nav role="navigation" aria-label="Pagination Navigation" class="flex items-center justify-between">
+                    <div class="flex justify-between flex-1 sm:hidden">
                         ${pagination.current_page > 1 ? 
-                            `<button data-page="${pagination.current_page - 1}" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</button>` : 
+                            `<a href="?page=${pagination.current_page - 1}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 leading-5 rounded-md hover:text-gray-400 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">« Previous</a>` : 
                             '<span></span>'
                         }
                         ${pagination.current_page < pagination.last_page ? 
-                            `<button data-page="${pagination.current_page + 1}" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</button>` : 
+                            `<a href="?page=${pagination.current_page + 1}" class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 leading-5 rounded-md hover:text-gray-400 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150">Next »</a>` : 
                             '<span></span>'
                         }
                     </div>
-                    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                         <div>
-                            <p class="text-sm text-gray-700">
+                            <p class="text-sm text-gray-700 leading-5">
                                 Showing <span class="font-medium">${pagination.from || 0}</span> to <span class="font-medium">${pagination.to || 0}</span> of <span class="font-medium">${pagination.total}</span> results
                             </p>
                         </div>
                         <div>
-                            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                            <span class="relative z-0 inline-flex shadow-sm rounded-md">
                                 ${this.generatePaginationLinks(pagination)}
-                            </nav>
+                            </span>
                         </div>
                     </div>
-                </div>
+                </nav>
             `;
         }
         
@@ -615,7 +622,7 @@ class ProductsSearch {
         
         // Previous button
         if (pagination.current_page > 1) {
-            links += `<button data-page="${pagination.current_page - 1}" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Previous</button>`;
+            links += `<a href="?page=${pagination.current_page - 1}" rel="prev" class="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md leading-5 hover:text-gray-400 focus:z-10 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150" aria-label="« Previous">‹</a>`;
         }
         
         // Page numbers
@@ -624,20 +631,22 @@ class ProductsSearch {
         
         for (let i = startPage; i <= endPage; i++) {
             const isActive = i === pagination.current_page;
-            links += `
-                <button data-page="${i}" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                    isActive 
-                        ? 'z-10 bg-blue-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600' 
-                        : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
-                }">
-                    ${i}
-                </button>
-            `;
+            if (isActive) {
+                links += `
+                    <span aria-current="page">
+                        <span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">${i}</span>
+                    </span>
+                `;
+            } else {
+                links += `
+                    <a href="?page=${i}" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 leading-5 hover:text-gray-500 focus:z-10 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150" aria-label="Go to page ${i}">${i}</a>
+                `;
+            }
         }
         
         // Next button
         if (pagination.current_page < pagination.last_page) {
-            links += `<button data-page="${pagination.current_page + 1}" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Next</button>`;
+            links += `<a href="?page=${pagination.current_page + 1}" rel="next" class="relative inline-flex items-center px-2 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md leading-5 hover:text-gray-400 focus:z-10 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150" aria-label="Next »">›</a>`;
         }
         
         return links;

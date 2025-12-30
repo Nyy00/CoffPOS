@@ -283,7 +283,7 @@
 
                 {{-- Pagination --}}
                 <div class="mt-6" id="pagination-container">
-                    <x-pagination :paginator="$products" />
+                    {{ $products->links() }}
                 </div>
             @else
                 {{-- Tampilan jika data kosong --}}

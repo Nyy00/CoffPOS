@@ -264,6 +264,11 @@ class ProductController extends Controller
      */
     public function filter(Request $request)
     {
+        // If not AJAX request, redirect to normal index with parameters
+        if (!$request->ajax() && !$request->wantsJson()) {
+            return redirect()->route('admin.products.index', $request->all());
+        }
+
         $query = Product::with('category');
 
         // Category filter
