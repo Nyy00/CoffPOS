@@ -97,6 +97,74 @@ Route::get('/debug/db-test', function () {
     }
 });
 
+// Quick fix test for Railway PostgreSQL search
+Route::get('/debug/fix-search-test', function () {
+    try {
+        $results = [];
+        
+        // Test 1: Check database type
+        $results['database_type'] = config('database.default');
+        $results['database_connection'] = config('database.connections.' . config('database.default'));
+        
+        // Test 2: Count all products
+        $results['total_products'] = \App\Models\Product::count();
+        
+        // Test 3: Search for pudding (case insensitive)
+        $puddingCount = \App\Models\Product::where(function($q) {
+            if (config('database.default') === 'pgsql') {
+                $q->where('name', 'ILIKE', '%pudding%');
+            } else {
+                $q->where('name', 'like', '%pudding%');
+            }
+        })->count();
+        $results['pudding_products_count'] = $puddingCount;
+        
+        // Test 4: Get actual pudding products
+        $puddingProducts = \App\Models\Product::where(function($q) {
+            if (config('database.default') === 'pgsql') {
+                $q->where('name', 'ILIKE', '%pudding%');
+            } else {
+                $q->where('name', 'like', '%pudding%');
+            }
+        })->get(['id', 'name', 'description']);
+        $results['pudding_products'] = $puddingProducts;
+        
+        // Test 5: Test controller search
+        $request = new \Illuminate\Http\Request(['search' => 'pudding']);
+        $query = \App\Models\Product::with('category');
+        
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                if (config('database.default') === 'pgsql') {
+                    $q->where('name', 'ILIKE', "%{$search}%")
+                      ->orWhere('description', 'ILIKE', "%{$search}%");
+                } else {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                }
+            });
+        }
+        
+        $controllerResults = $query->get(['id', 'name', 'description']);
+        $results['controller_search_results'] = $controllerResults;
+        $results['controller_search_count'] = $controllerResults->count();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Search functionality test completed',
+            'results' => $results
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+});
+
 // Test products search functionality
 Route::get('/debug/products-search', function () {
     try {
@@ -105,16 +173,22 @@ Route::get('/debug/products-search', function () {
         // Get all products first
         $allProducts = \App\Models\Product::with('category')->get();
         
-        // Test search query
+        // Test search query with PostgreSQL compatibility
         $searchResults = \App\Models\Product::with('category')
             ->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', "%{$searchTerm}%")
-                  ->orWhere('description', 'like', "%{$searchTerm}%");
+                if (config('database.default') === 'pgsql') {
+                    $q->where('name', 'ILIKE', "%{$searchTerm}%")
+                      ->orWhere('description', 'ILIKE', "%{$searchTerm}%");
+                } else {
+                    $q->where('name', 'like', "%{$searchTerm}%")
+                      ->orWhere('description', 'like', "%{$searchTerm}%");
+                }
             })
             ->get();
         
         return response()->json([
             'success' => true,
+            'database_type' => config('database.default'),
             'search_term' => $searchTerm,
             'all_products_count' => $allProducts->count(),
             'search_results_count' => $searchResults->count(),

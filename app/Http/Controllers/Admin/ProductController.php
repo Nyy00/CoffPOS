@@ -41,8 +41,14 @@ class ProductController extends Controller
             $search = $request->search;
             \Log::info('Applying search filter', ['search_term' => $search]);
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                // Use ILIKE for PostgreSQL case-insensitive search
+                if (config('database.default') === 'pgsql') {
+                    $q->where('name', 'ILIKE', "%{$search}%")
+                      ->orWhere('description', 'ILIKE', "%{$search}%");
+                } else {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                }
             });
         }
 
@@ -251,11 +257,20 @@ class ProductController extends Controller
         if ($request->filled('q')) {
             $search = $request->q;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('category', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
+                // Use ILIKE for PostgreSQL case-insensitive search
+                if (config('database.default') === 'pgsql') {
+                    $q->where('name', 'ILIKE', "%{$search}%")
+                      ->orWhere('description', 'ILIKE', "%{$search}%")
+                      ->orWhereHas('category', function ($q) use ($search) {
+                          $q->where('name', 'ILIKE', "%{$search}%");
+                      });
+                } else {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%")
+                      ->orWhereHas('category', function ($q) use ($search) {
+                          $q->where('name', 'like', "%{$search}%");
+                      });
+                }
             });
         }
 
@@ -330,8 +345,14 @@ class ProductController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                // Use ILIKE for PostgreSQL case-insensitive search
+                if (config('database.default') === 'pgsql') {
+                    $q->where('name', 'ILIKE', "%{$search}%")
+                      ->orWhere('description', 'ILIKE', "%{$search}%");
+                } else {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                }
             });
         }
 
