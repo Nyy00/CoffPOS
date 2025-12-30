@@ -40,72 +40,55 @@
 
         <!-- Filters -->
         <x-card class="mb-6">
-            <form method="GET" action="{{ route('admin.products.index') }}" id="products-filter-form">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div>
-                        <x-form.input 
-                            id="products-search"
-                            name="search" 
-                            placeholder="Search products..."
-                            value="{{ request('search') }}"
-                            label="Search Products"
-                        />
-                    </div>
-                    <div>
-                        <x-form.select 
-                            name="category_id" 
-                            :options="$categories" 
-                            value="{{ request('category_id') }}"
-                            placeholder="All Categories"
-                            label="Category"
-                        />
-                    </div>
-                    <div>
-                        <x-form.select 
-                            name="is_available" 
-                            :options="['1' => 'Available', '0' => 'Unavailable']" 
-                            value="{{ request('is_available') }}"
-                            placeholder="All Status"
-                            label="Status"
-                        />
-                    </div>
-                    
-                    {{-- Tombol aksi filter --}}
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">&nbsp;</label>
-                        <div class="flex gap-2">
-                            <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 flex-1">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                                Search
-                            </button>
-                            @if(request()->hasAny(['search', 'category_id', 'is_available']))
-                                <a href="{{ route('admin.products.index') }}" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-50 active:bg-gray-200 focus:outline-none focus:border-gray-300 focus:ring ring-gray-200 disabled:opacity-25 transition ease-in-out duration-150 flex-1">
-                                    Clear filters
-                                </a>
-                            @endif
-                        </div>
+            <form method="GET" action="{{ route('admin.products.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <x-form.input 
+                        name="search" 
+                        placeholder="Search products..."
+                        value="{{ request('search') }}"
+                        label="Search Products"
+                    />
+                </div>
+                <div>
+                    <x-form.select 
+                        name="category_id" 
+                        :options="$categories" 
+                        value="{{ request('category_id') }}"
+                        placeholder="All Categories"
+                        label="Category"
+                    />
+                </div>
+                <div>
+                    <x-form.select 
+                        name="is_available" 
+                        :options="['1' => 'Available', '0' => 'Unavailable']" 
+                        value="{{ request('is_available') }}"
+                        placeholder="All Status"
+                        label="Status"
+                    />
+                </div>
+                
+                {{-- Tombol aksi filter --}}
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">&nbsp;</label>
+                    <div class="flex gap-2">
+                        <x-button type="submit" variant="primary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            Search
+                        </x-button>
+                        @if(request()->hasAny(['search', 'category_id', 'is_available']))
+                            <x-button href="{{ route('admin.products.index') }}" variant="light">
+                                Clear filters
+                            </x-button>
+                        @endif
                     </div>
                 </div>
             </form>
 
-            <!-- Loading Indicator -->
-            <div id="search-loading" class="hidden mt-4">
-                <div class="flex items-center justify-center py-4">
-                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span class="text-sm text-gray-600">Searching...</span>
-                </div>
-            </div>
-
-            <!-- Active Filters -->
-            <div id="active-filters" class="mt-4 flex flex-wrap gap-2"></div>
-
             <!-- Results Count -->
-            <div id="results-count" class="mt-2 text-sm text-gray-600">
+            <div class="mt-4 text-sm text-gray-600">
                 @if($products->total() > 0)
                     Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} products
                 @endif
@@ -114,10 +97,8 @@
 
         <!-- Products Table -->
         <x-card>
-            <!-- Results Container for AJAX -->
-            <div id="products-results">
-                {{-- Mengecek apakah data produk ada --}}
-                @if($products->count() > 0)
+            {{-- Mengecek apakah data produk ada --}}
+            @if($products->count() > 0)
                 <!-- Mobile Cards View -->
                 <div class="block md:hidden space-y-4">
                     @foreach($products as $product)
@@ -282,7 +263,7 @@
                 </div>
 
                 {{-- Pagination --}}
-                <div class="mt-6" id="pagination-container">
+                <div class="mt-6">
                     {{ $products->links() }}
                 </div>
             @else
@@ -303,7 +284,6 @@
                     </div>
                 </div>
             @endif
-            </div>
         </x-card>
     </div>
 </div>
@@ -338,5 +318,12 @@ function confirmDelete(productId, productName) {
 </script>
 
 {{-- Include Products Search JavaScript --}}
-@vite('resources/js/admin/products-search.js')
+<script>
+// Fungsi untuk menampilkan modal konfirmasi hapus
+function confirmDelete(productId, productName) {
+    document.getElementById('productName').textContent = productName;
+    document.getElementById('deleteForm').action = `/admin/products/${productId}`;
+    openModal('deleteModal');
+}
+</script>
 @endsection
