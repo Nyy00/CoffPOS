@@ -31,20 +31,30 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Register custom Blade directives for image handling
-        \Illuminate\Support\Facades\Blade::directive('productImage', function ($expression) {
-            return "<?php echo \App\Helpers\ImageHelper::getProductImageUrl($expression); ?>";
-        });
+        // Only register if Blade is available and cache path is set
+        try {
+            if (app()->bound('view') && config('view.compiled')) {
+                \Illuminate\Support\Facades\Blade::directive('productImage', function ($expression) {
+                    return "<?php echo \App\Helpers\ImageHelper::getProductImageUrl($expression); ?>";
+                });
 
-        \Illuminate\Support\Facades\Blade::directive('categoryImage', function ($expression) {
-            return "<?php echo \App\Helpers\ImageHelper::getCategoryImageUrl($expression); ?>";
-        });
+                \Illuminate\Support\Facades\Blade::directive('categoryImage', function ($expression) {
+                    return "<?php echo \App\Helpers\ImageHelper::getCategoryImageUrl($expression); ?>";
+                });
 
-        \Illuminate\Support\Facades\Blade::directive('avatarImage', function ($expression) {
-            return "<?php echo \App\Helpers\ImageHelper::getAvatarUrl($expression); ?>";
-        });
+                \Illuminate\Support\Facades\Blade::directive('avatarImage', function ($expression) {
+                    return "<?php echo \App\Helpers\ImageHelper::getAvatarUrl($expression); ?>";
+                });
 
-        \Illuminate\Support\Facades\Blade::directive('receiptImage', function ($expression) {
-            return "<?php echo \App\Helpers\ImageHelper::getReceiptUrl($expression); ?>";
-        });
+                \Illuminate\Support\Facades\Blade::directive('receiptImage', function ($expression) {
+                    return "<?php echo \App\Helpers\ImageHelper::getReceiptUrl($expression); ?>";
+                });
+            }
+        } catch (\Exception $e) {
+            // Ignore blade directive registration errors during build
+            if (config('app.debug')) {
+                \Log::warning('Blade directive registration failed: ' . $e->getMessage());
+            }
+        }
     }
 }
