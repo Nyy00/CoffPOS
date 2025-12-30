@@ -40,9 +40,9 @@
 
         <!-- Filters -->
         <x-card class="mb-6">
-            <form method="GET" action="{{ route('admin.products.index') }}" class="space-y-4">
+            <form method="GET" action="{{ route('admin.products.index') }}">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="md:col-span-2 lg:col-span-1">
+                    <div>
                         <x-form.input 
                             name="search" 
                             placeholder="Search products..."
@@ -68,18 +68,18 @@
                             label="Status"
                         />
                     </div>
+                    
+                    {{-- Tombol aksi filter --}}
                     <div class="flex items-end space-x-2">
                         <x-button type="submit" variant="primary" class="flex-1">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
-                            <span class="hidden sm:inline">Search</span>
-                            <span class="sm:hidden">🔍</span>
+                            Search
                         </x-button>
                         @if(request()->hasAny(['search', 'category_id', 'is_available']))
                             <x-button href="{{ route('admin.products.index') }}" variant="light">
-                                <span class="hidden sm:inline">Clear</span>
-                                <span class="sm:hidden">✕</span>
+                                Clear
                             </x-button>
                         @endif
                     </div>

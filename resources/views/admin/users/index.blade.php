@@ -50,42 +50,45 @@
         {{-- ================= FILTER & SEARCH ================= --}}
         <x-card class="mb-6">
             {{-- Form pencarian user --}}
-            <form method="GET" action="{{ route('admin.users.index') }}"
-                  class="space-y-4 md:space-y-0 md:flex md:items-end md:space-x-4">
+            <form method="GET" action="{{ route('admin.users.index') }}">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {{-- Input pencarian nama/email --}}
+                    <div>
+                        <x-form.input 
+                            name="search"
+                            label="Search Users"
+                            placeholder="Search users by name or email..."
+                            value="{{ request('search') }}"
+                        />
+                    </div>
 
-                {{-- Input pencarian nama/email --}}
-                <div class="flex-1">
-                    <x-form.input 
-                        name="search"
-                        label="Search Users"
-                        placeholder="Search users by name or email..."
-                        value="{{ request('search') }}"
-                    />
-                </div>
+                    {{-- Filter role --}}
+                    <div>
+                        <x-form.select 
+                            name="role"
+                            label="Role"
+                            :options="['admin' => 'Admin', 'manager' => 'Manager', 'cashier' => 'Cashier']"
+                            value="{{ request('role') }}"
+                            placeholder="All Roles"
+                        />
+                    </div>
 
-                {{-- Filter role --}}
-                <div class="w-full md:w-48">
-                    <x-form.select 
-                        name="role"
-                        label="Role"
-                        :options="['admin' => 'Admin', 'manager' => 'Manager', 'cashier' => 'Cashier']"
-                        value="{{ request('role') }}"
-                        placeholder="All Roles"
-                    />
-                </div>
-
-                {{-- Tombol search & reset --}}
-                <div class="flex space-x-2">
-                    <x-button type="submit" variant="primary">
-                        Search
-                    </x-button>
-
-                    {{-- Tombol clear filter --}}
-                    @if(request()->hasAny(['search', 'role']))
-                        <x-button href="{{ route('admin.users.index') }}" variant="light">
-                            Clear
+                    {{-- Tombol search & reset --}}
+                    <div class="flex items-end space-x-2">
+                        <x-button type="submit" variant="primary" class="flex-1">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            Search
                         </x-button>
-                    @endif
+
+                        {{-- Tombol clear filter --}}
+                        @if(request()->hasAny(['search', 'role']))
+                            <x-button href="{{ route('admin.users.index') }}" variant="light">
+                                Clear
+                            </x-button>
+                        @endif
+                    </div>
                 </div>
             </form>
         </x-card>

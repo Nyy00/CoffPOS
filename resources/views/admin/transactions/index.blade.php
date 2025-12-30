@@ -117,15 +117,18 @@
             </div>
             
             {{-- Tombol aksi filter --}}
-            <div class="md:col-span-2 lg:col-span-4 flex justify-end space-x-2">
-                <a href="{{ route('admin.transactions.index') }}" 
-                   class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">
-                    Clear
-                </a>
-                <button type="submit" 
-                        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                    Apply Filters
-                </button>
+            <div class="md:col-span-2 lg:col-span-4 flex items-end justify-end space-x-2">
+                <x-button type="submit" variant="primary">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Search
+                </x-button>
+                @if(request()->hasAny(['search', 'status', 'payment_method', 'cashier_id', 'date_from', 'date_to', 'amount_min', 'amount_max']))
+                    <x-button href="{{ route('admin.transactions.index') }}" variant="light">
+                        Clear
+                    </x-button>
+                @endif
             </div>
         </form>
     </div>
